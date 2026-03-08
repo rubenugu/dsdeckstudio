@@ -10,28 +10,27 @@
 
 @layer base {
   :root {
-    /* DS Deck — GitHub dark palette */
-    --background: 215 14% 8%;        /* #0d1117 */
-    --surface:    215 13% 11%;       /* #161b22 */
-    --surface-2:  215 11% 15%;       /* #21262d */
-    --border:     215 10% 19%;       /* #30363d */
+    /* DS Deck — GitHub dark palette (default) */
+    --background: 215 14% 8%;
+    --surface:    215 13% 11%;
+    --surface-2:  215 11% 15%;
+    --border:     215 10% 19%;
 
-    --foreground:       210 22% 88%; /* #c9d1d9 */
-    --muted-foreground: 215 14% 55%; /* #8b949e */
+    --foreground:       210 22% 88%;
+    --muted-foreground: 215 14% 55%;
 
-    --primary:          212 100% 68%; /* #58a6ff */
+    --primary:            212 100% 68%;
     --primary-foreground: 215 14% 8%;
 
-    --success:    133 57% 58%;        /* #3fb950 */
+    --success:            133 57% 58%;
     --success-foreground: 215 14% 8%;
 
-    --warning:    40 77% 48%;         /* #d29922 */
+    --warning:            40 77% 48%;
     --warning-foreground: 215 14% 8%;
 
-    --destructive: 354 70% 54%;       /* #f85149 */
+    --destructive:            354 70% 54%;
     --destructive-foreground: 210 22% 88%;
 
-    /* shadcn compat */
     --card:             215 13% 11%;
     --card-foreground:  210 22% 88%;
     --popover:          215 13% 11%;
@@ -45,7 +44,6 @@
     --ring:             212 100% 68%;
     --radius:           0.5rem;
 
-    /* sidebar */
     --sidebar-background: 215 13% 9%;
     --sidebar-foreground: 210 22% 88%;
     --sidebar-primary: 212 100% 68%;
@@ -55,13 +53,57 @@
     --sidebar-border: 215 10% 19%;
     --sidebar-ring: 212 100% 68%;
 
-    /* gradients */
     --gradient-primary: linear-gradient(135deg, hsl(212 100% 68% / 0.15), hsl(212 100% 68% / 0.05));
     --gradient-success: linear-gradient(135deg, hsl(133 57% 58% / 0.15), hsl(133 57% 58% / 0.05));
-
-    /* shadows */
     --shadow-card: 0 1px 3px hsl(0 0% 0% / 0.4), 0 0 0 1px hsl(215 10% 19%);
     --shadow-glow-primary: 0 0 20px hsl(212 100% 68% / 0.15);
+  }
+
+  /* ── Light mode overrides ───────────────────────────────────────────────── */
+  .light-mode {
+    --background: 210 17% 97%;       /* #f6f8fa */
+    --surface:    0 0% 100%;         /* #ffffff */
+    --surface-2:  210 14% 93%;       /* #eaeef2 */
+    --border:     210 14% 83%;       /* #d0d7de */
+
+    --foreground:       215 25% 10%; /* #1c2128 */
+    --muted-foreground: 215 14% 40%; /* #656d76 */
+
+    --primary:            212 92% 45%;  /* #0969da */
+    --primary-foreground: 0 0% 100%;
+
+    --success:            133 63% 30%;  /* #1a7f37 */
+    --success-foreground: 0 0% 100%;
+
+    --warning:            35 90% 35%;   /* #9a6700 */
+    --warning-foreground: 0 0% 100%;
+
+    --destructive:            3 90% 44%; /* #cf222e */
+    --destructive-foreground: 0 0% 100%;
+
+    --card:             0 0% 100%;
+    --card-foreground:  215 25% 10%;
+    --popover:          0 0% 100%;
+    --popover-foreground: 215 25% 10%;
+    --secondary:        210 14% 93%;
+    --secondary-foreground: 215 25% 10%;
+    --muted:            210 14% 93%;
+    --accent:           210 14% 89%;
+    --accent-foreground: 215 25% 10%;
+    --input:            210 14% 83%;
+    --ring:             212 92% 45%;
+
+    --sidebar-background: 210 14% 94%;
+    --sidebar-foreground: 215 25% 10%;
+    --sidebar-primary: 212 92% 45%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 14% 89%;
+    --sidebar-accent-foreground: 215 25% 10%;
+    --sidebar-border: 210 14% 83%;
+    --sidebar-ring: 212 92% 45%;
+
+    --shadow-card: 0 1px 3px hsl(215 14% 8% / 0.08), 0 0 0 1px hsl(210 14% 83%);
+    --shadow-glow-primary: 0 0 20px hsl(212 92% 45% / 0.12);
   }
 }
 
@@ -140,6 +182,40 @@
     border-radius: calc(var(--radius) - 2px);
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.8125rem;
+  }
+
+  .light-mode .terminal-block {
+    background: hsl(210 14% 95%);
+  }
+
+  /* Card mastery badges */
+  .badge-mastered {
+    background: hsl(var(--success) / 0.12);
+    color: hsl(var(--success));
+    border: 1px solid hsl(var(--success) / 0.3);
+    font-size: 0.625rem;
+    padding: 1px 6px;
+    border-radius: 999px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  .badge-needs-practice {
+    background: hsl(var(--destructive) / 0.1);
+    color: hsl(var(--destructive));
+    border: 1px solid hsl(var(--destructive) / 0.3);
+    font-size: 0.625rem;
+    padding: 1px 6px;
+    border-radius: 999px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  /* Light mode grid bg */
+  .light-mode body {
+    background-image:
+      linear-gradient(hsl(215 14% 60% / 0.07) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(215 14% 60% / 0.07) 1px, transparent 1px);
   }
 
   .animate-page-in {

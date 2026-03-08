@@ -3,6 +3,9 @@ import { useDeckStore } from "@/store/useDeckStore";
 import { TopBar } from "@/components/TopBar";
 import { Sidebar } from "@/components/Sidebar";
 import { CommandPalette } from "@/components/CommandPalette";
+import { OnboardingModal } from "@/components/OnboardingModal";
+import { ToastNotifier } from "@/components/ToastNotifier";
+import { Toaster } from "@/components/ui/toaster";
 import { DashboardPage } from "./DashboardPage";
 import { StudyPage } from "./StudyPage";
 import { AllCardsPage } from "./AllCardsPage";
@@ -11,12 +14,12 @@ import { SettingsPage } from "./SettingsPage";
 import { QuickQuizPage } from "./QuickQuizPage";
 
 const PAGE_COMPONENTS: Record<string, React.FC> = {
-  dashboard:   DashboardPage,
-  study:       StudyPage,
+  dashboard:    DashboardPage,
+  study:        StudyPage,
   "quick-quiz": QuickQuizPage,
   "all-cards":  AllCardsPage,
   "add-card":   AddCardPage,
-  settings:    SettingsPage,
+  settings:     SettingsPage,
 };
 
 function AnimatedPage({ navKey }: { navKey: string }) {
@@ -52,10 +55,16 @@ function AnimatedPage({ navKey }: { navKey: string }) {
 
 const Index = () => {
   const { activeNav } = useDeckStore();
-  const [mobileOpen,  setMobileOpen]  = useState(false);
-  const [searchOpen,  setSearchOpen]  = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
 
-  // Global Cmd+K / Ctrl+K shortcut
+  // Apply persisted theme on boot
+  useEffect(() => {
+    const saved = localStorage.getItem("dsdeck_theme");
+    if (saved === "light") document.documentElement.classList.add("light-mode");
+  }, []);
+
+  // Global Cmd+K / Ctrl+K
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
@@ -87,10 +96,10 @@ const Index = () => {
         </main>
       </div>
 
-      <CommandPalette
-        open={searchOpen}
-        onClose={() => setSearchOpen(false)}
-      />
+      <CommandPalette open={searchOpen} onClose={() => setSearchOpen(false)} />
+      <OnboardingModal />
+      <ToastNotifier />
+      <Toaster />
     </div>
   );
 };
