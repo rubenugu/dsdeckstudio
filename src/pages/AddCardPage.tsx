@@ -453,11 +453,11 @@ function CardPreview({
               </div>
             )}
           </div>
-        ) : (
-          <div className="space-y-3 animate-fade-in">
-            <p className="text-[10px] uppercase tracking-widest" style={{ color: "hsl(var(--muted-foreground))" }}>
-              Answer
-            </p>
+          ) : (
+            <div className="space-y-3 animate-fade-in">
+              <p className="text-[10px] uppercase tracking-widest" style={{ color: "hsl(var(--muted-foreground))" }}>
+                {t("add_preview_back", lang)}
+              </p>
             {back ? (
               <div
                 className="terminal-block p-3 text-xs leading-relaxed whitespace-pre-wrap"
