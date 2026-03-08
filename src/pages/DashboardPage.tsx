@@ -348,7 +348,7 @@ export function DashboardPage() {
         <div className="ds-card p-5">
           <h2 className="text-sm font-semibold mb-4 flex items-center gap-2" style={{ color: "hsl(var(--foreground))" }}>
             <CalendarDays size={14} style={{ color: "hsl(var(--primary))" }} />
-            Due in Next 14 Days
+            {t("chart_upcoming", lang)}
           </h2>
           <ResponsiveContainer width="100%" height={180}>
             <LineChart data={dueTimeline} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
