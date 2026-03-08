@@ -3,7 +3,7 @@ import { useDeckStore } from "@/store/useDeckStore";
 import { useSupabaseSync } from "@/hooks/useSupabaseSync";
 import { useLang } from "@/contexts/LanguageContext";
 import { t } from "@/i18n/translations";
-import { Sun, Moon, Trash2, Download, Upload, Check, Globe } from "lucide-react";
+import { Sun, Moon, Trash2, FileDown, FileUp, Check, Globe } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 const THEME_KEY = "dsdeck_theme";
@@ -214,7 +214,7 @@ export function SettingsPage() {
                 border:     "1px solid hsl(var(--primary) / 0.3)",
               }}
             >
-              <Download size={14} />
+              <FileDown size={14} />
               Export JSON
             </button>
             <label
@@ -225,7 +225,7 @@ export function SettingsPage() {
                 border:     "1px solid hsl(var(--border))",
               }}
             >
-              <Upload size={14} />
+              <FileUp size={14} />
               Import JSON
               <input type="file" accept=".json" className="hidden" onChange={importDeck} />
             </label>
