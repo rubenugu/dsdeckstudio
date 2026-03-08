@@ -555,7 +555,7 @@ export function AddCardPage() {
     if (user) upsertCard(newCard);
 
     toast({
-      title: "Card added to your deck! 🎉",
+      title: t("add_success", lang),
       description: `"${front.slice(0, 50)}${front.length > 50 ? "…" : ""}" is ready for review`,
     });
 
