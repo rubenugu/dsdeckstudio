@@ -709,6 +709,7 @@ type Screen = "setup" | "quiz" | "results";
 
 export function QuickQuizPage() {
   const { cards, setActiveNav } = useDeckStore();
+  const { lang } = useLang();
   const [screen,    setScreen]    = useState<Screen>("setup");
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [results,   setResults]   = useState<QuizResult[]>([]);
@@ -717,16 +718,18 @@ export function QuickQuizPage() {
     return (
       <div className="flex flex-col items-center justify-center h-full p-6 text-center gap-4">
         <Zap size={40} style={{ color: "hsl(var(--warning))", opacity: 0.6 }} />
-        <p className="text-lg font-semibold" style={{ color: "hsl(var(--foreground))" }}>Not enough cards</p>
+        <p className="text-lg font-semibold" style={{ color: "hsl(var(--foreground))" }}>
+          {t("quiz_not_enough_cards", lang)}
+        </p>
         <p className="text-sm" style={{ color: "hsl(var(--muted-foreground))" }}>
-          You need at least 4 cards to run a quiz (for answer choices).
+          {t("quiz_not_enough_desc", lang)}
         </p>
         <button
           onClick={() => setActiveNav("add-card")}
           className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium"
           style={{ background: "hsl(var(--primary) / 0.12)", color: "hsl(var(--primary))", border: "1px solid hsl(var(--primary) / 0.3)" }}
         >
-          Add cards
+          {t("quiz_add_cards", lang)}
         </button>
       </div>
     );
@@ -736,6 +739,7 @@ export function QuickQuizPage() {
     return (
       <QuizSetup
         cards={cards}
+        lang={lang}
         onStart={(qs) => { setQuestions(qs); setScreen("quiz"); }}
         onGoToDashboard={() => setActiveNav("dashboard")}
       />
@@ -746,6 +750,7 @@ export function QuickQuizPage() {
     return (
       <QuizQuestion
         questions={questions}
+        lang={lang}
         onComplete={(r) => { setResults(r); setScreen("results"); }}
       />
     );
@@ -754,6 +759,7 @@ export function QuickQuizPage() {
   return (
     <QuizResults
       results={results}
+      lang={lang}
       onRetry={() => setScreen("setup")}
       onDashboard={() => setActiveNav("dashboard")}
     />
