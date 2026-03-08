@@ -255,9 +255,9 @@ function QuizSetup({ cards, lang, onStart, onGoToDashboard }: SetupProps) {
             className="flex items-center justify-between p-3 rounded-lg text-xs"
             style={{ background: "hsl(var(--surface-2))", border: "1px solid hsl(var(--border))" }}
           >
-            <span style={{ color: "hsl(var(--muted-foreground))" }}>Quiz size</span>
+            <span style={{ color: "hsl(var(--muted-foreground))" }}>{t("quiz_quiz_size", lang)}</span>
             <span className="font-mono font-semibold" style={{ color: canStart ? "hsl(var(--success))" : "hsl(var(--destructive))" }}>
-              {canStart ? `${effectiveCount} questions` : "Not enough cards — change filters"}
+              {canStart ? `${effectiveCount} ${t("quiz_questions", lang).toLowerCase()}` : t("quiz_not_enough", lang)}
             </span>
           </div>
         </div>
@@ -270,7 +270,7 @@ function QuizSetup({ cards, lang, onStart, onGoToDashboard }: SetupProps) {
             style={{ background: "hsl(var(--surface-2))", border: "1px solid hsl(var(--border))", color: "hsl(var(--muted-foreground))" }}
           >
             <LayoutDashboard size={14} />
-            Back
+            {t("quiz_back", lang)}
           </button>
           <button
             onClick={handleStart}
@@ -285,7 +285,7 @@ function QuizSetup({ cards, lang, onStart, onGoToDashboard }: SetupProps) {
             }}
           >
             <Zap size={15} />
-            Start Quiz
+            {t("quiz_start", lang)}
             <ChevronRight size={15} />
           </button>
         </div>
