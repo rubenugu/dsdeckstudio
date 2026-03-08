@@ -1,208 +1,509 @@
-import { useState } from "react";
-import { useDeckStore, type Flashcard, DS_CATEGORIES } from "@/store/useDeckStore";
-import { Trash2, ChevronDown, ChevronUp, Search, Code } from "lucide-react";
+import { useState, useMemo } from "react";
+import { useDeckStore, type Flashcard, type DSCategory, type Difficulty, DS_CATEGORIES } from "@/store/useDeckStore";
+import { Search, X, Code, Calendar, LayoutGrid, Plus, ChevronDown } from "lucide-react";
+import { SyntaxBlock } from "@/components/SyntaxBlock";
 
-function CardRow({ card }: { card: Flashcard }) {
-  const { deleteCard } = useDeckStore();
-  const [open, setOpen] = useState(false);
-  const accuracy =
-    card.repetitions > 0 && card.quality != null
-      ? Math.round(((card.quality / 5) * 100))
-      : null;
+// ── Category colour map ───────────────────────────────────────────────────────
 
-  const diffColor: Record<string, string> = {
-    beginner: "hsl(var(--success))",
-    intermediate: "hsl(var(--warning))",
-    advanced: "hsl(var(--destructive))",
-  };
+export const CATEGORY_COLORS: Record<DSCategory, string> = {
+  "Statistics":          "#a371f7",
+  "Machine Learning":    "#58a6ff",
+  "Deep Learning":       "#39d353",
+  "Python & Libraries":  "#d29922",
+  "Data Wrangling":      "#f78166",
+  "Data Visualization":  "#ff7eb6",
+  "SQL & Databases":     "#56d364",
+  "Feature Engineering": "#818cf8",
+  "Model Evaluation":    "#ff6e6e",
+  "MLOps":               "#3fb950",
+};
+
+const DIFF_COLORS: Record<Difficulty, string> = {
+  beginner:     "#3fb950",
+  intermediate: "#d29922",
+  advanced:     "#ff6e6e",
+};
+
+type SortKey = "due" | "recent" | "hardest" | "alpha";
+const SORT_OPTIONS: { key: SortKey; label: string }[] = [
+  { key: "due",     label: "Due for review" },
+  { key: "recent",  label: "Recently added" },
+  { key: "hardest", label: "Hardest first" },
+  { key: "alpha",   label: "Alphabetical" },
+];
+
+// ── Card preview ─────────────────────────────────────────────────────────────
+
+function CardPreview({ card, onClick }: { card: Flashcard; onClick: () => void }) {
+  const color = CATEGORY_COLORS[card.category];
+  const diffColor = DIFF_COLORS[card.difficulty];
+  const isDue = !card.nextReview || new Date(card.nextReview).getTime() <= Date.now();
 
   return (
-    <div className="ds-card overflow-hidden transition-all duration-200">
-      <button
-        onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center gap-3 p-4 text-left transition-colors duration-200"
-        style={{ background: "transparent" }}
-      >
-        <div className="flex-1 min-w-0">
-          <p className="text-sm truncate" style={{ color: "hsl(var(--foreground))" }}>
-            {card.front}
-          </p>
-          <p className="text-[11px] mt-0.5 truncate" style={{ color: "hsl(var(--muted-foreground))" }}>
-            {card.subcategory}
-          </p>
-        </div>
-        <div className="flex items-center gap-2 shrink-0">
-          <span
-            className="text-[10px] px-1.5 py-0.5 rounded hidden sm:block"
-            style={{
-              background: "hsl(var(--surface-2))",
-              color: "hsl(var(--muted-foreground))",
-              border: "1px solid hsl(var(--border))",
-            }}
-          >
-            {card.category}
-          </span>
-          <span
-            className="text-[10px] px-1.5 py-0.5 rounded capitalize"
-            style={{
-              background: `${diffColor[card.difficulty]}18`,
-              color: diffColor[card.difficulty],
-              border: `1px solid ${diffColor[card.difficulty]}40`,
-            }}
-          >
-            {card.difficulty}
-          </span>
-          {accuracy !== null && (
+    <button
+      onClick={onClick}
+      className="ds-card text-left w-full p-4 flex flex-col gap-3 group transition-all duration-200 cursor-pointer"
+      style={{ minHeight: 140 }}
+    >
+      {/* Header row */}
+      <div className="flex items-start justify-between gap-2">
+        <span
+          className="text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0"
+          style={{
+            background: `${color}18`,
+            color,
+            border: `1px solid ${color}40`,
+          }}
+        >
+          {card.category}
+        </span>
+        <div className="flex items-center gap-1.5 shrink-0">
+          {isDue && (
             <span
-              className="text-[10px] font-mono px-1.5 py-0.5 rounded"
-              style={{
-                background: "hsl(var(--primary) / 0.1)",
-                color: "hsl(var(--primary))",
-                border: "1px solid hsl(var(--primary) / 0.25)",
-              }}
+              className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full"
+              style={{ background: "#d2992218", color: "#d29922", border: "1px solid #d2992240" }}
             >
-              Q:{card.quality}/5
+              DUE
             </span>
           )}
           {card.codeExample && (
-            <Code size={12} style={{ color: "hsl(var(--primary))", opacity: 0.7 }} />
+            <Code size={12} style={{ color: "#58a6ff", opacity: 0.7 }} />
           )}
-          {open ? (
-            <ChevronUp size={14} style={{ color: "hsl(var(--muted-foreground))" }} />
-          ) : (
-            <ChevronDown size={14} style={{ color: "hsl(var(--muted-foreground))" }} />
+          {/* Difficulty dot */}
+          <span
+            className="w-2 h-2 rounded-full shrink-0"
+            style={{ background: diffColor }}
+            title={card.difficulty}
+          />
+        </div>
+      </div>
+
+      {/* Front text */}
+      <p
+        className="text-sm leading-snug flex-1"
+        style={{
+          color: "hsl(var(--foreground))",
+          display: "-webkit-box",
+          WebkitLineClamp: 3,
+          WebkitBoxOrient: "vertical",
+          overflow: "hidden",
+        }}
+      >
+        {card.front}
+      </p>
+
+      {/* Footer: tags + stats */}
+      <div className="flex items-center justify-between gap-2 mt-auto">
+        <div className="flex flex-wrap gap-1 flex-1 min-w-0">
+          {card.tags.slice(0, 3).map((tag) => (
+            <span
+              key={tag}
+              className="text-[10px] px-1.5 py-0.5 rounded font-mono"
+              style={{
+                background: "hsl(var(--surface-2))",
+                color: "hsl(var(--muted-foreground))",
+              }}
+            >
+              #{tag}
+            </span>
+          ))}
+          {card.tags.length > 3 && (
+            <span
+              className="text-[10px] px-1 py-0.5"
+              style={{ color: "hsl(var(--muted-foreground))" }}
+            >
+              +{card.tags.length - 3}
+            </span>
           )}
         </div>
-      </button>
-
-      {open && (
-        <div
-          className="px-4 pb-4 space-y-3 animate-fade-in"
-          style={{ borderTop: "1px solid hsl(var(--border))" }}
-        >
-          {/* Answer */}
-          <div
-            className="terminal-block p-3 mt-3 text-xs leading-relaxed whitespace-pre-wrap"
-            style={{ color: "hsl(var(--foreground))" }}
+        {card.repetitions > 0 && (
+          <span
+            className="text-[10px] font-mono shrink-0"
+            style={{ color: "hsl(var(--muted-foreground))" }}
           >
-            {card.back}
+            ×{card.repetitions}
+          </span>
+        )}
+      </div>
+    </button>
+  );
+}
+
+// ── Card Detail Modal ──────────────────────────────────────────────────────────
+
+function CardModal({ card, onClose }: { card: Flashcard; onClose: () => void }) {
+  const color = CATEGORY_COLORS[card.category];
+  const diffColor = DIFF_COLORS[card.difficulty];
+  const isDue = !card.nextReview || new Date(card.nextReview).getTime() <= Date.now();
+  const { deleteCard, setActiveNav } = useDeckStore();
+
+  function formatDate(iso?: string) {
+    if (!iso) return "—";
+    return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in"
+      style={{ background: "hsl(0 0% 0% / 0.65)" }}
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-xl animate-fade-in"
+        style={{
+          background: "hsl(var(--surface))",
+          border: "1px solid hsl(var(--border))",
+          boxShadow: "0 24px 48px hsl(0 0% 0% / 0.5)",
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Modal header */}
+        <div
+          className="flex items-center justify-between px-5 py-4"
+          style={{ borderBottom: "1px solid hsl(var(--border))" }}
+        >
+          <div className="flex items-center gap-2 flex-wrap">
+            <span
+              className="text-[11px] font-semibold px-2.5 py-1 rounded-full"
+              style={{ background: `${color}18`, color, border: `1px solid ${color}40` }}
+            >
+              {card.category}
+            </span>
+            <span
+              className="text-[11px] px-2.5 py-1 rounded-full capitalize font-medium"
+              style={{ background: `${diffColor}18`, color: diffColor, border: `1px solid ${diffColor}40` }}
+            >
+              {card.difficulty}
+            </span>
+            {card.subcategory && card.subcategory !== card.category && (
+              <span className="text-[11px]" style={{ color: "hsl(var(--muted-foreground))" }}>
+                {card.subcategory}
+              </span>
+            )}
+          </div>
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded-md transition-all duration-200"
+            style={{ color: "hsl(var(--muted-foreground))" }}
+            onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.background = "#21262d")}
+            onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.background = "transparent")}
+          >
+            <X size={16} />
+          </button>
+        </div>
+
+        <div className="p-5 space-y-5">
+          {/* Front */}
+          <div>
+            <p
+              className="text-[10px] uppercase tracking-widest font-semibold mb-2"
+              style={{ color: "hsl(var(--muted-foreground))" }}
+            >
+              Front
+            </p>
+            <p className="text-base leading-relaxed" style={{ color: "hsl(var(--foreground))" }}>
+              {card.front}
+            </p>
+          </div>
+
+          {/* Back */}
+          <div>
+            <p
+              className="text-[10px] uppercase tracking-widest font-semibold mb-2"
+              style={{ color: "hsl(var(--muted-foreground))" }}
+            >
+              Back
+            </p>
+            <div
+              className="terminal-block p-4 text-xs leading-relaxed whitespace-pre-wrap"
+              style={{ color: "hsl(var(--foreground))" }}
+            >
+              {card.back}
+            </div>
           </div>
 
           {/* Code example */}
           {card.codeExample && (
             <div>
-              <div
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-t-md"
-                style={{
-                  background: "hsl(var(--primary) / 0.08)",
-                  borderBottom: "1px solid hsl(var(--border))",
-                  border: "1px solid hsl(var(--border))",
-                  borderBottomColor: "transparent",
-                }}
+              <p
+                className="text-[10px] uppercase tracking-widest font-semibold mb-2"
+                style={{ color: "hsl(var(--muted-foreground))" }}
               >
-                <Code size={11} style={{ color: "hsl(var(--primary))" }} />
-                <span className="text-[10px] font-mono" style={{ color: "hsl(var(--primary))" }}>
-                  Python
-                </span>
-              </div>
-              <div
-                className="terminal-block p-3 text-xs leading-relaxed whitespace-pre-wrap rounded-t-none"
-                style={{ color: "hsl(133, 57%, 70%)" }}
-              >
-                {card.codeExample}
-              </div>
+                Python Example
+              </p>
+              <SyntaxBlock code={card.codeExample} />
             </div>
           )}
 
-          <div className="flex items-center justify-between flex-wrap gap-2">
-            <div className="flex flex-wrap gap-3 text-xs" style={{ color: "hsl(var(--muted-foreground))" }}>
-              <span>Reps: <span className="font-mono">{card.repetitions}</span></span>
-              <span>Interval: <span className="font-mono">{card.interval}d</span></span>
-              <span>EF: <span className="font-mono">{card.easeFactor.toFixed(2)}</span></span>
-              {card.tags.length > 0 && (
-                <span className="hidden sm:inline">
-                  {card.tags.map((t) => `#${t}`).join(" ")}
+          {/* Tags */}
+          {card.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              {card.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="text-xs px-2 py-0.5 rounded font-mono"
+                  style={{
+                    background: "hsl(var(--surface-2))",
+                    color: "hsl(var(--muted-foreground))",
+                    border: "1px solid hsl(var(--border))",
+                  }}
+                >
+                  #{tag}
                 </span>
-              )}
+              ))}
             </div>
+          )}
+
+          {/* Review history */}
+          <div
+            className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1"
+            style={{ borderTop: "1px solid hsl(var(--border))" }}
+          >
+            {[
+              { label: "Repetitions",   value: card.repetitions },
+              { label: "Ease Factor",   value: card.easeFactor.toFixed(2) },
+              { label: "Interval",      value: `${card.interval}d` },
+              { label: "Last Quality",  value: card.quality != null ? `${card.quality}/5` : "—" },
+            ].map(({ label, value }) => (
+              <div key={label} className="text-center py-3 rounded-lg" style={{ background: "hsl(var(--surface-2))" }}>
+                <p className="font-mono text-lg font-semibold" style={{ color: "hsl(var(--primary))" }}>
+                  {value}
+                </p>
+                <p className="text-[10px] mt-0.5" style={{ color: "hsl(var(--muted-foreground))" }}>
+                  {label}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {/* Dates */}
+          <div className="flex flex-wrap gap-4 text-xs" style={{ color: "hsl(var(--muted-foreground))" }}>
+            <span className="flex items-center gap-1.5">
+              <Calendar size={11} />
+              Created {formatDate(card.created)}
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Calendar size={11} />
+              Last reviewed {formatDate(card.lastReviewed)}
+            </span>
+            <span
+              className="flex items-center gap-1.5"
+              style={{ color: isDue ? "#d29922" : "hsl(var(--muted-foreground))" }}
+            >
+              <Calendar size={11} />
+              Next review {isDue ? "now due" : formatDate(card.nextReview)}
+            </span>
+          </div>
+
+          {/* Actions */}
+          <div
+            className="flex gap-2 pt-1"
+            style={{ borderTop: "1px solid hsl(var(--border))" }}
+          >
             <button
-              onClick={() => deleteCard(card.id)}
-              className="flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded transition-all duration-200"
+              onClick={() => { setActiveNav("study"); onClose(); }}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200"
               style={{
-                color: "hsl(var(--destructive))",
+                background: "hsl(var(--primary) / 0.12)",
+                color: "hsl(var(--primary))",
+                border: "1px solid hsl(var(--primary) / 0.3)",
+              }}
+            >
+              Study this deck
+            </button>
+            <button
+              onClick={() => { deleteCard(card.id); onClose(); }}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ml-auto"
+              style={{
                 background: "hsl(var(--destructive) / 0.08)",
+                color: "hsl(var(--destructive))",
                 border: "1px solid hsl(var(--destructive) / 0.25)",
               }}
             >
-              <Trash2 size={12} />
-              Delete
+              Delete card
             </button>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
 
-export function AllCardsPage() {
-  const { cards } = useDeckStore();
-  const [search, setSearch] = useState("");
-  const [filterCat, setFilterCat] = useState<string>("All");
+// ── Main Page ─────────────────────────────────────────────────────────────────
 
-  const filtered = cards.filter((c) => {
-    const matchesSearch =
-      c.front.toLowerCase().includes(search.toLowerCase()) ||
-      c.back.toLowerCase().includes(search.toLowerCase()) ||
-      (c.codeExample ?? "").toLowerCase().includes(search.toLowerCase());
-    const matchesCat = filterCat === "All" || c.category === filterCat;
-    return matchesSearch && matchesCat;
-  });
+export function AllCardsPage() {
+  const { cards, setActiveNav } = useDeckStore();
+
+  const [search, setSearch] = useState("");
+  const [selectedCats, setSelectedCats] = useState<Set<DSCategory>>(new Set());
+  const [diffFilter, setDiffFilter] = useState<"all" | Difficulty>("all");
+  const [sort, setSort] = useState<SortKey>("due");
+  const [sortOpen, setSortOpen] = useState(false);
+  const [selected, setSelected] = useState<Flashcard | null>(null);
+
+  function toggleCat(cat: DSCategory) {
+    setSelectedCats((prev) => {
+      const next = new Set(prev);
+      next.has(cat) ? next.delete(cat) : next.add(cat);
+      return next;
+    });
+  }
+
+  const filtered = useMemo(() => {
+    const now = Date.now();
+    return cards
+      .filter((c) => {
+        const matchCat = selectedCats.size === 0 || selectedCats.has(c.category);
+        const matchDiff = diffFilter === "all" || c.difficulty === diffFilter;
+        const q = search.toLowerCase();
+        const matchSearch =
+          !q ||
+          c.front.toLowerCase().includes(q) ||
+          c.back.toLowerCase().includes(q) ||
+          c.tags.some((t) => t.toLowerCase().includes(q)) ||
+          c.subcategory.toLowerCase().includes(q);
+        return matchCat && matchDiff && matchSearch;
+      })
+      .sort((a, b) => {
+        if (sort === "due") {
+          const aDue = a.nextReview ? new Date(a.nextReview).getTime() : 0;
+          const bDue = b.nextReview ? new Date(b.nextReview).getTime() : 0;
+          return aDue - bDue;
+        }
+        if (sort === "recent") return new Date(b.created).getTime() - new Date(a.created).getTime();
+        if (sort === "hardest") {
+          const order = { advanced: 0, intermediate: 1, beginner: 2 };
+          return order[a.difficulty] - order[b.difficulty];
+        }
+        return a.front.localeCompare(b.front);
+      });
+  }, [cards, selectedCats, diffFilter, search, sort]);
+
+  const sortLabel = SORT_OPTIONS.find((s) => s.key === sort)?.label ?? "Sort";
+
+  // Empty state
+  if (cards.length === 0) {
+    return (
+      <div className="p-6 flex flex-col items-center justify-center h-full gap-4 text-center animate-fade-in">
+        <div
+          className="w-16 h-16 rounded-2xl flex items-center justify-center"
+          style={{ background: "hsl(var(--surface))", border: "1px solid hsl(var(--border))" }}
+        >
+          <LayoutGrid size={28} style={{ color: "hsl(var(--primary))", opacity: 0.7 }} />
+        </div>
+        <div>
+          <p className="text-lg font-semibold" style={{ color: "hsl(var(--foreground))" }}>
+            No flashcards yet
+          </p>
+          <p className="text-sm mt-1" style={{ color: "hsl(var(--muted-foreground))" }}>
+            Add your first card to start building your DS deck.
+          </p>
+        </div>
+        <button
+          onClick={() => setActiveNav("add-card")}
+          className="flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200"
+          style={{
+            background: "hsl(var(--primary) / 0.12)",
+            color: "hsl(var(--primary))",
+            border: "1px solid hsl(var(--primary) / 0.3)",
+          }}
+        >
+          <Plus size={15} />
+          Add your first card
+        </button>
+      </div>
+    );
+  }
 
   return (
-    <div className="p-6 space-y-4 animate-fade-in">
-      <div className="flex items-center justify-between">
+    <div className="p-4 md:p-6 space-y-4 animate-fade-in">
+      {/* Header */}
+      <div className="flex items-center justify-between gap-3 flex-wrap">
         <div>
           <h1 className="text-xl font-semibold" style={{ color: "hsl(var(--foreground))" }}>
             All Cards
           </h1>
           <p className="text-sm mt-0.5" style={{ color: "hsl(var(--muted-foreground))" }}>
-            {cards.length} cards total · {filtered.length} shown
+            {cards.length} total · {filtered.length} shown
           </p>
+        </div>
+
+        {/* Sort dropdown */}
+        <div className="relative">
+          <button
+            onClick={() => setSortOpen((o) => !o)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200"
+            style={{
+              background: "hsl(var(--surface))",
+              color: "hsl(var(--foreground))",
+              border: "1px solid hsl(var(--border))",
+            }}
+          >
+            {sortLabel}
+            <ChevronDown size={13} />
+          </button>
+          {sortOpen && (
+            <div
+              className="absolute right-0 top-full mt-1 z-20 rounded-lg overflow-hidden animate-fade-in min-w-40"
+              style={{
+                background: "hsl(var(--surface))",
+                border: "1px solid hsl(var(--border))",
+                boxShadow: "0 8px 24px hsl(0 0% 0% / 0.4)",
+              }}
+            >
+              {SORT_OPTIONS.map(({ key, label }) => (
+                <button
+                  key={key}
+                  onClick={() => { setSort(key); setSortOpen(false); }}
+                  className="w-full text-left px-3 py-2 text-xs transition-all duration-150"
+                  style={{
+                    color: sort === key ? "#58a6ff" : "hsl(var(--foreground))",
+                    background: sort === key ? "#58a6ff12" : "transparent",
+                  }}
+                  onMouseEnter={(e) => { if (sort !== key) (e.currentTarget as HTMLButtonElement).style.background = "#21262d"; }}
+                  onMouseLeave={(e) => { if (sort !== key) (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-wrap gap-2">
-        <div
-          className="flex items-center gap-2 px-3 py-1.5 rounded-md flex-1 min-w-40"
-          style={{
-            background: "hsl(var(--surface))",
-            border: "1px solid hsl(var(--border))",
-          }}
-        >
-          <Search size={13} style={{ color: "hsl(var(--muted-foreground))" }} />
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search cards…"
-            className="bg-transparent text-xs flex-1 outline-none"
-            style={{ color: "hsl(var(--foreground))" }}
-          />
-        </div>
+      {/* Search bar */}
+      <div
+        className="flex items-center gap-2 px-3 py-2 rounded-lg"
+        style={{ background: "hsl(var(--surface))", border: "1px solid hsl(var(--border))" }}
+      >
+        <Search size={14} style={{ color: "hsl(var(--muted-foreground))", flexShrink: 0 }} />
+        <input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search cards, tags, subcategories…"
+          className="bg-transparent text-sm flex-1 outline-none"
+          style={{ color: "hsl(var(--foreground))" }}
+        />
+        {search && (
+          <button onClick={() => setSearch("")}>
+            <X size={13} style={{ color: "hsl(var(--muted-foreground))" }} />
+          </button>
+        )}
+      </div>
 
-        <div className="flex flex-wrap gap-1.5">
-          {["All", ...DS_CATEGORIES].map((cat) => (
+      {/* Category pills */}
+      <div className="flex flex-wrap gap-1.5">
+        {DS_CATEGORIES.map((cat) => {
+          const color = CATEGORY_COLORS[cat];
+          const active = selectedCats.has(cat);
+          return (
             <button
               key={cat}
-              onClick={() => setFilterCat(cat)}
-              className="text-[11px] px-2.5 py-1 rounded transition-all duration-200"
+              onClick={() => toggleCat(cat)}
+              className="text-[11px] px-2.5 py-1 rounded-full font-medium transition-all duration-200"
               style={
-                filterCat === cat
-                  ? {
-                      background: "hsl(var(--primary) / 0.15)",
-                      color: "hsl(var(--primary))",
-                      border: "1px solid hsl(var(--primary) / 0.3)",
-                    }
+                active
+                  ? { background: `${color}22`, color, border: `1px solid ${color}60` }
                   : {
                       background: "hsl(var(--surface))",
                       color: "hsl(var(--muted-foreground))",
@@ -212,19 +513,78 @@ export function AllCardsPage() {
             >
               {cat}
             </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="space-y-2">
-        {filtered.length === 0 ? (
-          <p className="text-sm py-8 text-center" style={{ color: "hsl(var(--muted-foreground))" }}>
-            No cards match your filters.
-          </p>
-        ) : (
-          filtered.map((card) => <CardRow key={card.id} card={card} />)
+          );
+        })}
+        {selectedCats.size > 0 && (
+          <button
+            onClick={() => setSelectedCats(new Set())}
+            className="text-[11px] px-2.5 py-1 rounded-full flex items-center gap-1 transition-all duration-200"
+            style={{ color: "hsl(var(--muted-foreground))", border: "1px solid hsl(var(--border))" }}
+          >
+            <X size={10} /> Clear
+          </button>
         )}
       </div>
+
+      {/* Difficulty filter */}
+      <div className="flex gap-1.5">
+        {(["all", "beginner", "intermediate", "advanced"] as const).map((d) => (
+          <button
+            key={d}
+            onClick={() => setDiffFilter(d)}
+            className="text-[11px] px-3 py-1 rounded-md capitalize transition-all duration-200"
+            style={
+              diffFilter === d
+                ? {
+                    background: d === "all" ? "hsl(var(--primary) / 0.15)" : `${DIFF_COLORS[d as Difficulty]}18`,
+                    color: d === "all" ? "hsl(var(--primary))" : DIFF_COLORS[d as Difficulty],
+                    border: `1px solid ${d === "all" ? "hsl(var(--primary) / 0.3)" : `${DIFF_COLORS[d as Difficulty]}40`}`,
+                    fontWeight: 600,
+                  }
+                : {
+                    background: "hsl(var(--surface))",
+                    color: "hsl(var(--muted-foreground))",
+                    border: "1px solid hsl(var(--border))",
+                  }
+            }
+          >
+            {d === "all" ? "All" : d}
+          </button>
+        ))}
+      </div>
+
+      {/* No results */}
+      {filtered.length === 0 ? (
+        <div className="py-16 text-center space-y-2">
+          <p className="text-base" style={{ color: "hsl(var(--foreground))" }}>
+            No cards match your filters
+          </p>
+          <p className="text-sm" style={{ color: "hsl(var(--muted-foreground))" }}>
+            Try adjusting your search or clearing filters
+          </p>
+          <button
+            onClick={() => { setSearch(""); setSelectedCats(new Set()); setDiffFilter("all"); }}
+            className="text-xs mt-2 px-3 py-1.5 rounded-md transition-all duration-200"
+            style={{
+              background: "hsl(var(--surface))",
+              color: "hsl(var(--primary))",
+              border: "1px solid hsl(var(--primary) / 0.3)",
+            }}
+          >
+            Clear all filters
+          </button>
+        </div>
+      ) : (
+        /* Grid */
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {filtered.map((card) => (
+            <CardPreview key={card.id} card={card} onClick={() => setSelected(card)} />
+          ))}
+        </div>
+      )}
+
+      {/* Modal */}
+      {selected && <CardModal card={selected} onClose={() => setSelected(null)} />}
     </div>
   );
 }
