@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useDeckStore } from "@/store/useDeckStore";
+import { useSupabaseSync } from "@/hooks/useSupabaseSync";
 import { Sun, Moon, Trash2, Download, Upload, Check } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 

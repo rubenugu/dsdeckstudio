@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { useDeckStore, type Flashcard, type DSCategory, type Difficulty, DS_CATEGORIES } from "@/store/useDeckStore";
+import { useSupabaseSync } from "@/hooks/useSupabaseSync";
 import { Search, X, Code, Calendar, LayoutGrid, Plus, ChevronDown } from "lucide-react";
 import { SyntaxBlock } from "@/components/SyntaxBlock";
 
