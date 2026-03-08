@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { useDeckStore } from "@/store/useDeckStore";
 import { useSupabaseSync } from "@/hooks/useSupabaseSync";
-import { Sun, Moon, Trash2, Download, Upload, Check } from "lucide-react";
+import { useLang } from "@/contexts/LanguageContext";
+import { t } from "@/i18n/translations";
+import { Sun, Moon, Trash2, Download, Upload, Check, Globe } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 const THEME_KEY = "dsdeck_theme";
