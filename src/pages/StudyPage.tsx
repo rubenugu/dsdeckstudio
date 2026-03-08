@@ -625,6 +625,7 @@ interface CompleteProps {
 
 function SessionComplete({ results, queue, elapsedSeconds, streak, onStudyAgain, onDashboard }: CompleteProps) {
   const { cards } = useDeckStore();
+  const { lang } = useLang();
   const total    = results.length;
   const correct  = results.filter((r) => r.quality >= 3).length;
   const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
