@@ -7,6 +7,8 @@ import {
 import { useDeckStore, DSCategory, Flashcard } from "@/store/useDeckStore";
 import { useSupabaseSync } from "@/hooks/useSupabaseSync";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLang } from "@/contexts/LanguageContext";
+import { t } from "@/i18n/translations";
 import { getDueCards } from "@/utils/sm2";
 import { SyntaxBlock } from "@/components/SyntaxBlock";
 
