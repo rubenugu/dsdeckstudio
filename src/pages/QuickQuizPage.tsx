@@ -4,6 +4,8 @@ import {
   Clock, CheckCircle2, XCircle, Trophy, Target, Flame,
 } from "lucide-react";
 import { useDeckStore, type Flashcard, type DSCategory, type Difficulty, DS_CATEGORIES } from "@/store/useDeckStore";
+import { useLang } from "@/contexts/LanguageContext";
+import { t, type Language } from "@/i18n/translations";
 
 // ── Category / diff colours ────────────────────────────────────────────────────
 const CAT_COLORS: Record<DSCategory, string> = {
