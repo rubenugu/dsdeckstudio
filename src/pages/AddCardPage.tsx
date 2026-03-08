@@ -363,6 +363,7 @@ function CardPreview({
   category,
   difficulty,
   tags,
+  lang,
 }: {
   front: string;
   back: string;
@@ -370,6 +371,7 @@ function CardPreview({
   category: DSCategory;
   difficulty: Difficulty;
   tags: string[];
+  lang: import("@/i18n/translations").Language;
 }) {
   const color = CATEGORY_COLORS[category];
   const diffMeta = DIFF_META[difficulty];
