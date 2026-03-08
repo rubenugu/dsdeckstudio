@@ -145,6 +145,15 @@
   .animate-page-in {
     animation: page-slide-in 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
+
+  /* Flip card faces: disable hover glow so it doesn't fight the 3-D transform */
+  .flip-face {
+    transition: border-color 200ms ease !important;
+    box-shadow: var(--shadow-card) !important;
+  }
+  .flip-face:hover {
+    box-shadow: var(--shadow-card) !important;
+  }
 }
 
 @keyframes page-slide-in {
