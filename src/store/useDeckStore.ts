@@ -557,6 +557,7 @@ export const useDeckStore = create<DeckState>()(
       streak: 3,
       lastStudyDate: null,
       activeNav: "dashboard",
+      studySessions: [],
 
       addCard: (card) =>
         set((state) => ({
