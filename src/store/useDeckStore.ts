@@ -602,6 +602,11 @@ export const useDeckStore = create<DeckState>()(
           };
         }),
 
+      addStudySession: (session) =>
+        set((state) => ({
+          studySessions: [...(state.studySessions ?? []), session].slice(-50),
+        })),
+
       setActiveNav: (nav) => set({ activeNav: nav }),
     }),
     { name: "dsdeck_cards" }
