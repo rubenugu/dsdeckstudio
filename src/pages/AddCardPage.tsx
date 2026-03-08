@@ -686,7 +686,7 @@ export function AddCardPage() {
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label style={{ ...labelStyle, marginBottom: 0 }}>
-                  Front — Question
+                  {t("add_front", lang)}
                   <span style={{ color: "#ff6e6e", marginLeft: 2 }}>*</span>
                 </label>
                 <div className="flex items-center gap-2">
@@ -700,7 +700,7 @@ export function AddCardPage() {
                 onChange={(e) => setFront(e.target.value)}
                 onBlur={(e) => { setTouched((t) => ({ ...t, front: true })); blur(e); }}
                 onFocus={focus}
-                placeholder="e.g., What is the bias-variance tradeoff?"
+                placeholder={t("add_front_placeholder", lang)}
                 style={{
                   ...inputBase,
                   resize: "vertical",
