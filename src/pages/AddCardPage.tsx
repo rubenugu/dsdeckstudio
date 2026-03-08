@@ -828,6 +828,7 @@ export function AddCardPage() {
                 category={category}
                 difficulty={difficulty}
                 tags={tags}
+                lang={lang}
               />
 
               {/* Deck stats hint */}
