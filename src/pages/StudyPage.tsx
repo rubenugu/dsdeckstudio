@@ -440,12 +440,12 @@ function CardReview({ queue, onComplete, onEditCard }: ReviewProps) {
               {/* Hint */}
               <div className="text-center space-y-1">
                 <p className="text-xs hidden sm:block" style={{ color: "hsl(var(--muted-foreground))" }}>
-                  Tap to reveal · <kbd className="px-1.5 py-0.5 rounded font-mono text-[10px]" style={{ background: "hsl(var(--surface-2))", border: "1px solid hsl(var(--border))" }}>Space</kbd>
+                  {t("study_tap_to_flip", lang)} · <kbd className="px-1.5 py-0.5 rounded font-mono text-[10px]" style={{ background: "hsl(var(--surface-2))", border: "1px solid hsl(var(--border))" }}>Space</kbd>
                 </p>
                 <p className="text-xs sm:hidden flex items-center justify-center gap-3" style={{ color: "hsl(var(--muted-foreground))" }}>
-                  <span className="flex items-center gap-1"><ArrowLeft size={11} /> Hard</span>
-                  <span>Tap to reveal</span>
-                  <span className="flex items-center gap-1">Easy <ArrowRight size={11} /></span>
+                  <span className="flex items-center gap-1"><ArrowLeft size={11} /> {t("study_rating_hard", lang)}</span>
+                  <span>{t("study_tap_to_flip", lang)}</span>
+                  <span className="flex items-center gap-1">{t("study_rating_easy", lang)} <ArrowRight size={11} /></span>
                 </p>
               </div>
             </div>
