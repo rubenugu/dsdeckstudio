@@ -575,10 +575,10 @@ export function AddCardPage() {
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-xl font-semibold" style={{ color: "hsl(var(--foreground))" }}>
-            Add Card
+            {t("add_title", lang)}
           </h1>
           <p className="text-sm mt-0.5" style={{ color: "hsl(var(--muted-foreground))" }}>
-            Build your DS knowledge deck — one card at a time
+            {t("add_header_sub", lang)}
           </p>
         </div>
 
