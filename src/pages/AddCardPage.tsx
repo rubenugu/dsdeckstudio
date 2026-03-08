@@ -532,7 +532,7 @@ export function AddCardPage() {
     setTouched({ front: true, back: true });
     if (!isValid) return;
 
-    addCard({
+    const newCard = addCard({
       front: front.trim(),
       back: back.trim(),
       codeExample: codeExample.trim() || undefined,
@@ -541,6 +541,9 @@ export function AddCardPage() {
       difficulty,
       tags,
     });
+
+    // Sync to Supabase if logged in
+    if (user) upsertCard(newCard);
 
     toast({
       title: "Card added to your deck! 🎉",
