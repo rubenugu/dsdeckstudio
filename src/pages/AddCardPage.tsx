@@ -673,9 +673,9 @@ export function AddCardPage() {
               <label style={labelStyle}>
                 <span className="flex items-center gap-1.5">
                   <Tag size={10} />
-                  Tags
+                  {t("add_tags", lang)}
                   <span style={{ fontWeight: 400, textTransform: "none" }}>
-                    — press Enter to add
+                    {t("add_tags_hint", lang)}
                   </span>
                 </span>
               </label>
