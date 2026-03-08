@@ -295,10 +295,11 @@ function QuizSetup({ cards, lang, onStart, onGoToDashboard }: SetupProps) {
 // ─────────────────────────────────────────────────────────────────────────────
 interface QuestionProps {
   questions: QuizQuestion[];
+  lang: Language;
   onComplete: (results: QuizResult[]) => void;
 }
 
-function QuizQuestion({ questions, onComplete }: QuestionProps) {
+function QuizQuestion({ questions, lang, onComplete }: QuestionProps) {
   const [index,    setIndex]    = useState(0);
   const [chosen,   setChosen]   = useState<string | null>(null);
   const [revealed, setRevealed] = useState(false);
