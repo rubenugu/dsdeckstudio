@@ -4,6 +4,8 @@ import {
   Clock, CheckCircle2, XCircle, Trophy, Target, Flame,
 } from "lucide-react";
 import { useDeckStore, type Flashcard, type DSCategory, type Difficulty, DS_CATEGORIES } from "@/store/useDeckStore";
+import { useLang } from "@/contexts/LanguageContext";
+import { t, type Language } from "@/i18n/translations";
 
 // ── Category / diff colours ────────────────────────────────────────────────────
 const CAT_COLORS: Record<DSCategory, string> = {
@@ -104,11 +106,12 @@ function buildQuiz(
 // ─────────────────────────────────────────────────────────────────────────────
 interface SetupProps {
   cards: Flashcard[];
+  lang: Language;
   onStart: (questions: QuizQuestion[]) => void;
   onGoToDashboard: () => void;
 }
 
-function QuizSetup({ cards, onStart, onGoToDashboard }: SetupProps) {
+function QuizSetup({ cards, lang, onStart, onGoToDashboard }: SetupProps) {
   const [cat,   setCat]   = useState<DSCategory | "all">("all");
   const [diff,  setDiff]  = useState<Difficulty | "all">("all");
   const [count, setCount] = useState<number | "all">(10);
@@ -143,10 +146,10 @@ function QuizSetup({ cards, onStart, onGoToDashboard }: SetupProps) {
             <Zap size={26} style={{ color: "hsl(var(--warning))" }} />
           </div>
           <h1 className="text-2xl font-semibold" style={{ color: "hsl(var(--foreground))" }}>
-            Quick Quiz
+            {t("quiz_title", lang)}
           </h1>
           <p className="text-sm" style={{ color: "hsl(var(--muted-foreground))" }}>
-            Multiple-choice · 30 s per question · instant scoring
+            {t("quiz_subtitle", lang)}
           </p>
         </div>
 
@@ -154,7 +157,7 @@ function QuizSetup({ cards, onStart, onGoToDashboard }: SetupProps) {
           {/* Category */}
           <div>
             <p className="text-[10px] uppercase tracking-widest font-semibold mb-2" style={{ color: "hsl(var(--muted-foreground))" }}>
-              Category
+              {t("quiz_category", lang)}
             </p>
             <div className="flex flex-wrap gap-1.5">
               <button
@@ -166,7 +169,7 @@ function QuizSetup({ cards, onStart, onGoToDashboard }: SetupProps) {
                   color:      cat === "all" ? "hsl(var(--primary))" : "hsl(var(--muted-foreground))",
                 }}
               >
-                All
+                {t("cards_filter_all", lang)}
               </button>
               {categories.map((c) => {
                 const color  = CAT_COLORS[c];
@@ -192,12 +195,16 @@ function QuizSetup({ cards, onStart, onGoToDashboard }: SetupProps) {
           {/* Difficulty */}
           <div>
             <p className="text-[10px] uppercase tracking-widest font-semibold mb-2" style={{ color: "hsl(var(--muted-foreground))" }}>
-              Difficulty
+              {t("quiz_difficulty", lang)}
             </p>
             <div className="flex gap-2">
               {(["all", "beginner", "intermediate", "advanced"] as const).map((d) => {
                 const active = diff === d;
                 const color  = d === "all" ? "hsl(var(--primary))" : DIFF_COLORS[d as Difficulty];
+                const label  = d === "all" ? t("cards_filter_all", lang) :
+                               d === "beginner" ? t("difficulty_beginner", lang).slice(0, 3) :
+                               d === "intermediate" ? t("difficulty_intermediate", lang).slice(0, 3) :
+                               t("difficulty_advanced", lang).slice(0, 3);
                 return (
                   <button
                     key={d}
@@ -209,7 +216,7 @@ function QuizSetup({ cards, onStart, onGoToDashboard }: SetupProps) {
                       color:      active ? color : "hsl(var(--muted-foreground))",
                     }}
                   >
-                    {d === "all" ? "All" : d.slice(0, 3)}
+                    {label}
                   </button>
                 );
               })}
@@ -219,7 +226,7 @@ function QuizSetup({ cards, onStart, onGoToDashboard }: SetupProps) {
           {/* Question count */}
           <div>
             <p className="text-[10px] uppercase tracking-widest font-semibold mb-2" style={{ color: "hsl(var(--muted-foreground))" }}>
-              Questions
+              {t("quiz_questions", lang)}
             </p>
             <div className="flex gap-2">
               {([5, 10, 20, "all"] as const).map((n) => {
@@ -248,9 +255,9 @@ function QuizSetup({ cards, onStart, onGoToDashboard }: SetupProps) {
             className="flex items-center justify-between p-3 rounded-lg text-xs"
             style={{ background: "hsl(var(--surface-2))", border: "1px solid hsl(var(--border))" }}
           >
-            <span style={{ color: "hsl(var(--muted-foreground))" }}>Quiz size</span>
+            <span style={{ color: "hsl(var(--muted-foreground))" }}>{t("quiz_quiz_size", lang)}</span>
             <span className="font-mono font-semibold" style={{ color: canStart ? "hsl(var(--success))" : "hsl(var(--destructive))" }}>
-              {canStart ? `${effectiveCount} questions` : "Not enough cards — change filters"}
+              {canStart ? `${effectiveCount} ${t("quiz_questions", lang).toLowerCase()}` : t("quiz_not_enough", lang)}
             </span>
           </div>
         </div>
@@ -263,7 +270,7 @@ function QuizSetup({ cards, onStart, onGoToDashboard }: SetupProps) {
             style={{ background: "hsl(var(--surface-2))", border: "1px solid hsl(var(--border))", color: "hsl(var(--muted-foreground))" }}
           >
             <LayoutDashboard size={14} />
-            Back
+            {t("quiz_back", lang)}
           </button>
           <button
             onClick={handleStart}
@@ -278,7 +285,7 @@ function QuizSetup({ cards, onStart, onGoToDashboard }: SetupProps) {
             }}
           >
             <Zap size={15} />
-            Start Quiz
+            {t("quiz_start", lang)}
             <ChevronRight size={15} />
           </button>
         </div>
@@ -292,10 +299,11 @@ function QuizSetup({ cards, onStart, onGoToDashboard }: SetupProps) {
 // ─────────────────────────────────────────────────────────────────────────────
 interface QuestionProps {
   questions: QuizQuestion[];
+  lang: Language;
   onComplete: (results: QuizResult[]) => void;
 }
 
-function QuizQuestion({ questions, onComplete }: QuestionProps) {
+function QuizQuestion({ questions, lang, onComplete }: QuestionProps) {
   const [index,    setIndex]    = useState(0);
   const [chosen,   setChosen]   = useState<string | null>(null);
   const [revealed, setRevealed] = useState(false);
@@ -377,7 +385,8 @@ function QuizQuestion({ questions, onComplete }: QuestionProps) {
       <div className="w-full max-w-2xl space-y-2">
         <div className="flex items-center justify-between text-xs" style={{ color: "hsl(var(--muted-foreground))" }}>
           <span>
-            Question <span className="font-mono font-semibold" style={{ color: "hsl(var(--foreground))" }}>{index + 1}</span>
+            {t("quiz_question_label", lang)}{" "}
+            <span className="font-mono font-semibold" style={{ color: "hsl(var(--foreground))" }}>{index + 1}</span>
             {" / "}
             <span className="font-mono font-semibold" style={{ color: "hsl(var(--foreground))" }}>{questions.length}</span>
           </span>
@@ -506,7 +515,7 @@ function QuizQuestion({ questions, onComplete }: QuestionProps) {
           style={{ background: "hsl(var(--destructive) / 0.1)", border: "1px solid hsl(var(--destructive) / 0.3)", color: "hsl(var(--destructive))" }}
         >
           <Clock size={14} />
-          Time's up! The correct answer is highlighted above.
+          {t("quiz_times_up", lang)}
         </div>
       )}
 
@@ -517,7 +526,7 @@ function QuizQuestion({ questions, onComplete }: QuestionProps) {
           className="flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all"
           style={{ background: "hsl(var(--warning))", color: "hsl(215 14% 8%)" }}
         >
-          {index + 1 >= questions.length ? "See Results" : "Next Question"}
+          {index + 1 >= questions.length ? t("quiz_see_results", lang) : t("quiz_next", lang)}
           <ChevronRight size={15} />
         </button>
       )}
@@ -531,7 +540,7 @@ function QuizQuestion({ questions, onComplete }: QuestionProps) {
               {n}
             </kbd>
           ))}
-          {" "}to choose
+          {" "}{t("quiz_keyboard_choose", lang)}
         </p>
       )}
       {revealed && (
@@ -540,7 +549,7 @@ function QuizQuestion({ questions, onComplete }: QuestionProps) {
           <kbd className="px-1.5 py-0.5 rounded font-mono" style={{ background: "hsl(var(--surface-2))", border: "1px solid hsl(var(--border))" }}>
             Space
           </kbd>
-          {" "}to continue
+          {" "}{t("quiz_keyboard_continue", lang)}
         </p>
       )}
     </div>
@@ -552,11 +561,12 @@ function QuizQuestion({ questions, onComplete }: QuestionProps) {
 // ─────────────────────────────────────────────────────────────────────────────
 interface ResultsProps {
   results: QuizResult[];
+  lang: Language;
   onRetry: () => void;
   onDashboard: () => void;
 }
 
-function QuizResults({ results, onRetry, onDashboard }: ResultsProps) {
+function QuizResults({ results, lang, onRetry, onDashboard }: ResultsProps) {
   const total    = results.length;
   const correct  = results.filter((r) => r.correct).length;
   const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
@@ -579,17 +589,17 @@ function QuizResults({ results, onRetry, onDashboard }: ResultsProps) {
           <div className="text-5xl mb-2">{grade.emoji}</div>
           <h2 className="text-2xl font-semibold" style={{ color: "hsl(var(--foreground))" }}>{grade.label}</h2>
           <p className="text-sm" style={{ color: "hsl(var(--muted-foreground))" }}>
-            {accuracy >= 70 ? "You're ready for that interview!" : "Review the missed topics and try again."}
+            {accuracy >= 70 ? t("quiz_grade_ready", lang) : t("quiz_grade_review", lang)}
           </p>
         </div>
 
         {/* Stat cards */}
         <div className="grid grid-cols-4 gap-3">
           {[
-            { icon: Target,       label: "Score",    value: `${correct}/${total}`, color: grade.color },
-            { icon: Trophy,       label: "Accuracy", value: `${accuracy}%`,        color: grade.color },
-            { icon: Clock,        label: "Avg time", value: `${avgTime}s`,         color: "hsl(var(--primary))" },
-            { icon: Flame,        label: "Streak",   value: wrong.length === 0 ? "Perfect" : `${total - wrong.length}`,  color: "#f78166" },
+            { icon: Target, label: t("quiz_score_label", lang),    value: `${correct}/${total}`, color: grade.color },
+            { icon: Trophy, label: t("quiz_accuracy_label", lang), value: `${accuracy}%`,        color: grade.color },
+            { icon: Clock,  label: t("quiz_avg_time", lang),       value: `${avgTime}s`,         color: "hsl(var(--primary))" },
+            { icon: Flame,  label: t("quiz_streak_label", lang),   value: wrong.length === 0 ? t("quiz_perfect", lang) : `${total - wrong.length}`, color: "#f78166" },
           ].map(({ icon: Icon, label, value, color }) => (
             <div key={label} className="ds-card p-3 text-center space-y-1">
               <Icon size={16} className="mx-auto" style={{ color }} />
@@ -622,9 +632,9 @@ function QuizResults({ results, onRetry, onDashboard }: ResultsProps) {
             {/* Breakdown bars */}
             <div className="flex-1 space-y-2">
               {[
-                { label: "Correct",  count: correct,         color: "#3fb950" },
-                { label: "Wrong",    count: wrong.length,     color: "#f85149" },
-                { label: "Timed out",count: results.filter(r => r.chosen === null).length, color: "#d29922" },
+                { label: t("quiz_correct", lang),   count: correct,                                              color: "#3fb950" },
+                { label: t("quiz_wrong", lang),     count: wrong.length,                                         color: "#f85149" },
+                { label: t("quiz_timed_out", lang), count: results.filter(r => r.chosen === null).length,        color: "#d29922" },
               ].map(({ label, count, color }) => (
                 <div key={label} className="flex items-center gap-2 text-xs">
                   <span className="w-16 shrink-0" style={{ color: "hsl(var(--muted-foreground))" }}>{label}</span>
@@ -645,7 +655,7 @@ function QuizResults({ results, onRetry, onDashboard }: ResultsProps) {
         {wrong.length > 0 && (
           <div className="ds-card p-5 space-y-3">
             <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "hsl(var(--muted-foreground))" }}>
-              Missed Questions ({wrong.length})
+              {t("quiz_missed", lang)} ({wrong.length})
             </p>
             <div className="space-y-3 max-h-56 overflow-y-auto pr-1">
               {wrong.map((r, i) => (
@@ -660,7 +670,7 @@ function QuizResults({ results, onRetry, onDashboard }: ResultsProps) {
                   <div className="flex items-start gap-2 text-[11px]">
                     <XCircle size={12} style={{ color: "#f85149", flexShrink: 0, marginTop: 1 }} />
                     <span style={{ color: "#f85149" }}>
-                      {r.chosen ?? "Timed out"}
+                      {r.chosen ?? t("quiz_timed_out", lang)}
                     </span>
                   </div>
                   <div className="flex items-start gap-2 text-[11px]">
@@ -681,7 +691,7 @@ function QuizResults({ results, onRetry, onDashboard }: ResultsProps) {
             style={{ background: "hsl(var(--surface-2))", border: "1px solid hsl(var(--border))", color: "hsl(var(--muted-foreground))" }}
           >
             <LayoutDashboard size={14} />
-            Dashboard
+            {t("quiz_dashboard", lang)}
           </button>
           <button
             onClick={onRetry}
@@ -689,7 +699,7 @@ function QuizResults({ results, onRetry, onDashboard }: ResultsProps) {
             style={{ background: "hsl(var(--warning))", color: "hsl(215 14% 8%)" }}
           >
             <RotateCcw size={14} />
-            Quiz Again
+            {t("quiz_again", lang)}
           </button>
         </div>
       </div>
@@ -704,6 +714,7 @@ type Screen = "setup" | "quiz" | "results";
 
 export function QuickQuizPage() {
   const { cards, setActiveNav } = useDeckStore();
+  const { lang } = useLang();
   const [screen,    setScreen]    = useState<Screen>("setup");
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [results,   setResults]   = useState<QuizResult[]>([]);
@@ -712,16 +723,18 @@ export function QuickQuizPage() {
     return (
       <div className="flex flex-col items-center justify-center h-full p-6 text-center gap-4">
         <Zap size={40} style={{ color: "hsl(var(--warning))", opacity: 0.6 }} />
-        <p className="text-lg font-semibold" style={{ color: "hsl(var(--foreground))" }}>Not enough cards</p>
+        <p className="text-lg font-semibold" style={{ color: "hsl(var(--foreground))" }}>
+          {t("quiz_not_enough_cards", lang)}
+        </p>
         <p className="text-sm" style={{ color: "hsl(var(--muted-foreground))" }}>
-          You need at least 4 cards to run a quiz (for answer choices).
+          {t("quiz_not_enough_desc", lang)}
         </p>
         <button
           onClick={() => setActiveNav("add-card")}
           className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium"
           style={{ background: "hsl(var(--primary) / 0.12)", color: "hsl(var(--primary))", border: "1px solid hsl(var(--primary) / 0.3)" }}
         >
-          Add cards
+          {t("quiz_add_cards", lang)}
         </button>
       </div>
     );
@@ -731,6 +744,7 @@ export function QuickQuizPage() {
     return (
       <QuizSetup
         cards={cards}
+        lang={lang}
         onStart={(qs) => { setQuestions(qs); setScreen("quiz"); }}
         onGoToDashboard={() => setActiveNav("dashboard")}
       />
@@ -741,6 +755,7 @@ export function QuickQuizPage() {
     return (
       <QuizQuestion
         questions={questions}
+        lang={lang}
         onComplete={(r) => { setResults(r); setScreen("results"); }}
       />
     );
@@ -749,6 +764,7 @@ export function QuickQuizPage() {
   return (
     <QuizResults
       results={results}
+      lang={lang}
       onRetry={() => setScreen("setup")}
       onDashboard={() => setActiveNav("dashboard")}
     />

@@ -14,10 +14,10 @@ import { SyntaxBlock } from "@/components/SyntaxBlock";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-const DIFF_META: Record<Difficulty, { color: string; label: string; desc: string }> = {
-  beginner:     { color: "#3fb950", label: "Beginner",     desc: "Core concept" },
-  intermediate: { color: "#d29922", label: "Intermediate", desc: "Needs practice" },
-  advanced:     { color: "#ff6e6e", label: "Advanced",     desc: "Deep mastery" },
+const DIFF_META: Record<Difficulty, { color: string }> = {
+  beginner:     { color: "#3fb950" },
+  intermediate: { color: "#d29922" },
+  advanced:     { color: "#ff6e6e" },
 };
 
 const AI_SUGGESTIONS: Record<DSCategory, string[]> = {
@@ -275,9 +275,11 @@ df.head()"
 function AISuggest({
   category,
   onSelect,
+  lang,
 }: {
   category: DSCategory;
   onSelect: (s: string) => void;
+  lang: import("@/i18n/translations").Language;
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -292,19 +294,19 @@ function AISuggest({
 
   return (
     <div ref={ref} className="relative">
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all duration-200 whitespace-nowrap"
-        style={{
-          background: "hsl(212 100% 68% / 0.1)",
-          color: "#58a6ff",
-          border: "1px solid hsl(212 100% 68% / 0.25)",
-        }}
-      >
-        <Sparkles size={12} />
-        AI Suggest
-        <ChevronDown size={11} style={{ transform: open ? "rotate(180deg)" : "none", transition: "transform 200ms" }} />
+        <button
+          type="button"
+          onClick={() => setOpen((o) => !o)}
+          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all duration-200 whitespace-nowrap"
+          style={{
+            background: "hsl(212 100% 68% / 0.1)",
+            color: "#58a6ff",
+            border: "1px solid hsl(212 100% 68% / 0.25)",
+          }}
+        >
+          <Sparkles size={12} />
+          {t("add_ai_suggest", lang)}
+          <ChevronDown size={11} style={{ transform: open ? "rotate(180deg)" : "none", transition: "transform 200ms" }} />
       </button>
 
       {open && (
@@ -361,6 +363,7 @@ function CardPreview({
   category,
   difficulty,
   tags,
+  lang,
 }: {
   front: string;
   back: string;
@@ -368,6 +371,7 @@ function CardPreview({
   category: DSCategory;
   difficulty: Difficulty;
   tags: string[];
+  lang: import("@/i18n/translations").Language;
 }) {
   const color = CATEGORY_COLORS[category];
   const diffMeta = DIFF_META[difficulty];
@@ -377,61 +381,61 @@ function CardPreview({
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center gap-2">
-        <Eye size={14} style={{ color: "hsl(var(--primary))" }} />
-        <h2 className="text-sm font-semibold" style={{ color: "hsl(var(--foreground))" }}>
-          Live Preview
-        </h2>
-        {!isEmpty && (
-          <button
-            type="button"
-            onClick={() => setFlipped((f) => !f)}
-            className="ml-auto text-xs px-2.5 py-1 rounded-md transition-all duration-200"
-            style={{
-              background: "hsl(var(--surface-2))",
-              color: "hsl(var(--muted-foreground))",
-              border: "1px solid hsl(var(--border))",
-            }}
-          >
-            {flipped ? "Show front" : "Show back"}
-          </button>
-        )}
-      </div>
+        <div className="flex items-center gap-2">
+          <Eye size={14} style={{ color: "hsl(var(--primary))" }} />
+          <h2 className="text-sm font-semibold" style={{ color: "hsl(var(--foreground))" }}>
+            {t("add_preview", lang)}
+          </h2>
+          {!isEmpty && (
+            <button
+              type="button"
+              onClick={() => setFlipped((f) => !f)}
+              className="ml-auto text-xs px-2.5 py-1 rounded-md transition-all duration-200"
+              style={{
+                background: "hsl(var(--surface-2))",
+                color: "hsl(var(--muted-foreground))",
+                border: "1px solid hsl(var(--border))",
+              }}
+            >
+              {flipped ? t("add_preview_show_front", lang) : t("add_preview_show_back", lang)}
+            </button>
+          )}
+        </div>
 
       <div
         className="ds-card p-5 min-h-36 transition-all duration-200"
         style={isEmpty ? { opacity: 0.4 } : {}}
       >
-        {isEmpty ? (
-          <div className="flex items-center justify-center h-24">
-            <p className="text-sm" style={{ color: "hsl(var(--muted-foreground))" }}>
-              Fill in the form to see a preview
-            </p>
-          </div>
-        ) : !flipped ? (
-          <div className="space-y-3 animate-fade-in">
-            {/* Badges */}
-            <div className="flex items-center gap-2 flex-wrap">
-              <span
-                className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full"
-                style={{ background: `${color}18`, color, border: `1px solid ${color}40` }}
-              >
-                {category}
-              </span>
-              <span
-                className="text-[10px] px-2 py-0.5 rounded-full capitalize"
-                style={{
-                  background: `${diffMeta.color}18`,
-                  color: diffMeta.color,
-                  border: `1px solid ${diffMeta.color}40`,
-                }}
-              >
-                ● {difficulty}
-              </span>
+          {isEmpty ? (
+            <div className="flex items-center justify-center h-24">
+              <p className="text-sm" style={{ color: "hsl(var(--muted-foreground))" }}>
+                {t("add_preview_empty", lang)}
+              </p>
             </div>
-            <p className="text-[10px] uppercase tracking-widest" style={{ color: "hsl(var(--muted-foreground))" }}>
-              Question
-            </p>
+          ) : !flipped ? (
+            <div className="space-y-3 animate-fade-in">
+              {/* Badges */}
+              <div className="flex items-center gap-2 flex-wrap">
+                <span
+                  className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full"
+                  style={{ background: `${color}18`, color, border: `1px solid ${color}40` }}
+                >
+                  {category}
+                </span>
+                <span
+                  className="text-[10px] px-2 py-0.5 rounded-full capitalize"
+                  style={{
+                    background: `${diffMeta.color}18`,
+                    color: diffMeta.color,
+                    border: `1px solid ${diffMeta.color}40`,
+                  }}
+                >
+                  ● {difficulty}
+                </span>
+              </div>
+              <p className="text-[10px] uppercase tracking-widest" style={{ color: "hsl(var(--muted-foreground))" }}>
+                {t("add_preview_front", lang)}
+              </p>
             <p className="text-sm leading-relaxed" style={{ color: "hsl(var(--foreground))" }}>
               {front || <span style={{ opacity: 0.4 }}>Your question will appear here…</span>}
             </p>
@@ -449,11 +453,11 @@ function CardPreview({
               </div>
             )}
           </div>
-        ) : (
-          <div className="space-y-3 animate-fade-in">
-            <p className="text-[10px] uppercase tracking-widest" style={{ color: "hsl(var(--muted-foreground))" }}>
-              Answer
-            </p>
+          ) : (
+            <div className="space-y-3 animate-fade-in">
+              <p className="text-[10px] uppercase tracking-widest" style={{ color: "hsl(var(--muted-foreground))" }}>
+                {t("add_preview_back", lang)}
+              </p>
             {back ? (
               <div
                 className="terminal-block p-3 text-xs leading-relaxed whitespace-pre-wrap"
@@ -485,6 +489,12 @@ export function AddCardPage() {
   const { upsertCard } = useSupabaseSync();
   const { user } = useAuth();
   const { lang } = useLang();
+
+  const DIFF_LABELS: Record<Difficulty, { label: string; desc: string }> = {
+    beginner:     { label: t("difficulty_beginner", lang),     desc: t("difficulty_beginner_desc", lang) },
+    intermediate: { label: t("difficulty_intermediate", lang), desc: t("difficulty_intermediate_desc", lang) },
+    advanced:     { label: t("difficulty_advanced", lang),     desc: t("difficulty_advanced_desc", lang) },
+  };
 
   const [front, setFront] = useState("");
   const [back, setBack] = useState("");
@@ -549,7 +559,7 @@ export function AddCardPage() {
     if (user) upsertCard(newCard);
 
     toast({
-      title: "Card added to your deck! 🎉",
+      title: t("add_success", lang),
       description: `"${front.slice(0, 50)}${front.length > 50 ? "…" : ""}" is ready for review`,
     });
 
@@ -569,10 +579,10 @@ export function AddCardPage() {
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-xl font-semibold" style={{ color: "hsl(var(--foreground))" }}>
-            Add Card
+            {t("add_title", lang)}
           </h1>
           <p className="text-sm mt-0.5" style={{ color: "hsl(var(--muted-foreground))" }}>
-            Build your DS knowledge deck — one card at a time
+            {t("add_header_sub", lang)}
           </p>
         </div>
 
@@ -582,7 +592,7 @@ export function AddCardPage() {
 
             {/* Category */}
             <div>
-              <label style={labelStyle}>Category</label>
+              <label style={labelStyle}>{t("add_category", lang)}</label>
               <div className="relative">
                 <select
                   value={category}
@@ -612,11 +622,11 @@ export function AddCardPage() {
 
             {/* Subcategory */}
             <div>
-              <label style={labelStyle}>Subcategory</label>
+              <label style={labelStyle}>{t("add_subcategory", lang)}</label>
               <input
                 value={subcategory}
                 onChange={(e) => setSubcategory(e.target.value)}
-                placeholder="e.g. Probability, Supervised Learning"
+                placeholder={t("add_subcategory_placeholder", lang)}
                 maxLength={80}
                 style={inputBase}
                 onFocus={focus}
@@ -626,13 +636,15 @@ export function AddCardPage() {
 
             {/* Difficulty — segmented control */}
             <div>
-              <label style={labelStyle}>Difficulty</label>
+              <label style={labelStyle}>{t("add_difficulty", lang)}</label>
               <div
                 className="grid grid-cols-3 p-1 rounded-lg gap-1"
                 style={{ background: "hsl(var(--surface-2))", border: "1px solid hsl(var(--border))" }}
               >
                 {(Object.entries(DIFF_META) as [Difficulty, typeof DIFF_META[Difficulty]][]).map(
-                  ([key, meta]) => (
+                  ([key, meta]) => {
+                    const labels = DIFF_LABELS[key];
+                    return (
                     <button
                       key={key}
                       type="button"
@@ -651,10 +663,11 @@ export function AddCardPage() {
                             }
                       }
                     >
-                      <span className="text-xs font-semibold">{meta.label}</span>
-                      <span className="text-[10px] mt-0.5 opacity-70">{meta.desc}</span>
+                      <span className="text-xs font-semibold">{labels.label}</span>
+                      <span className="text-[10px] mt-0.5 opacity-70">{labels.desc}</span>
                     </button>
-                  )
+                  );
+                  }
                 )}
               </div>
             </div>
@@ -664,9 +677,9 @@ export function AddCardPage() {
               <label style={labelStyle}>
                 <span className="flex items-center gap-1.5">
                   <Tag size={10} />
-                  Tags
+                  {t("add_tags", lang)}
                   <span style={{ fontWeight: 400, textTransform: "none" }}>
-                    — press Enter to add
+                    {t("add_tags_hint", lang)}
                   </span>
                 </span>
               </label>
@@ -677,11 +690,11 @@ export function AddCardPage() {
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label style={{ ...labelStyle, marginBottom: 0 }}>
-                  Front — Question
+                  {t("add_front", lang)}
                   <span style={{ color: "#ff6e6e", marginLeft: 2 }}>*</span>
                 </label>
                 <div className="flex items-center gap-2">
-                  <AISuggest category={category} onSelect={(s) => setFront(s)} />
+                  <AISuggest category={category} onSelect={(s) => setFront(s)} lang={lang} />
                 </div>
               </div>
               <textarea
@@ -691,7 +704,7 @@ export function AddCardPage() {
                 onChange={(e) => setFront(e.target.value)}
                 onBlur={(e) => { setTouched((t) => ({ ...t, front: true })); blur(e); }}
                 onFocus={focus}
-                placeholder="e.g., What is the bias-variance tradeoff?"
+                placeholder={t("add_front_placeholder", lang)}
                 style={{
                   ...inputBase,
                   resize: "vertical",
@@ -720,7 +733,7 @@ export function AddCardPage() {
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label style={{ ...labelStyle, marginBottom: 0 }}>
-                  Back — Answer
+                  {t("add_back", lang)}
                   <span style={{ color: "#ff6e6e", marginLeft: 2 }}>*</span>
                 </label>
                 <span
@@ -737,7 +750,7 @@ export function AddCardPage() {
                 onChange={(e) => setBack(e.target.value)}
                 onBlur={(e) => { setTouched((t) => ({ ...t, back: true })); blur(e); }}
                 onFocus={focus}
-                placeholder="Explain clearly as if teaching someone. Use bullet points, formulas, comparisons…"
+                placeholder={t("add_back_placeholder", lang)}
                 style={{
                   ...inputBase,
                   resize: "vertical",
@@ -767,12 +780,12 @@ export function AddCardPage() {
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label style={{ ...labelStyle, marginBottom: 0 }}>
-                  Python Code Example
+                  {t("add_code", lang)}
                   <span
                     className="ml-2 font-mono"
                     style={{ fontWeight: 400, textTransform: "none", color: "hsl(var(--muted-foreground))" }}
                   >
-                    (optional)
+                    {t("add_code_optional", lang)}
                   </span>
                 </label>
                 <button
@@ -781,7 +794,9 @@ export function AddCardPage() {
                   className="flex items-center gap-1.5 text-xs transition-all duration-200"
                   style={{ color: showCode ? "#ff6e6e" : "#58a6ff" }}
                 >
-                  {showCode ? <><X size={12} /> Remove</> : <><Plus size={12} /> Add snippet</>}
+                  {showCode
+                    ? <><X size={12} /> {t("add_code_remove", lang)}</>
+                    : <><Plus size={12} /> {t("add_code_add", lang)}</>}
                 </button>
               </div>
               {showCode && <CodeEditor value={codeExample} onChange={setCodeExample} />}
@@ -793,15 +808,13 @@ export function AddCardPage() {
               disabled={!isValid}
               className="w-full flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
               style={{
-                background: isValid
-                  ? "hsl(var(--primary) / 0.15)"
-                  : "hsl(var(--surface-2))",
+                background: isValid ? "hsl(var(--primary) / 0.15)" : "hsl(var(--surface-2))",
                 color: isValid ? "hsl(var(--primary))" : "hsl(var(--muted-foreground))",
                 border: `1px solid ${isValid ? "hsl(var(--primary) / 0.35)" : "hsl(var(--border))"}`,
               }}
             >
               <CheckCircle2 size={16} />
-              Add to Deck
+              {t("add_submit", lang)}
             </button>
           </form>
 
@@ -815,6 +828,7 @@ export function AddCardPage() {
                 category={category}
                 difficulty={difficulty}
                 tags={tags}
+                lang={lang}
               />
 
               {/* Deck stats hint */}
@@ -823,13 +837,13 @@ export function AddCardPage() {
                 style={{ background: "hsl(var(--surface))", border: "1px solid hsl(var(--border))" }}
               >
                 <p className="font-medium" style={{ color: "hsl(var(--foreground))" }}>
-                  SM-2 defaults
+                  {t("add_sm2_defaults", lang)}
                 </p>
-                {[
-                  ["Ease Factor", "2.50"],
-                  ["First interval", "1 day"],
-                  ["Repetitions", "0"],
-                ].map(([k, v]) => (
+                {([
+                  [t("add_sm2_ease", lang),     "2.50"],
+                  [t("add_sm2_interval", lang),  t("add_sm2_interval_val", lang)],
+                  [t("add_sm2_reps", lang),      "0"],
+                ] as [string, string][]).map(([k, v]) => (
                   <div key={k} className="flex justify-between">
                     <span style={{ color: "hsl(var(--muted-foreground))" }}>{k}</span>
                     <span className="font-mono" style={{ color: "hsl(var(--primary))" }}>{v}</span>
