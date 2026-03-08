@@ -184,6 +184,40 @@
     font-size: 0.8125rem;
   }
 
+  .light-mode .terminal-block {
+    background: hsl(210 14% 95%);
+  }
+
+  /* Card mastery badges */
+  .badge-mastered {
+    background: hsl(var(--success) / 0.12);
+    color: hsl(var(--success));
+    border: 1px solid hsl(var(--success) / 0.3);
+    font-size: 0.625rem;
+    padding: 1px 6px;
+    border-radius: 999px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  .badge-needs-practice {
+    background: hsl(var(--destructive) / 0.1);
+    color: hsl(var(--destructive));
+    border: 1px solid hsl(var(--destructive) / 0.3);
+    font-size: 0.625rem;
+    padding: 1px 6px;
+    border-radius: 999px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  /* Light mode grid bg */
+  .light-mode body {
+    background-image:
+      linear-gradient(hsl(215 14% 60% / 0.07) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(215 14% 60% / 0.07) 1px, transparent 1px);
+  }
+
   .animate-page-in {
     animation: page-slide-in 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
