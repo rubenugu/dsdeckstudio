@@ -394,7 +394,7 @@ function CardReview({ queue, onComplete, onEditCard }: ReviewProps) {
 
           {/* BACK */}
           <div
-            className="ds-card absolute inset-0 p-6 flex flex-col gap-4 overflow-y-auto"
+            className="ds-card flip-face absolute inset-0 p-6 flex flex-col gap-4 overflow-y-auto"
             style={{
               backfaceVisibility: "hidden",
               WebkitBackfaceVisibility: "hidden",
