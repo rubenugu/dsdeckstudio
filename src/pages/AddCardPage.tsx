@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useDeckStore, DS_CATEGORIES, type DSCategory, type Difficulty } from "@/store/useDeckStore";
 import { useSupabaseSync } from "@/hooks/useSupabaseSync";
 import { useAuth } from "@/contexts/AuthContext";
