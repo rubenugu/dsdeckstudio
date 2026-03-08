@@ -467,17 +467,12 @@ function CardReview({ queue, onComplete, onEditCard }: ReviewProps) {
                 Answer
               </p>
 
-              <div
-                className="terminal-block p-4 leading-relaxed whitespace-pre-wrap flex-1"
-                style={{
-                  color: "hsl(var(--foreground))",
-                  fontSize: "clamp(1rem, 2vw, 1.0625rem)",
-                  maxHeight: card.codeExample ? 200 : 360,
-                  overflowY: "auto",
-                }}
+              <p
+                className="font-medium leading-relaxed whitespace-pre-wrap flex-1"
+                style={{ color: "hsl(var(--foreground))", fontSize: "clamp(1.125rem, 2.5vw, 1.375rem)" }}
               >
                 {card.back}
-              </div>
+              </p>
 
               {card.codeExample && (
                 <SyntaxBlock code={card.codeExample} language="python" />
