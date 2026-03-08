@@ -515,7 +515,7 @@ function QuizQuestion({ questions, lang, onComplete }: QuestionProps) {
           style={{ background: "hsl(var(--destructive) / 0.1)", border: "1px solid hsl(var(--destructive) / 0.3)", color: "hsl(var(--destructive))" }}
         >
           <Clock size={14} />
-          Time's up! The correct answer is highlighted above.
+          {t("quiz_times_up", lang)}
         </div>
       )}
 
@@ -526,7 +526,7 @@ function QuizQuestion({ questions, lang, onComplete }: QuestionProps) {
           className="flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all"
           style={{ background: "hsl(var(--warning))", color: "hsl(215 14% 8%)" }}
         >
-          {index + 1 >= questions.length ? "See Results" : "Next Question"}
+          {index + 1 >= questions.length ? t("quiz_see_results", lang) : t("quiz_next", lang)}
           <ChevronRight size={15} />
         </button>
       )}
@@ -540,7 +540,7 @@ function QuizQuestion({ questions, lang, onComplete }: QuestionProps) {
               {n}
             </kbd>
           ))}
-          {" "}to choose
+          {" "}{t("quiz_keyboard_choose", lang)}
         </p>
       )}
       {revealed && (
@@ -549,7 +549,7 @@ function QuizQuestion({ questions, lang, onComplete }: QuestionProps) {
           <kbd className="px-1.5 py-0.5 rounded font-mono" style={{ background: "hsl(var(--surface-2))", border: "1px solid hsl(var(--border))" }}>
             Space
           </kbd>
-          {" "}to continue
+          {" "}{t("quiz_keyboard_continue", lang)}
         </p>
       )}
     </div>
