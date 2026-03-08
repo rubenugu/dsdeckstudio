@@ -385,7 +385,8 @@ function QuizQuestion({ questions, lang, onComplete }: QuestionProps) {
       <div className="w-full max-w-2xl space-y-2">
         <div className="flex items-center justify-between text-xs" style={{ color: "hsl(var(--muted-foreground))" }}>
           <span>
-            Question <span className="font-mono font-semibold" style={{ color: "hsl(var(--foreground))" }}>{index + 1}</span>
+            {t("quiz_question_label", lang)}{" "}
+            <span className="font-mono font-semibold" style={{ color: "hsl(var(--foreground))" }}>{index + 1}</span>
             {" / "}
             <span className="font-mono font-semibold" style={{ color: "hsl(var(--foreground))" }}>{questions.length}</span>
           </span>
