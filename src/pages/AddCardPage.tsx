@@ -588,7 +588,7 @@ export function AddCardPage() {
 
             {/* Category */}
             <div>
-              <label style={labelStyle}>Category</label>
+              <label style={labelStyle}>{t("add_category", lang)}</label>
               <div className="relative">
                 <select
                   value={category}
