@@ -618,11 +618,11 @@ export function AddCardPage() {
 
             {/* Subcategory */}
             <div>
-              <label style={labelStyle}>Subcategory</label>
+              <label style={labelStyle}>{t("add_subcategory", lang)}</label>
               <input
                 value={subcategory}
                 onChange={(e) => setSubcategory(e.target.value)}
-                placeholder="e.g. Probability, Supervised Learning"
+                placeholder={t("add_subcategory_placeholder", lang)}
                 maxLength={80}
                 style={inputBase}
                 onFocus={focus}
