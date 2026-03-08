@@ -632,7 +632,7 @@ export function AddCardPage() {
 
             {/* Difficulty — segmented control */}
             <div>
-              <label style={labelStyle}>Difficulty</label>
+              <label style={labelStyle}>{t("add_difficulty", lang)}</label>
               <div
                 className="grid grid-cols-3 p-1 rounded-lg gap-1"
                 style={{ background: "hsl(var(--surface-2))", border: "1px solid hsl(var(--border))" }}
