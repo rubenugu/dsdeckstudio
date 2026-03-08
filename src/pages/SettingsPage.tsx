@@ -225,7 +225,7 @@ export function SettingsPage() {
                 border:     "1px solid hsl(var(--border))",
               }}
             >
-              <FileUp size={14} />
+              <Download size={14} />
               Import JSON
               <input type="file" accept=".json" className="hidden" onChange={importDeck} />
             </label>
