@@ -776,12 +776,12 @@ export function AddCardPage() {
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label style={{ ...labelStyle, marginBottom: 0 }}>
-                  Python Code Example
+                  {t("add_code", lang)}
                   <span
                     className="ml-2 font-mono"
                     style={{ fontWeight: 400, textTransform: "none", color: "hsl(var(--muted-foreground))" }}
                   >
-                    (optional)
+                    {t("add_code_optional", lang)}
                   </span>
                 </label>
                 <button
@@ -790,7 +790,9 @@ export function AddCardPage() {
                   className="flex items-center gap-1.5 text-xs transition-all duration-200"
                   style={{ color: showCode ? "#ff6e6e" : "#58a6ff" }}
                 >
-                  {showCode ? <><X size={12} /> Remove</> : <><Plus size={12} /> Add snippet</>}
+                  {showCode
+                    ? <><X size={12} /> {t("add_code_remove", lang)}</>
+                    : <><Plus size={12} /> {t("add_code_add", lang)}</>}
                 </button>
               </div>
               {showCode && <CodeEditor value={codeExample} onChange={setCodeExample} />}
