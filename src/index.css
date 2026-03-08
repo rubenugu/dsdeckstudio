@@ -75,6 +75,10 @@
     @apply bg-background text-foreground;
     font-family: 'Inter', sans-serif;
     -webkit-font-smoothing: antialiased;
+    background-image:
+      linear-gradient(hsl(215 14% 20% / 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(215 14% 20% / 0.035) 1px, transparent 1px);
+    background-size: 32px 32px;
   }
 
   code, pre, .font-mono {
