@@ -7,6 +7,7 @@ import {
   Clock,
   CheckCircle2,
   AlertCircle,
+  Code,
 } from "lucide-react";
 
 function StatCard({
@@ -46,24 +47,39 @@ function StatCard({
 export function DashboardPage() {
   const { cards, streak } = useDeckStore();
 
-  const totalReviewed = cards.reduce((s, c) => s + c.timesReviewed, 0);
-  const totalCorrect = cards.reduce((s, c) => s + c.timesCorrect, 0);
-  const accuracy = totalReviewed > 0 ? Math.round((totalCorrect / totalReviewed) * 100) : 0;
-  const dueCards = cards.filter((c) => !c.lastReviewed || Date.now() - c.lastReviewed > 86400000 * 2);
+  const totalReviewed = cards.reduce((s, c) => s + c.repetitions, 0);
+  const avgQuality =
+    totalReviewed > 0
+      ? (
+          cards.reduce((s, c) => s + (c.quality ?? 0) * c.repetitions, 0) /
+          totalReviewed
+        ).toFixed(1)
+      : "–";
+
+  const accuracy =
+    totalReviewed > 0
+      ? Math.round(
+          (cards.filter((c) => (c.quality ?? 0) >= 3).length / cards.length) * 100
+        )
+      : 0;
+
+  const now = Date.now();
+  const dueCards = cards.filter(
+    (c) => !c.nextReview || new Date(c.nextReview).getTime() <= now
+  );
 
   const categoryCount = cards.reduce<Record<string, number>>((acc, c) => {
     acc[c.category] = (acc[c.category] || 0) + 1;
     return acc;
   }, {});
 
+  const withCode = cards.filter((c) => !!c.codeExample).length;
+
   return (
     <div className="p-6 space-y-6 animate-fade-in">
       {/* Header */}
       <div>
-        <h1
-          className="text-xl font-semibold"
-          style={{ color: "hsl(var(--foreground))" }}
-        >
+        <h1 className="text-xl font-semibold" style={{ color: "hsl(var(--foreground))" }}>
           Dashboard
         </h1>
         <p className="text-sm mt-0.5" style={{ color: "hsl(var(--muted-foreground))" }}>
@@ -87,8 +103,8 @@ export function DashboardPage() {
         />
         <StatCard
           icon={BarChart2}
-          label="Accuracy"
-          value={`${accuracy}%`}
+          label="Avg Quality"
+          value={avgQuality}
           color="hsl(var(--warning))"
         />
         <StatCard
@@ -110,13 +126,10 @@ export function DashboardPage() {
         >
           <AlertCircle size={16} style={{ color: "hsl(var(--warning))" }} />
           <p className="text-sm" style={{ color: "hsl(var(--foreground))" }}>
-            <span
-              className="font-semibold font-mono"
-              style={{ color: "hsl(var(--warning))" }}
-            >
+            <span className="font-semibold font-mono" style={{ color: "hsl(var(--warning))" }}>
               {dueCards.length}
             </span>{" "}
-            card{dueCards.length !== 1 ? "s" : ""} due for review today.
+            card{dueCards.length !== 1 ? "s" : ""} due for review today — SM-2 scheduled.
           </p>
         </div>
       )}
@@ -132,36 +145,32 @@ export function DashboardPage() {
             Cards by Category
           </h2>
           <div className="space-y-2.5">
-            {Object.entries(categoryCount).map(([cat, count]) => {
-              const pct = Math.round((count / cards.length) * 100);
-              return (
-                <div key={cat}>
-                  <div className="flex justify-between mb-1">
-                    <span className="text-xs" style={{ color: "hsl(var(--foreground))" }}>
-                      {cat}
-                    </span>
-                    <span
-                      className="text-xs font-mono"
-                      style={{ color: "hsl(var(--muted-foreground))" }}
-                    >
-                      {count}
-                    </span>
-                  </div>
-                  <div
-                    className="h-1.5 rounded-full overflow-hidden"
-                    style={{ background: "hsl(var(--surface-2))" }}
-                  >
+            {Object.entries(categoryCount)
+              .sort(([, a], [, b]) => b - a)
+              .map(([cat, count]) => {
+                const pct = Math.round((count / cards.length) * 100);
+                return (
+                  <div key={cat}>
+                    <div className="flex justify-between mb-1">
+                      <span className="text-xs truncate pr-2" style={{ color: "hsl(var(--foreground))" }}>
+                        {cat}
+                      </span>
+                      <span className="text-xs font-mono shrink-0" style={{ color: "hsl(var(--muted-foreground))" }}>
+                        {count}
+                      </span>
+                    </div>
                     <div
-                      className="h-full rounded-full transition-all duration-500"
-                      style={{
-                        width: `${pct}%`,
-                        background: "hsl(var(--primary))",
-                      }}
-                    />
+                      className="h-1.5 rounded-full overflow-hidden"
+                      style={{ background: "hsl(var(--surface-2))" }}
+                    >
+                      <div
+                        className="h-full rounded-full transition-all duration-500"
+                        style={{ width: `${pct}%`, background: "hsl(var(--primary))" }}
+                      />
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
           </div>
         </div>
 
@@ -176,23 +185,21 @@ export function DashboardPage() {
           </h2>
           <div className="space-y-2">
             {[...cards]
-              .sort((a, b) => b.createdAt - a.createdAt)
-              .slice(0, 4)
+              .sort((a, b) => new Date(b.created).getTime() - new Date(a.created).getTime())
+              .slice(0, 5)
               .map((card) => (
                 <div
                   key={card.id}
                   className="flex items-center gap-2.5 py-1.5"
                   style={{ borderBottom: "1px solid hsl(var(--border))" }}
                 >
-                  <CheckCircle2
-                    size={13}
-                    style={{ color: "hsl(var(--success))", flexShrink: 0 }}
-                  />
-                  <p
-                    className="text-xs truncate flex-1"
-                    style={{ color: "hsl(var(--foreground))" }}
-                  >
-                    {card.question}
+                  {card.codeExample ? (
+                    <Code size={12} style={{ color: "hsl(var(--primary))", flexShrink: 0 }} />
+                  ) : (
+                    <CheckCircle2 size={13} style={{ color: "hsl(var(--success))", flexShrink: 0 }} />
+                  )}
+                  <p className="text-xs truncate flex-1" style={{ color: "hsl(var(--foreground))" }}>
+                    {card.front}
                   </p>
                   <span
                     className="text-[10px] px-1.5 py-0.5 rounded font-mono shrink-0"
@@ -201,10 +208,19 @@ export function DashboardPage() {
                       color: "hsl(var(--muted-foreground))",
                     }}
                   >
-                    {card.category}
+                    {card.difficulty[0].toUpperCase()}
                   </span>
                 </div>
               ))}
+          </div>
+
+          {/* Code coverage */}
+          <div className="mt-4 pt-3 flex items-center gap-2" style={{ borderTop: "1px solid hsl(var(--border))" }}>
+            <Code size={12} style={{ color: "hsl(var(--primary))" }} />
+            <span className="text-xs" style={{ color: "hsl(var(--muted-foreground))" }}>
+              <span className="font-mono" style={{ color: "hsl(var(--primary))" }}>{withCode}</span>
+              /{cards.length} cards have Python examples
+            </span>
           </div>
         </div>
       </div>
