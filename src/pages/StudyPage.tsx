@@ -194,7 +194,7 @@ function SessionSetup({ cards, onStart, onGoToDashboard }: SetupProps) {
               opacity: queue.length === 0 ? 0.6 : 1,
             }}
           >
-            Start Session
+            {t("study_start", lang)}
             <ChevronRight size={15} />
             <span className="font-mono text-xs ml-0.5 px-1.5 py-0.5 rounded" style={{ background: "hsl(0 0% 0% / 0.2)" }}>
               {queue.length}
