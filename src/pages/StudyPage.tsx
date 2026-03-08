@@ -335,7 +335,7 @@ function CardReview({ queue, onComplete, onEditCard }: ReviewProps) {
         >
           {/* FRONT */}
           <div
-            className="ds-card absolute inset-0 p-6 flex flex-col gap-4"
+            className="ds-card flip-face absolute inset-0 p-6 flex flex-col gap-4"
             style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}
           >
             {/* Meta */}
