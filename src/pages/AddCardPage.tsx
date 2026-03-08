@@ -804,15 +804,13 @@ export function AddCardPage() {
               disabled={!isValid}
               className="w-full flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
               style={{
-                background: isValid
-                  ? "hsl(var(--primary) / 0.15)"
-                  : "hsl(var(--surface-2))",
+                background: isValid ? "hsl(var(--primary) / 0.15)" : "hsl(var(--surface-2))",
                 color: isValid ? "hsl(var(--primary))" : "hsl(var(--muted-foreground))",
                 border: `1px solid ${isValid ? "hsl(var(--primary) / 0.35)" : "hsl(var(--border))"}`,
               }}
             >
               <CheckCircle2 size={16} />
-              Add to Deck
+              {t("add_submit", lang)}
             </button>
           </form>
 
