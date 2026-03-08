@@ -670,7 +670,7 @@ function QuizResults({ results, lang, onRetry, onDashboard }: ResultsProps) {
                   <div className="flex items-start gap-2 text-[11px]">
                     <XCircle size={12} style={{ color: "#f85149", flexShrink: 0, marginTop: 1 }} />
                     <span style={{ color: "#f85149" }}>
-                      {r.chosen ?? "Timed out"}
+                      {r.chosen ?? t("quiz_timed_out", lang)}
                     </span>
                   </div>
                   <div className="flex items-start gap-2 text-[11px]">
