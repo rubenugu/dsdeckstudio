@@ -655,7 +655,7 @@ function QuizResults({ results, lang, onRetry, onDashboard }: ResultsProps) {
         {wrong.length > 0 && (
           <div className="ds-card p-5 space-y-3">
             <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "hsl(var(--muted-foreground))" }}>
-              Missed Questions ({wrong.length})
+              {t("quiz_missed", lang)} ({wrong.length})
             </p>
             <div className="space-y-3 max-h-56 overflow-y-auto pr-1">
               {wrong.map((r, i) => (
