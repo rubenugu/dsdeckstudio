@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useDeckStore } from "@/store/useDeckStore";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSupabaseSync } from "@/hooks/useSupabaseSync";
+import { useLang } from "@/contexts/LanguageContext";
+import { t } from "@/i18n/translations";
 import { Layers, Menu, Search, LogOut, RefreshCw } from "lucide-react";
 
 interface TopBarProps {
