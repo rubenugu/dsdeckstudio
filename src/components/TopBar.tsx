@@ -1,5 +1,8 @@
+import { useState, useEffect } from "react";
 import { useDeckStore } from "@/store/useDeckStore";
-import { Layers, Menu, Search } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useSupabaseSync } from "@/hooks/useSupabaseSync";
+import { Layers, Menu, Search, LogOut, RefreshCw } from "lucide-react";
 
 interface TopBarProps {
   onMenuClick?: () => void;
@@ -8,6 +11,8 @@ interface TopBarProps {
 
 export function TopBar({ onMenuClick, onSearchOpen }: TopBarProps) {
   const { cards, streak } = useDeckStore();
+  const { user, signOut } = useAuth();
+  const { syncing }       = useSupabaseSync();
 
   const isMac = typeof navigator !== "undefined" && /mac/i.test(navigator.platform);
 
@@ -52,19 +57,14 @@ export function TopBar({ onMenuClick, onSearchOpen }: TopBarProps) {
       {/* Center: search trigger */}
       <button
         onClick={onSearchOpen}
-        className="hidden md:flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm flex-1 max-w-xs mx-6 transition-all duration-200 group"
+        className="hidden md:flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm flex-1 max-w-xs mx-6 transition-all duration-200"
         style={{
           background: "hsl(var(--surface-2))",
           border: "1px solid hsl(var(--border))",
           color: "hsl(var(--muted-foreground))",
         }}
-        onMouseEnter={(e) => {
-          (e.currentTarget as HTMLButtonElement).style.borderColor = "hsl(var(--primary) / 0.4)";
-          (e.currentTarget as HTMLButtonElement).style.background  = "hsl(var(--surface-2))";
-        }}
-        onMouseLeave={(e) => {
-          (e.currentTarget as HTMLButtonElement).style.borderColor = "hsl(var(--border))";
-        }}
+        onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "hsl(var(--primary) / 0.4)"; }}
+        onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "hsl(var(--border))"; }}
       >
         <Search size={13} />
         <span className="flex-1 text-left text-xs">Search cards…</span>
@@ -87,8 +87,21 @@ export function TopBar({ onMenuClick, onSearchOpen }: TopBarProps) {
         <Search size={17} />
       </button>
 
-      {/* Right — streak + card count */}
+      {/* Right — sync + streak + cards + user */}
       <div className="flex items-center gap-2 md:gap-3">
+
+        {/* Sync indicator */}
+        {syncing && (
+          <div
+            className="flex items-center gap-1 px-2 py-1 rounded-md text-xs"
+            style={{ color: "hsl(var(--muted-foreground))" }}
+            title="Syncing…"
+          >
+            <RefreshCw size={11} className="animate-spin" />
+            <span className="hidden sm:inline text-[11px]">Syncing</span>
+          </div>
+        )}
+
         <div
           className="flex items-center gap-1 md:gap-1.5 px-2 md:px-2.5 py-1 rounded-md text-xs font-medium"
           style={{ background: "hsl(var(--warning) / 0.12)", border: "1px solid hsl(var(--warning) / 0.25)", color: "hsl(var(--warning))" }}
@@ -97,6 +110,7 @@ export function TopBar({ onMenuClick, onSearchOpen }: TopBarProps) {
           <span className="font-mono">{streak}</span>
           <span className="opacity-80 hidden sm:inline">day streak</span>
         </div>
+
         <div
           className="flex items-center gap-1 md:gap-1.5 px-2 md:px-2.5 py-1 rounded-md text-xs font-medium"
           style={{ background: "hsl(var(--primary) / 0.1)", border: "1px solid hsl(var(--primary) / 0.25)", color: "hsl(var(--primary))" }}
@@ -105,6 +119,29 @@ export function TopBar({ onMenuClick, onSearchOpen }: TopBarProps) {
           <span className="font-mono">{cards.length}</span>
           <span className="opacity-80 hidden sm:inline">cards</span>
         </div>
+
+        {/* User info + logout */}
+        {user && (
+          <div className="flex items-center gap-1.5 pl-2 border-l" style={{ borderColor: "hsl(var(--border))" }}>
+            <span
+              className="hidden sm:inline text-xs max-w-[100px] truncate"
+              style={{ color: "hsl(var(--muted-foreground))" }}
+              title={user.email}
+            >
+              {user.email}
+            </span>
+            <button
+              onClick={signOut}
+              title="Sign out"
+              className="p-1.5 rounded-md transition-all duration-200"
+              style={{ color: "hsl(var(--muted-foreground))" }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "hsl(var(--destructive))"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "hsl(var(--muted-foreground))"; }}
+            >
+              <LogOut size={14} />
+            </button>
+          </div>
+        )}
       </div>
     </header>
   );

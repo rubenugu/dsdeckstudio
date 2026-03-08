@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { useDeckStore, type Flashcard, type DSCategory, type Difficulty, DS_CATEGORIES } from "@/store/useDeckStore";
+import { useSupabaseSync } from "@/hooks/useSupabaseSync";
 import { Search, X, Code, Calendar, LayoutGrid, Plus, ChevronDown } from "lucide-react";
 import { SyntaxBlock } from "@/components/SyntaxBlock";
 
@@ -135,6 +136,7 @@ function CardModal({ card, onClose }: { card: Flashcard; onClose: () => void }) 
   const diffColor = DIFF_COLORS[card.difficulty];
   const isDue = !card.nextReview || new Date(card.nextReview).getTime() <= Date.now();
   const { deleteCard, setActiveNav } = useDeckStore();
+  const { deleteCard: deleteCardRemote } = useSupabaseSync();
 
   function formatDate(iso?: string) {
     if (!iso) return "—";
@@ -311,7 +313,7 @@ function CardModal({ card, onClose }: { card: Flashcard; onClose: () => void }) 
               Study this deck
             </button>
             <button
-              onClick={() => { deleteCard(card.id); onClose(); }}
+              onClick={() => { deleteCard(card.id); deleteCardRemote(card.id); onClose(); }}
               className="flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ml-auto"
               style={{
                 background: "hsl(var(--destructive) / 0.08)",

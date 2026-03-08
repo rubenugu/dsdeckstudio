@@ -1,5 +1,7 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useDeckStore, DS_CATEGORIES, type DSCategory, type Difficulty } from "@/store/useDeckStore";
+import { useSupabaseSync } from "@/hooks/useSupabaseSync";
+import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
 import { CATEGORY_COLORS } from "@/pages/AllCardsPage";
 import {
@@ -478,6 +480,8 @@ function CardPreview({
 
 export function AddCardPage() {
   const { addCard } = useDeckStore();
+  const { upsertCard } = useSupabaseSync();
+  const { user } = useAuth();
 
   const [front, setFront] = useState("");
   const [back, setBack] = useState("");
@@ -528,7 +532,7 @@ export function AddCardPage() {
     setTouched({ front: true, back: true });
     if (!isValid) return;
 
-    addCard({
+    const newCard = addCard({
       front: front.trim(),
       back: back.trim(),
       codeExample: codeExample.trim() || undefined,
@@ -537,6 +541,9 @@ export function AddCardPage() {
       difficulty,
       tags,
     });
+
+    // Sync to Supabase if logged in
+    if (user) upsertCard(newCard);
 
     toast({
       title: "Card added to your deck! 🎉",

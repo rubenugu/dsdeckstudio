@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useDeckStore } from "@/store/useDeckStore";
+import { useSupabaseSync } from "@/hooks/useSupabaseSync";
 import { Sun, Moon, Trash2, Download, Upload, Check } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
@@ -39,6 +40,7 @@ export function SettingsPage() {
   const { cards, studySessions } = useDeckStore();
   const store = useDeckStore();
   const { theme, setTheme } = useTheme();
+  const { upsertSettings, deleteCard: deleteCardRemote } = useSupabaseSync();
 
   const totalReps    = cards.reduce((s, c) => s + c.repetitions, 0);
   const avgEF        = cards.length > 0
@@ -50,9 +52,14 @@ export function SettingsPage() {
     return recentLow;
   }).length;
 
+  function handleThemeChange(t: "dark" | "light") {
+    setTheme(t);
+    upsertSettings({ theme: t });
+  }
+
   function clearAll() {
     if (window.confirm("Delete ALL cards? This cannot be undone.")) {
-      cards.forEach((c) => store.deleteCard(c.id));
+      cards.forEach((c) => { store.deleteCard(c.id); deleteCardRemote(c.id); });
       toast({ title: "🗑 All cards deleted", duration: 3000 });
     }
   }
@@ -114,7 +121,7 @@ export function SettingsPage() {
               return (
                 <button
                   key={t}
-                  onClick={() => setTheme(t)}
+                  onClick={() => handleThemeChange(t)}
                   className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all duration-200"
                   style={{
                     background: active ? "hsl(var(--primary) / 0.12)" : "hsl(var(--surface-2))",

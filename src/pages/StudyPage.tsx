@@ -5,6 +5,8 @@ import {
   Zap, Brain, CheckCircle2, ArrowLeft, ArrowRight,
 } from "lucide-react";
 import { useDeckStore, DSCategory, Flashcard } from "@/store/useDeckStore";
+import { useSupabaseSync } from "@/hooks/useSupabaseSync";
+import { useAuth } from "@/contexts/AuthContext";
 import { getDueCards } from "@/utils/sm2";
 import { SyntaxBlock } from "@/components/SyntaxBlock";
 
@@ -214,6 +216,8 @@ interface ReviewProps {
 
 function CardReview({ queue, onComplete, onEditCard }: ReviewProps) {
   const { recordReview } = useDeckStore();
+  const { upsertCard } = useSupabaseSync();
+  const { user } = useAuth();
   const [index, setIndex]     = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [results, setResults] = useState<ReviewResult[]>([]);
@@ -247,7 +251,8 @@ function CardReview({ queue, onComplete, onEditCard }: ReviewProps) {
   }
 
   function handleRate(quality: number) {
-    recordReview(card.id, quality);
+    const updated = recordReview(card.id, quality);
+    if (user && updated) upsertCard(updated);
     const newResults = [...results, { cardId: card.id, quality }];
     setResults(newResults);
     advance(newResults);
@@ -776,6 +781,8 @@ type Screen = "setup" | "review" | "complete";
 
 export function StudyPage() {
   const { cards, streak, setActiveNav, addStudySession } = useDeckStore();
+  const { insertSession } = useSupabaseSync();
+  const { user } = useAuth();
   const [screen, setScreen]   = useState<Screen>("setup");
   const [queue, setQueue]     = useState<Flashcard[]>([]);
   const [results, setResults] = useState<ReviewResult[]>([]);
@@ -793,12 +800,14 @@ export function StudyPage() {
     setElapsed(secs);
     const total   = r.length;
     const correct = r.filter((x) => x.quality >= 3).length;
-    addStudySession({
+    const session = {
       date: new Date().toISOString(),
       reviewed: total,
       accuracy: total > 0 ? Math.round((correct / total) * 100) : 0,
       durationSec: secs,
-    });
+    };
+    addStudySession(session);
+    if (user) insertSession(session);
     setScreen("complete");
   }
 
