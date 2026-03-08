@@ -381,26 +381,26 @@ function CardPreview({
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center gap-2">
-        <Eye size={14} style={{ color: "hsl(var(--primary))" }} />
-        <h2 className="text-sm font-semibold" style={{ color: "hsl(var(--foreground))" }}>
-          Live Preview
-        </h2>
-        {!isEmpty && (
-          <button
-            type="button"
-            onClick={() => setFlipped((f) => !f)}
-            className="ml-auto text-xs px-2.5 py-1 rounded-md transition-all duration-200"
-            style={{
-              background: "hsl(var(--surface-2))",
-              color: "hsl(var(--muted-foreground))",
-              border: "1px solid hsl(var(--border))",
-            }}
-          >
-            {flipped ? "Show front" : "Show back"}
-          </button>
-        )}
-      </div>
+        <div className="flex items-center gap-2">
+          <Eye size={14} style={{ color: "hsl(var(--primary))" }} />
+          <h2 className="text-sm font-semibold" style={{ color: "hsl(var(--foreground))" }}>
+            {t("add_preview", lang)}
+          </h2>
+          {!isEmpty && (
+            <button
+              type="button"
+              onClick={() => setFlipped((f) => !f)}
+              className="ml-auto text-xs px-2.5 py-1 rounded-md transition-all duration-200"
+              style={{
+                background: "hsl(var(--surface-2))",
+                color: "hsl(var(--muted-foreground))",
+                border: "1px solid hsl(var(--border))",
+              }}
+            >
+              {flipped ? t("add_preview_show_front", lang) : t("add_preview_show_back", lang)}
+            </button>
+          )}
+        </div>
 
       <div
         className="ds-card p-5 min-h-36 transition-all duration-200"
