@@ -141,4 +141,19 @@
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.8125rem;
   }
+
+  .animate-page-in {
+    animation: page-slide-in 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+
+@keyframes page-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
