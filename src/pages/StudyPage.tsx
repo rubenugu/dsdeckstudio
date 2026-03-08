@@ -99,11 +99,11 @@ function SessionSetup({ cards, onStart, onGoToDashboard }: SetupProps) {
             </div>
           </div>
           <h1 className="text-2xl font-semibold" style={{ color: "hsl(var(--foreground))" }}>
-            Start a Study Session
+            {t("study_title", lang)}
           </h1>
           <p className="text-sm" style={{ color: "hsl(var(--muted-foreground))" }}>
             {dueCards.length > 0
-              ? `You have ${dueCards.length} card${dueCards.length !== 1 ? "s" : ""} due for review`
+              ? `${dueCards.length} ${t("study_due_cards", lang)}`
               : "No cards due today — study ahead!"}
           </p>
         </div>
