@@ -513,11 +513,19 @@ with mlflow.start_run():
 
 // ── Store ─────────────────────────────────────────────────────────────────────
 
+export interface StudySession {
+  date: string;        // ISO
+  reviewed: number;
+  accuracy: number;    // 0–100
+  durationSec: number;
+}
+
 interface DeckState {
   cards: Flashcard[];
   streak: number;
   lastStudyDate: string | null;
   activeNav: string;
+  studySessions: StudySession[];
 
   addCard: (
     card: Omit<Flashcard, "id" | "created" | "repetitions" | "easeFactor" | "interval">
@@ -525,6 +533,7 @@ interface DeckState {
   updateCard: (id: string, updates: Partial<Flashcard>) => void;
   deleteCard: (id: string) => void;
   recordReview: (id: string, quality: number) => void;
+  addStudySession: (session: StudySession) => void;
   setActiveNav: (nav: string) => void;
 }
 
