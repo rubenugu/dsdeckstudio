@@ -587,7 +587,7 @@ export const useDeckStore = create<DeckState>()(
             streak: newStreak,
             lastStudyDate: today,
             cards: state.cards.map((c) =>
-              c.id === id ? { ...c, ...sm2(c, quality) } : c
+              c.id === id ? { ...c, ...calculateNextReview(c, quality) } : c
             ),
           };
         }),
