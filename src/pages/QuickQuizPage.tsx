@@ -556,11 +556,12 @@ function QuizQuestion({ questions, lang, onComplete }: QuestionProps) {
 // ─────────────────────────────────────────────────────────────────────────────
 interface ResultsProps {
   results: QuizResult[];
+  lang: Language;
   onRetry: () => void;
   onDashboard: () => void;
 }
 
-function QuizResults({ results, onRetry, onDashboard }: ResultsProps) {
+function QuizResults({ results, lang, onRetry, onDashboard }: ResultsProps) {
   const total    = results.length;
   const correct  = results.filter((r) => r.correct).length;
   const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
