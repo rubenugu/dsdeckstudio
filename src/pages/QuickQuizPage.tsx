@@ -691,7 +691,7 @@ function QuizResults({ results, lang, onRetry, onDashboard }: ResultsProps) {
             style={{ background: "hsl(var(--surface-2))", border: "1px solid hsl(var(--border))", color: "hsl(var(--muted-foreground))" }}
           >
             <LayoutDashboard size={14} />
-            Dashboard
+            {t("quiz_dashboard", lang)}
           </button>
           <button
             onClick={onRetry}
@@ -699,7 +699,7 @@ function QuizResults({ results, lang, onRetry, onDashboard }: ResultsProps) {
             style={{ background: "hsl(var(--warning))", color: "hsl(215 14% 8%)" }}
           >
             <RotateCcw size={14} />
-            Quiz Again
+            {t("quiz_again", lang)}
           </button>
         </div>
       </div>
