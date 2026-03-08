@@ -120,7 +120,7 @@ export function TopBar({ onMenuClick, onSearchOpen }: TopBarProps) {
         >
           <Layers size={12} />
           <span className="font-mono">{cards.length}</span>
-          <span className="opacity-80 hidden sm:inline">cards</span>
+          <span className="opacity-80 hidden sm:inline">{t("total_cards", lang)}</span>
         </div>
 
         {/* User info + logout */}
