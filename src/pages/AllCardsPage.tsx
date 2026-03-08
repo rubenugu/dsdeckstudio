@@ -334,6 +334,7 @@ function CardModal({ card, onClose }: { card: Flashcard; onClose: () => void }) 
 
 export function AllCardsPage() {
   const { cards, setActiveNav } = useDeckStore();
+  const { lang } = useLang();
 
   const [search, setSearch] = useState("");
   const [selectedCats, setSelectedCats] = useState<Set<DSCategory>>(new Set());

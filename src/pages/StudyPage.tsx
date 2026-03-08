@@ -65,6 +65,7 @@ interface SetupProps {
 function SessionSetup({ cards, onStart, onGoToDashboard }: SetupProps) {
   const dueCards = getDueCards(cards);
   const [mode, setMode] = useState<StudyMode>(dueCards.length > 0 ? "due" : "all");
+  const { lang } = useLang();
 
   const categories = Array.from(new Set(cards.map((c) => c.category))) as DSCategory[];
 
