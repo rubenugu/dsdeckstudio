@@ -1,0 +1,16 @@
+{
+  "name": "DS Deck",
+  "short_name": "DS Deck",
+  "description": "Spaced-repetition flashcards for data scientists",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0d1117",
+  "theme_color": "#0d1117",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64",
+      "type": "image/x-icon"
+    }
+  ]
+}
