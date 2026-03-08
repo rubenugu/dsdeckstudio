@@ -664,7 +664,7 @@ function SessionComplete({ results, queue, elapsedSeconds, streak, onStudyAgain,
             {accuracy >= 80 ? "🏆" : accuracy >= 50 ? "💪" : "📖"}
           </div>
           <h2 className="text-2xl font-semibold" style={{ color: "hsl(var(--foreground))" }}>
-            Session Complete!
+            {t("study_complete_title", lang)}
           </h2>
           <p className="text-sm" style={{ color: "hsl(var(--muted-foreground))" }}>
             {accuracy >= 80 ? "Excellent work! You're mastering this material." : accuracy >= 50 ? "Good session. Keep up the practice." : "Keep going — repetition builds mastery."}
