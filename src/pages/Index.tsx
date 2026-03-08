@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useDeckStore } from "@/store/useDeckStore";
+import { useAuth } from "@/contexts/AuthContext";
+import { useSupabaseSync } from "@/hooks/useSupabaseSync";
 import { TopBar } from "@/components/TopBar";
 import { Sidebar } from "@/components/Sidebar";
 import { CommandPalette } from "@/components/CommandPalette";
@@ -12,6 +14,7 @@ import { AllCardsPage } from "./AllCardsPage";
 import { AddCardPage } from "./AddCardPage";
 import { SettingsPage } from "./SettingsPage";
 import { QuickQuizPage } from "./QuickQuizPage";
+import { AuthPage } from "./AuthPage";
 
 const PAGE_COMPONENTS: Record<string, React.FC> = {
   dashboard:    DashboardPage,
@@ -23,15 +26,12 @@ const PAGE_COMPONENTS: Record<string, React.FC> = {
 };
 
 function AnimatedPage({ navKey }: { navKey: string }) {
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible]   = useState(false);
   const [renderKey, setRenderKey] = useState(navKey);
 
   useEffect(() => {
     setVisible(false);
-    const t = setTimeout(() => {
-      setRenderKey(navKey);
-      setVisible(true);
-    }, 80);
+    const t = setTimeout(() => { setRenderKey(navKey); setVisible(true); }, 80);
     return () => clearTimeout(t);
   }, [navKey]);
 
@@ -53,8 +53,25 @@ function AnimatedPage({ navKey }: { navKey: string }) {
   );
 }
 
+/** Keeps Supabase in sync and persists streak/settings changes */
+function SyncLayer() {
+  const { user } = useAuth();
+  const store = useDeckStore();
+  const { upsertSettings } = useSupabaseSync();
+
+  // Persist streak changes to Supabase
+  useEffect(() => {
+    if (!user) return;
+    upsertSettings({ streak: store.streak, lastStudyDate: store.lastStudyDate });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [store.streak]);
+
+  return null;
+}
+
 const Index = () => {
   const { activeNav } = useDeckStore();
+  const { user, loading } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
 
@@ -76,11 +93,32 @@ const Index = () => {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
+  // Loading state
+  if (loading) {
+    return (
+      <div
+        className="min-h-screen flex items-center justify-center"
+        style={{ background: "hsl(var(--background))" }}
+      >
+        <div className="flex items-center gap-2 text-sm" style={{ color: "hsl(var(--muted-foreground))" }}>
+          <div className="w-4 h-4 border-2 rounded-full animate-spin" style={{ borderColor: "hsl(var(--primary))", borderTopColor: "transparent" }} />
+          Loading…
+        </div>
+      </div>
+    );
+  }
+
+  // Not logged in → show auth page
+  if (!user) {
+    return <AuthPage />;
+  }
+
   return (
     <div
       className="flex flex-col h-screen overflow-hidden"
       style={{ background: "hsl(var(--background))" }}
     >
+      <SyncLayer />
       <TopBar
         onMenuClick={() => setMobileOpen(true)}
         onSearchOpen={() => setSearchOpen(true)}
