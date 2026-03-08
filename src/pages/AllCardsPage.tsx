@@ -34,10 +34,17 @@ const SORT_OPTIONS: { key: SortKey; label: string }[] = [
 
 // ── Card preview ─────────────────────────────────────────────────────────────
 
+function cardStatus(card: Flashcard): "mastered" | "needs-practice" | null {
+  if (card.interval > 21 && (card.quality ?? 0) >= 4) return "mastered";
+  if ((card.quality ?? 5) <= 2 && card.repetitions >= 3) return "needs-practice";
+  return null;
+}
+
 function CardPreview({ card, onClick }: { card: Flashcard; onClick: () => void }) {
   const color = CATEGORY_COLORS[card.category];
   const diffColor = DIFF_COLORS[card.difficulty];
   const isDue = !card.nextReview || new Date(card.nextReview).getTime() <= Date.now();
+  const status = cardStatus(card);
 
   return (
     <button
@@ -49,16 +56,18 @@ function CardPreview({ card, onClick }: { card: Flashcard; onClick: () => void }
       <div className="flex items-start justify-between gap-2">
         <span
           className="text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0"
-          style={{
-            background: `${color}18`,
-            color,
-            border: `1px solid ${color}40`,
-          }}
+          style={{ background: `${color}18`, color, border: `1px solid ${color}40` }}
         >
           {card.category}
         </span>
-        <div className="flex items-center gap-1.5 shrink-0">
-          {isDue && (
+        <div className="flex items-center gap-1.5 shrink-0 flex-wrap justify-end">
+          {status === "mastered" && (
+            <span className="badge-mastered">✨ Mastered</span>
+          )}
+          {status === "needs-practice" && (
+            <span className="badge-needs-practice">🔴 Needs practice</span>
+          )}
+          {isDue && !status && (
             <span
               className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full"
               style={{ background: "#d2992218", color: "#d29922", border: "1px solid #d2992240" }}
@@ -69,7 +78,6 @@ function CardPreview({ card, onClick }: { card: Flashcard; onClick: () => void }
           {card.codeExample && (
             <Code size={12} style={{ color: "#58a6ff", opacity: 0.7 }} />
           )}
-          {/* Difficulty dot */}
           <span
             className="w-2 h-2 rounded-full shrink-0"
             style={{ background: diffColor }}
@@ -99,28 +107,19 @@ function CardPreview({ card, onClick }: { card: Flashcard; onClick: () => void }
             <span
               key={tag}
               className="text-[10px] px-1.5 py-0.5 rounded font-mono"
-              style={{
-                background: "hsl(var(--surface-2))",
-                color: "hsl(var(--muted-foreground))",
-              }}
+              style={{ background: "hsl(var(--surface-2))", color: "hsl(var(--muted-foreground))" }}
             >
               #{tag}
             </span>
           ))}
           {card.tags.length > 3 && (
-            <span
-              className="text-[10px] px-1 py-0.5"
-              style={{ color: "hsl(var(--muted-foreground))" }}
-            >
+            <span className="text-[10px] px-1 py-0.5" style={{ color: "hsl(var(--muted-foreground))" }}>
               +{card.tags.length - 3}
             </span>
           )}
         </div>
         {card.repetitions > 0 && (
-          <span
-            className="text-[10px] font-mono shrink-0"
-            style={{ color: "hsl(var(--muted-foreground))" }}
-          >
+          <span className="text-[10px] font-mono shrink-0" style={{ color: "hsl(var(--muted-foreground))" }}>
             ×{card.repetitions}
           </span>
         )}
