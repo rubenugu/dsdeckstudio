@@ -832,13 +832,13 @@ export function AddCardPage() {
                 style={{ background: "hsl(var(--surface))", border: "1px solid hsl(var(--border))" }}
               >
                 <p className="font-medium" style={{ color: "hsl(var(--foreground))" }}>
-                  SM-2 defaults
+                  {t("add_sm2_defaults", lang)}
                 </p>
-                {[
-                  ["Ease Factor", "2.50"],
-                  ["First interval", "1 day"],
-                  ["Repetitions", "0"],
-                ].map(([k, v]) => (
+                {([
+                  [t("add_sm2_ease", lang),     "2.50"],
+                  [t("add_sm2_interval", lang),  t("add_sm2_interval_val", lang)],
+                  [t("add_sm2_reps", lang),      "0"],
+                ] as [string, string][]).map(([k, v]) => (
                   <div key={k} className="flex justify-between">
                     <span style={{ color: "hsl(var(--muted-foreground))" }}>{k}</span>
                     <span className="font-mono" style={{ color: "hsl(var(--primary))" }}>{v}</span>
