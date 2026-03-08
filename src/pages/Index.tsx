@@ -1,11 +1,37 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useDeckStore } from "@/store/useDeckStore";
+import { TopBar } from "@/components/TopBar";
+import { Sidebar } from "@/components/Sidebar";
+import { DashboardPage } from "./DashboardPage";
+import { StudyPage } from "./StudyPage";
+import { AllCardsPage } from "./AllCardsPage";
+import { AddCardPage } from "./AddCardPage";
+import { SettingsPage } from "./SettingsPage";
+
+const PAGE_MAP: Record<string, React.ReactNode> = {
+  dashboard: <DashboardPage />,
+  study: <StudyPage />,
+  "all-cards": <AllCardsPage />,
+  "add-card": <AddCardPage />,
+  settings: <SettingsPage />,
+};
 
 const Index = () => {
+  const { activeNav } = useDeckStore();
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
+    <div
+      className="flex flex-col h-screen overflow-hidden"
+      style={{ background: "hsl(var(--background))" }}
+    >
+      {/* Top bar */}
+      <TopBar />
+
+      {/* Body */}
+      <div className="flex flex-1 overflow-hidden">
+        <Sidebar />
+        <main className="flex-1 overflow-y-auto">
+          {PAGE_MAP[activeNav] ?? <DashboardPage />}
+        </main>
       </div>
     </div>
   );
