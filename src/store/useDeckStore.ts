@@ -112,6 +112,8 @@ interface DeckState {
   recordReview:(id: string, quality: number) => Flashcard | null;
   addStudySession: (session: StudySession) => void;
   setActiveNav:(nav: string) => void;
+  resetStreak: () => void;
+  resetReviewSchedule: () => Flashcard[];
 
   // Sync helpers (called by useSupabaseSync)
   setCards:        (cards: Flashcard[]) => void;
