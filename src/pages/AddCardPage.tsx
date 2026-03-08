@@ -294,19 +294,19 @@ function AISuggest({
 
   return (
     <div ref={ref} className="relative">
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all duration-200 whitespace-nowrap"
-        style={{
-          background: "hsl(212 100% 68% / 0.1)",
-          color: "#58a6ff",
-          border: "1px solid hsl(212 100% 68% / 0.25)",
-        }}
-      >
-        <Sparkles size={12} />
-        AI Suggest
-        <ChevronDown size={11} style={{ transform: open ? "rotate(180deg)" : "none", transition: "transform 200ms" }} />
+        <button
+          type="button"
+          onClick={() => setOpen((o) => !o)}
+          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all duration-200 whitespace-nowrap"
+          style={{
+            background: "hsl(212 100% 68% / 0.1)",
+            color: "#58a6ff",
+            border: "1px solid hsl(212 100% 68% / 0.25)",
+          }}
+        >
+          <Sparkles size={12} />
+          {t("add_ai_suggest", lang)}
+          <ChevronDown size={11} style={{ transform: open ? "rotate(180deg)" : "none", transition: "transform 200ms" }} />
       </button>
 
       {open && (
