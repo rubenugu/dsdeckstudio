@@ -589,7 +589,7 @@ function QuizResults({ results, lang, onRetry, onDashboard }: ResultsProps) {
           <div className="text-5xl mb-2">{grade.emoji}</div>
           <h2 className="text-2xl font-semibold" style={{ color: "hsl(var(--foreground))" }}>{grade.label}</h2>
           <p className="text-sm" style={{ color: "hsl(var(--muted-foreground))" }}>
-            {accuracy >= 70 ? "You're ready for that interview!" : "Review the missed topics and try again."}
+            {accuracy >= 70 ? t("quiz_grade_ready", lang) : t("quiz_grade_review", lang)}
           </p>
         </div>
 
