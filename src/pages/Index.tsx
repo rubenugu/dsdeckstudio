@@ -16,43 +16,59 @@ const PAGE_COMPONENTS: Record<string, React.FC> = {
   settings: SettingsPage,
 };
 
+function AnimatedPage({ navKey }: { navKey: string }) {
+  const [visible, setVisible] = useState(false);
+  const [renderKey, setRenderKey] = useState(navKey);
+
+  useEffect(() => {
+    // Fade out → swap content → fade in
+    setVisible(false);
+    const t = setTimeout(() => {
+      setRenderKey(navKey);
+      setVisible(true);
+    }, 80);
+    return () => clearTimeout(t);
+  }, [navKey]);
+
+  useEffect(() => {
+    setVisible(true);
+  }, []);
+
+  const PageComponent = PAGE_COMPONENTS[renderKey] ?? DashboardPage;
+
+  return (
+    <div
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translateX(0)" : "translateX(12px)",
+        transition: "opacity 0.18s ease, transform 0.22s cubic-bezier(0.22,1,0.36,1)",
+        height: "100%",
+      }}
+    >
+      <PageComponent />
+    </div>
+  );
+}
+
 const Index = () => {
   const { activeNav } = useDeckStore();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [animKey, setAnimKey] = useState(activeNav);
-  const prevNav = useRef(activeNav);
-
-  useEffect(() => {
-    if (activeNav !== prevNav.current) {
-      prevNav.current = activeNav;
-      setAnimKey(activeNav);
-    }
-  }, [activeNav]);
-
-  const PageComponent = PAGE_COMPONENTS[activeNav] ?? DashboardPage;
 
   return (
     <div
       className="flex flex-col h-screen overflow-hidden"
       style={{ background: "hsl(var(--background))" }}
     >
-      {/* Top bar */}
       <TopBar onMenuClick={() => setMobileOpen(true)} />
 
-      {/* Body */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Desktop sidebar (always visible) */}
         <Sidebar
           mobileOpen={mobileOpen}
           onMobileClose={() => setMobileOpen(false)}
         />
 
-        {/* Main content with slide-in key animation */}
-        <main
-          key={animKey}
-          className="flex-1 overflow-y-auto animate-page-in"
-        >
-          <PageComponent />
+        <main className="flex-1 overflow-y-auto">
+          <AnimatedPage navKey={activeNav} />
         </main>
       </div>
     </div>
