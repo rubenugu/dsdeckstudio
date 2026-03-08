@@ -251,7 +251,8 @@ function CardReview({ queue, onComplete, onEditCard }: ReviewProps) {
   }
 
   function handleRate(quality: number) {
-    recordReview(card.id, quality);
+    const updated = recordReview(card.id, quality);
+    if (user && updated) upsertCard(updated);
     const newResults = [...results, { cardId: card.id, quality }];
     setResults(newResults);
     advance(newResults);
