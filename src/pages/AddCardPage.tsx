@@ -692,7 +692,7 @@ export function AddCardPage() {
                   <span style={{ color: "#ff6e6e", marginLeft: 2 }}>*</span>
                 </label>
                 <div className="flex items-center gap-2">
-                  <AISuggest category={category} onSelect={(s) => setFront(s)} />
+                  <AISuggest category={category} onSelect={(s) => setFront(s)} lang={lang} />
                 </div>
               </div>
               <textarea
