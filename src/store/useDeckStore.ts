@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { calculateNextReview } from "@/utils/sm2";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -33,44 +34,6 @@ export interface Flashcard {
   easeFactor: number;      // SM-2 factor (starts at 2.5)
   interval: number;        // days until next review
   quality?: number;        // last review quality 0-5
-}
-
-// ── SM-2 helper ───────────────────────────────────────────────────────────────
-
-export function sm2(card: Flashcard, quality: number): Partial<Flashcard> {
-  // quality: 0-5  (0-2 = wrong, 3-5 = correct)
-  const q = Math.max(0, Math.min(5, quality));
-  const now = new Date();
-
-  let { easeFactor, interval, repetitions } = card;
-
-  if (q < 3) {
-    // Wrong — reset
-    repetitions = 0;
-    interval = 1;
-  } else {
-    // Correct
-    if (repetitions === 0) interval = 1;
-    else if (repetitions === 1) interval = 6;
-    else interval = Math.round(interval * easeFactor);
-
-    easeFactor = Math.max(
-      1.3,
-      easeFactor + 0.1 - (5 - q) * (0.08 + (5 - q) * 0.02)
-    );
-    repetitions += 1;
-  }
-
-  const nextReview = new Date(now.getTime() + interval * 86400000);
-
-  return {
-    easeFactor,
-    interval,
-    repetitions,
-    quality: q,
-    lastReviewed: now.toISOString(),
-    nextReview: nextReview.toISOString(),
-  };
 }
 
 // ── 20 Seed cards ─────────────────────────────────────────────────────────────
@@ -624,7 +587,7 @@ export const useDeckStore = create<DeckState>()(
             streak: newStreak,
             lastStudyDate: today,
             cards: state.cards.map((c) =>
-              c.id === id ? { ...c, ...sm2(c, quality) } : c
+              c.id === id ? { ...c, ...calculateNextReview(c, quality) } : c
             ),
           };
         }),
