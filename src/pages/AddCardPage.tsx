@@ -406,36 +406,36 @@ function CardPreview({
         className="ds-card p-5 min-h-36 transition-all duration-200"
         style={isEmpty ? { opacity: 0.4 } : {}}
       >
-        {isEmpty ? (
-          <div className="flex items-center justify-center h-24">
-            <p className="text-sm" style={{ color: "hsl(var(--muted-foreground))" }}>
-              Fill in the form to see a preview
-            </p>
-          </div>
-        ) : !flipped ? (
-          <div className="space-y-3 animate-fade-in">
-            {/* Badges */}
-            <div className="flex items-center gap-2 flex-wrap">
-              <span
-                className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full"
-                style={{ background: `${color}18`, color, border: `1px solid ${color}40` }}
-              >
-                {category}
-              </span>
-              <span
-                className="text-[10px] px-2 py-0.5 rounded-full capitalize"
-                style={{
-                  background: `${diffMeta.color}18`,
-                  color: diffMeta.color,
-                  border: `1px solid ${diffMeta.color}40`,
-                }}
-              >
-                ● {difficulty}
-              </span>
+          {isEmpty ? (
+            <div className="flex items-center justify-center h-24">
+              <p className="text-sm" style={{ color: "hsl(var(--muted-foreground))" }}>
+                {t("add_preview_empty", lang)}
+              </p>
             </div>
-            <p className="text-[10px] uppercase tracking-widest" style={{ color: "hsl(var(--muted-foreground))" }}>
-              Question
-            </p>
+          ) : !flipped ? (
+            <div className="space-y-3 animate-fade-in">
+              {/* Badges */}
+              <div className="flex items-center gap-2 flex-wrap">
+                <span
+                  className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full"
+                  style={{ background: `${color}18`, color, border: `1px solid ${color}40` }}
+                >
+                  {category}
+                </span>
+                <span
+                  className="text-[10px] px-2 py-0.5 rounded-full capitalize"
+                  style={{
+                    background: `${diffMeta.color}18`,
+                    color: diffMeta.color,
+                    border: `1px solid ${diffMeta.color}40`,
+                  }}
+                >
+                  ● {difficulty}
+                </span>
+              </div>
+              <p className="text-[10px] uppercase tracking-widest" style={{ color: "hsl(var(--muted-foreground))" }}>
+                {t("add_preview_front", lang)}
+              </p>
             <p className="text-sm leading-relaxed" style={{ color: "hsl(var(--foreground))" }}>
               {front || <span style={{ opacity: 0.4 }}>Your question will appear here…</span>}
             </p>
