@@ -88,10 +88,15 @@ export function SettingsPage() {
         const json = JSON.parse(ev.target?.result as string);
         const imported = json.cards ?? json;
         if (!Array.isArray(imported)) throw new Error("Invalid format");
+        let count = 0;
         imported.forEach((c: any) => {
-          if (c.front && c.back) store.addCard(c);
+          if (c.front && c.back) {
+            const newCard = store.addCard(c);
+            upsertCard(newCard);
+            count++;
+          }
         });
-        toast({ title: `✅ Imported ${imported.length} cards!`, duration: 4000 });
+        toast({ title: `✅ Imported ${count} cards!`, duration: 4000 });
       } catch {
         toast({ title: "❌ Import failed", description: "Invalid JSON format.", duration: 4000 });
       }
