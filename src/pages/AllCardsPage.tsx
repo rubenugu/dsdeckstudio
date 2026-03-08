@@ -425,7 +425,7 @@ export function AllCardsPage() {
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div>
           <h1 className="text-xl font-semibold" style={{ color: "hsl(var(--foreground))" }}>
-            All Cards
+            {t("cards_title", lang)}
           </h1>
           <p className="text-sm mt-0.5" style={{ color: "hsl(var(--muted-foreground))" }}>
             {cards.length} total · {filtered.length} shown
