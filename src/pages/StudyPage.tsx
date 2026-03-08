@@ -5,6 +5,8 @@ import {
   Zap, Brain, CheckCircle2, ArrowLeft, ArrowRight,
 } from "lucide-react";
 import { useDeckStore, DSCategory, Flashcard } from "@/store/useDeckStore";
+import { useSupabaseSync } from "@/hooks/useSupabaseSync";
+import { useAuth } from "@/contexts/AuthContext";
 import { getDueCards } from "@/utils/sm2";
 import { SyntaxBlock } from "@/components/SyntaxBlock";
 
