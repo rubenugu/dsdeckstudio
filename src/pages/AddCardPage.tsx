@@ -14,10 +14,10 @@ import { SyntaxBlock } from "@/components/SyntaxBlock";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-const DIFF_META: Record<Difficulty, { color: string; label: string; desc: string }> = {
-  beginner:     { color: "#3fb950", label: "Beginner",     desc: "Core concept" },
-  intermediate: { color: "#d29922", label: "Intermediate", desc: "Needs practice" },
-  advanced:     { color: "#ff6e6e", label: "Advanced",     desc: "Deep mastery" },
+const DIFF_META: Record<Difficulty, { color: string }> = {
+  beginner:     { color: "#3fb950" },
+  intermediate: { color: "#d29922" },
+  advanced:     { color: "#ff6e6e" },
 };
 
 const AI_SUGGESTIONS: Record<DSCategory, string[]> = {
