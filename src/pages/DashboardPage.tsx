@@ -320,7 +320,7 @@ export function DashboardPage() {
         <div className="ds-card p-5">
           <h2 className="text-sm font-semibold mb-4 flex items-center gap-2" style={{ color: "hsl(var(--foreground))" }}>
             <Activity size={14} style={{ color: "hsl(var(--primary))" }} />
-            Category Mastery
+            {t("chart_category", lang)}
           </h2>
           <div className="space-y-3">
             {categoryStats.map(({ name, mastered: m, total, pct, color }) => (
