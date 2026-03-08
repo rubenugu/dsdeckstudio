@@ -275,9 +275,11 @@ df.head()"
 function AISuggest({
   category,
   onSelect,
+  lang,
 }: {
   category: DSCategory;
   onSelect: (s: string) => void;
+  lang: import("@/i18n/translations").Language;
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
