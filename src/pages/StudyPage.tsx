@@ -763,7 +763,7 @@ function SessionComplete({ results, queue, elapsedSeconds, streak, onStudyAgain,
             }}
           >
             <LayoutDashboard size={14} />
-            Dashboard
+            {t("study_go_dashboard", lang)}
           </button>
           <button
             onClick={onStudyAgain}
@@ -771,7 +771,7 @@ function SessionComplete({ results, queue, elapsedSeconds, streak, onStudyAgain,
             style={{ background: "hsl(var(--primary))", color: "hsl(var(--primary-foreground))" }}
           >
             <RotateCcw size={14} />
-            Study Again
+            {t("study_again", lang)}
           </button>
         </div>
       </div>

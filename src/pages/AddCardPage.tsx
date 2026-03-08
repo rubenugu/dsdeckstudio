@@ -482,6 +482,7 @@ export function AddCardPage() {
   const { addCard } = useDeckStore();
   const { upsertCard } = useSupabaseSync();
   const { user } = useAuth();
+  const { lang } = useLang();
 
   const [front, setFront] = useState("");
   const [back, setBack] = useState("");
