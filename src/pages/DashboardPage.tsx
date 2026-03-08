@@ -1,12 +1,8 @@
 import React, { useMemo } from "react";
 import { useDeckStore } from "@/store/useDeckStore";
-import {
-  Flame,
-  BookMarked,
-  Clock,
-  CalendarDays,
-  Activity,
-} from "lucide-react";
+import { useLang } from "@/contexts/LanguageContext";
+import { t } from "@/i18n/translations";
+import { Flame, BookMarked, Clock, CalendarDays, Activity } from "lucide-react";
 import {
   BarChart,
   Bar,
