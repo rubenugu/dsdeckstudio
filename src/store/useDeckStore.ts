@@ -192,6 +192,22 @@ export const useDeckStore = create<DeckState>()(
         })),
 
       setActiveNav: (nav) => set({ activeNav: nav }),
+
+      resetStreak: () => set({ streak: 0, lastStudyDate: null }),
+
+      resetReviewSchedule: () => {
+        const reset = get().cards.map((c) => ({
+          ...c,
+          repetitions:  0,
+          easeFactor:   2.5,
+          interval:     0,
+          lastReviewed: undefined,
+          nextReview:   undefined,
+          quality:      undefined,
+        }));
+        set({ cards: reset });
+        return reset;
+      },
     }),
     { name: "dsdeck_cards" }
   )
