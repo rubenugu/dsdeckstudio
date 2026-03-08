@@ -43,6 +43,7 @@ export function SettingsPage() {
   const store = useDeckStore();
   const { theme, setTheme } = useTheme();
   const { upsertSettings, deleteCard: deleteCardRemote } = useSupabaseSync();
+  const { lang, setLang } = useLang();
 
   const totalReps    = cards.reduce((s, c) => s + c.repetitions, 0);
   const avgEF        = cards.length > 0
