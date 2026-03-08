@@ -214,7 +214,7 @@ export function SettingsPage() {
                 border:     "1px solid hsl(var(--primary) / 0.3)",
               }}
             >
-              <Download size={14} />
+              <FileDown size={14} />
               Export JSON
             </button>
             <label
