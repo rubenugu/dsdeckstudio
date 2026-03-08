@@ -486,6 +486,12 @@ export function AddCardPage() {
   const { user } = useAuth();
   const { lang } = useLang();
 
+  const DIFF_LABELS: Record<Difficulty, { label: string; desc: string }> = {
+    beginner:     { label: t("difficulty_beginner", lang),     desc: t("difficulty_beginner_desc", lang) },
+    intermediate: { label: t("difficulty_intermediate", lang), desc: t("difficulty_intermediate_desc", lang) },
+    advanced:     { label: t("difficulty_advanced", lang),     desc: t("difficulty_advanced_desc", lang) },
+  };
+
   const [front, setFront] = useState("");
   const [back, setBack] = useState("");
   const [codeExample, setCodeExample] = useState("");
