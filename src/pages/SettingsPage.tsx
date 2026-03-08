@@ -42,7 +42,7 @@ export function SettingsPage() {
   const { cards, studySessions } = useDeckStore();
   const store = useDeckStore();
   const { theme, setTheme } = useTheme();
-  const { upsertSettings, deleteCard: deleteCardRemote } = useSupabaseSync();
+  const { upsertSettings, deleteCard: deleteCardRemote, upsertCard } = useSupabaseSync();
   const { lang, setLang } = useLang();
 
   const totalReps    = cards.reduce((s, c) => s + c.repetitions, 0);
