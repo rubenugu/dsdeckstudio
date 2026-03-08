@@ -135,6 +135,7 @@ function CardModal({ card, onClose }: { card: Flashcard; onClose: () => void }) 
   const diffColor = DIFF_COLORS[card.difficulty];
   const isDue = !card.nextReview || new Date(card.nextReview).getTime() <= Date.now();
   const { deleteCard, setActiveNav } = useDeckStore();
+  const { deleteCard: deleteCardRemote } = useSupabaseSync();
 
   function formatDate(iso?: string) {
     if (!iso) return "—";
