@@ -14,7 +14,114 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      flashcards: {
+        Row: {
+          back: string
+          category: string
+          code_example: string | null
+          created_at: string
+          difficulty: string
+          ease_factor: number
+          front: string
+          id: string
+          interval_days: number
+          last_reviewed: string | null
+          next_review: string | null
+          quality: number | null
+          repetitions: number
+          subcategory: string
+          tags: string[]
+          user_id: string
+        }
+        Insert: {
+          back: string
+          category: string
+          code_example?: string | null
+          created_at?: string
+          difficulty?: string
+          ease_factor?: number
+          front: string
+          id?: string
+          interval_days?: number
+          last_reviewed?: string | null
+          next_review?: string | null
+          quality?: number | null
+          repetitions?: number
+          subcategory?: string
+          tags?: string[]
+          user_id: string
+        }
+        Update: {
+          back?: string
+          category?: string
+          code_example?: string | null
+          created_at?: string
+          difficulty?: string
+          ease_factor?: number
+          front?: string
+          id?: string
+          interval_days?: number
+          last_reviewed?: string | null
+          next_review?: string | null
+          quality?: number | null
+          repetitions?: number
+          subcategory?: string
+          tags?: string[]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      study_sessions: {
+        Row: {
+          accuracy: number
+          cards_reviewed: number
+          date: string
+          duration_minutes: number
+          id: string
+          user_id: string
+        }
+        Insert: {
+          accuracy?: number
+          cards_reviewed?: number
+          date?: string
+          duration_minutes?: number
+          id?: string
+          user_id: string
+        }
+        Update: {
+          accuracy?: number
+          cards_reviewed?: number
+          date?: string
+          duration_minutes?: number
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_settings: {
+        Row: {
+          last_study_date: string | null
+          streak: number
+          theme: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          last_study_date?: string | null
+          streak?: number
+          theme?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          last_study_date?: string | null
+          streak?: number
+          theme?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
