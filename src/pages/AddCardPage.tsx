@@ -1,39 +1,45 @@
 import { useState } from "react";
-import { useDeckStore, type Category, type Difficulty } from "@/store/useDeckStore";
-import { PlusCircle, CheckCircle2 } from "lucide-react";
+import { useDeckStore, DS_CATEGORIES, type DSCategory, type Difficulty } from "@/store/useDeckStore";
+import { PlusCircle, CheckCircle2, Code } from "lucide-react";
 
-const CATEGORIES: Category[] = ["Python", "Statistics", "ML", "Deep Learning", "SQL", "Data Engineering", "Other"];
-const DIFFICULTIES: Difficulty[] = ["easy", "medium", "hard"];
+const DIFFICULTIES: Difficulty[] = ["beginner", "intermediate", "advanced"];
 
 const diffColor: Record<Difficulty, string> = {
-  easy: "hsl(var(--success))",
-  medium: "hsl(var(--warning))",
-  hard: "hsl(var(--destructive))",
+  beginner: "hsl(var(--success))",
+  intermediate: "hsl(var(--warning))",
+  advanced: "hsl(var(--destructive))",
 };
 
 export function AddCardPage() {
   const { addCard } = useDeckStore();
-  const [question, setQuestion] = useState("");
-  const [answer, setAnswer] = useState("");
-  const [category, setCategory] = useState<Category>("Python");
-  const [difficulty, setDifficulty] = useState<Difficulty>("medium");
+  const [front, setFront] = useState("");
+  const [back, setBack] = useState("");
+  const [codeExample, setCodeExample] = useState("");
+  const [showCode, setShowCode] = useState(false);
+  const [category, setCategory] = useState<DSCategory>("Machine Learning");
+  const [subcategory, setSubcategory] = useState("");
+  const [difficulty, setDifficulty] = useState<Difficulty>("intermediate");
   const [tags, setTags] = useState("");
   const [saved, setSaved] = useState(false);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!question.trim() || !answer.trim()) return;
+    if (!front.trim() || !back.trim()) return;
     addCard({
-      question: question.trim(),
-      answer: answer.trim(),
+      front: front.trim(),
+      back: back.trim(),
+      codeExample: codeExample.trim() || undefined,
       category,
+      subcategory: subcategory.trim() || category,
       difficulty,
       tags: tags.split(",").map((t) => t.trim()).filter(Boolean),
     });
-    setQuestion("");
-    setAnswer("");
+    setFront("");
+    setBack("");
+    setCodeExample("");
+    setSubcategory("");
     setTags("");
-    setDifficulty("medium");
+    setShowCode(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
   }
@@ -44,6 +50,8 @@ export function AddCardPage() {
     textTransform: "uppercase" as const,
     letterSpacing: "0.06em",
     fontWeight: 600,
+    display: "block" as const,
+    marginBottom: "6px",
   };
 
   const inputStyle = {
@@ -58,6 +66,11 @@ export function AddCardPage() {
     padding: "10px 12px",
   };
 
+  const focus = (e: React.FocusEvent<HTMLElement>) =>
+    ((e.currentTarget as HTMLElement).style.borderColor = "hsl(var(--primary))");
+  const blur = (e: React.FocusEvent<HTMLElement>) =>
+    ((e.currentTarget as HTMLElement).style.borderColor = "hsl(var(--border))");
+
   return (
     <div className="p-6 animate-fade-in">
       <div className="max-w-xl">
@@ -69,105 +82,153 @@ export function AddCardPage() {
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Question */}
-          <div className="space-y-1.5">
-            <label style={labelStyle}>Question</label>
+          {/* Front */}
+          <div>
+            <label style={labelStyle}>Front — Question / Concept</label>
             <textarea
-              rows={3}
-              value={question}
-              onChange={(e) => setQuestion(e.target.value)}
+              rows={2}
+              value={front}
+              onChange={(e) => setFront(e.target.value)}
               placeholder="e.g. What is the curse of dimensionality?"
               style={{ ...inputStyle, resize: "vertical", fontFamily: "inherit" }}
-              onFocus={(e) => (e.currentTarget.style.borderColor = "hsl(var(--primary))")}
-              onBlur={(e) => (e.currentTarget.style.borderColor = "hsl(var(--border))")}
+              onFocus={focus}
+              onBlur={blur}
             />
           </div>
 
-          {/* Answer */}
-          <div className="space-y-1.5">
-            <label style={labelStyle}>Answer</label>
+          {/* Back */}
+          <div>
+            <label style={labelStyle}>Back — Answer / Explanation</label>
             <textarea
               rows={5}
-              value={answer}
-              onChange={(e) => setAnswer(e.target.value)}
-              placeholder="Supports multi-line text and code snippets..."
+              value={back}
+              onChange={(e) => setBack(e.target.value)}
+              placeholder="Detailed answer, formulas, key points…"
               style={{
                 ...inputStyle,
                 resize: "vertical",
                 fontFamily: "JetBrains Mono, monospace",
                 fontSize: "12px",
               }}
-              onFocus={(e) => (e.currentTarget.style.borderColor = "hsl(var(--primary))")}
-              onBlur={(e) => (e.currentTarget.style.borderColor = "hsl(var(--border))")}
+              onFocus={focus}
+              onBlur={blur}
             />
           </div>
 
-          {/* Category + Difficulty */}
+          {/* Code example toggle */}
+          <div>
+            <button
+              type="button"
+              onClick={() => setShowCode((s) => !s)}
+              className="flex items-center gap-2 text-xs transition-all duration-200 mb-3"
+              style={{ color: showCode ? "hsl(var(--primary))" : "hsl(var(--muted-foreground))" }}
+            >
+              <Code size={13} />
+              {showCode ? "Remove code example" : "+ Add Python code example (optional)"}
+            </button>
+            {showCode && (
+              <textarea
+                rows={6}
+                value={codeExample}
+                onChange={(e) => setCodeExample(e.target.value)}
+                placeholder="# Runnable Python snippet…"
+                style={{
+                  ...inputStyle,
+                  fontFamily: "JetBrains Mono, monospace",
+                  fontSize: "12px",
+                  resize: "vertical",
+                  color: "hsl(133, 57%, 70%)",
+                  background: "hsl(215 14% 6%)",
+                }}
+                onFocus={focus}
+                onBlur={blur}
+              />
+            )}
+          </div>
+
+          {/* Category + Subcategory */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1.5">
+            <div>
               <label style={labelStyle}>Category</label>
               <select
                 value={category}
-                onChange={(e) => setCategory(e.target.value as Category)}
+                onChange={(e) => setCategory(e.target.value as DSCategory)}
                 style={{ ...inputStyle, cursor: "pointer" }}
-                onFocus={(e) => (e.currentTarget.style.borderColor = "hsl(var(--primary))")}
-                onBlur={(e) => (e.currentTarget.style.borderColor = "hsl(var(--border))")}
+                onFocus={focus}
+                onBlur={blur}
               >
-                {CATEGORIES.map((c) => (
+                {DS_CATEGORIES.map((c) => (
                   <option key={c} value={c} style={{ background: "hsl(var(--surface))" }}>
                     {c}
                   </option>
                 ))}
               </select>
             </div>
+            <div>
+              <label style={labelStyle}>Subcategory</label>
+              <input
+                value={subcategory}
+                onChange={(e) => setSubcategory(e.target.value)}
+                placeholder="e.g. Hypothesis Testing"
+                style={inputStyle}
+                onFocus={focus}
+                onBlur={blur}
+              />
+            </div>
+          </div>
 
-            <div className="space-y-1.5">
-              <label style={labelStyle}>Difficulty</label>
-              <div className="flex gap-2">
-                {DIFFICULTIES.map((d) => (
-                  <button
-                    key={d}
-                    type="button"
-                    onClick={() => setDifficulty(d)}
-                    className="flex-1 py-2 rounded-md text-xs font-medium capitalize transition-all duration-200"
-                    style={
-                      difficulty === d
-                        ? {
-                            background: `${diffColor[d]}18`,
-                            color: diffColor[d],
-                            border: `1px solid ${diffColor[d]}50`,
-                          }
-                        : {
-                            background: "hsl(var(--surface))",
-                            color: "hsl(var(--muted-foreground))",
-                            border: "1px solid hsl(var(--border))",
-                          }
-                    }
-                  >
-                    {d}
-                  </button>
-                ))}
-              </div>
+          {/* Difficulty */}
+          <div>
+            <label style={labelStyle}>Difficulty</label>
+            <div className="flex gap-2">
+              {DIFFICULTIES.map((d) => (
+                <button
+                  key={d}
+                  type="button"
+                  onClick={() => setDifficulty(d)}
+                  className="flex-1 py-2 rounded-md text-xs font-medium capitalize transition-all duration-200"
+                  style={
+                    difficulty === d
+                      ? {
+                          background: `${diffColor[d]}18`,
+                          color: diffColor[d],
+                          border: `1px solid ${diffColor[d]}50`,
+                        }
+                      : {
+                          background: "hsl(var(--surface))",
+                          color: "hsl(var(--muted-foreground))",
+                          border: "1px solid hsl(var(--border))",
+                        }
+                  }
+                >
+                  {d}
+                </button>
+              ))}
             </div>
           </div>
 
           {/* Tags */}
-          <div className="space-y-1.5">
-            <label style={labelStyle}>Tags <span style={{ color: "hsl(var(--muted-foreground))", fontWeight: 400, textTransform: "none" }}>(comma separated)</span></label>
+          <div>
+            <label style={labelStyle}>
+              Tags{" "}
+              <span style={{ color: "hsl(var(--muted-foreground))", fontWeight: 400, textTransform: "none" }}>
+                (comma separated)
+              </span>
+            </label>
             <input
               value={tags}
               onChange={(e) => setTags(e.target.value)}
               placeholder="e.g. regression, sklearn, numpy"
-              style={{ ...inputStyle }}
-              onFocus={(e) => (e.currentTarget.style.borderColor = "hsl(var(--primary))")}
-              onBlur={(e) => (e.currentTarget.style.borderColor = "hsl(var(--border))")}
+              style={inputStyle}
+              onFocus={focus}
+              onBlur={blur}
             />
           </div>
 
           {/* Submit */}
           <button
             type="submit"
-            disabled={!question.trim() || !answer.trim()}
+            disabled={!front.trim() || !back.trim()}
             className="flex items-center gap-2 px-5 py-2.5 rounded-md text-sm font-medium transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
             style={{
               background: saved ? "hsl(var(--success) / 0.15)" : "hsl(var(--primary) / 0.15)",
@@ -178,15 +239,9 @@ export function AddCardPage() {
             }}
           >
             {saved ? (
-              <>
-                <CheckCircle2 size={15} />
-                Card saved!
-              </>
+              <><CheckCircle2 size={15} /> Card saved!</>
             ) : (
-              <>
-                <PlusCircle size={15} />
-                Add Card
-              </>
+              <><PlusCircle size={15} /> Add Card</>
             )}
           </button>
         </form>

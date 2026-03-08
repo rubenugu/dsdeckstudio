@@ -1,25 +1,23 @@
 import { useState } from "react";
-import { useDeckStore, type Flashcard, type Category } from "@/store/useDeckStore";
-import { Trash2, ChevronDown, ChevronUp, Search } from "lucide-react";
-
-const CATEGORIES: Category[] = ["Python", "Statistics", "ML", "Deep Learning", "SQL", "Data Engineering", "Other"];
+import { useDeckStore, type Flashcard, DS_CATEGORIES } from "@/store/useDeckStore";
+import { Trash2, ChevronDown, ChevronUp, Search, Code } from "lucide-react";
 
 function CardRow({ card }: { card: Flashcard }) {
   const { deleteCard } = useDeckStore();
   const [open, setOpen] = useState(false);
-  const accuracy = card.timesReviewed > 0 ? Math.round((card.timesCorrect / card.timesReviewed) * 100) : null;
+  const accuracy =
+    card.repetitions > 0 && card.quality != null
+      ? Math.round(((card.quality / 5) * 100))
+      : null;
 
   const diffColor: Record<string, string> = {
-    easy: "hsl(var(--success))",
-    medium: "hsl(var(--warning))",
-    hard: "hsl(var(--destructive))",
+    beginner: "hsl(var(--success))",
+    intermediate: "hsl(var(--warning))",
+    advanced: "hsl(var(--destructive))",
   };
 
   return (
-    <div
-      className="ds-card overflow-hidden transition-all duration-200"
-      style={{ animationDelay: "0ms" }}
-    >
+    <div className="ds-card overflow-hidden transition-all duration-200">
       <button
         onClick={() => setOpen((o) => !o)}
         className="w-full flex items-center gap-3 p-4 text-left transition-colors duration-200"
@@ -27,7 +25,10 @@ function CardRow({ card }: { card: Flashcard }) {
       >
         <div className="flex-1 min-w-0">
           <p className="text-sm truncate" style={{ color: "hsl(var(--foreground))" }}>
-            {card.question}
+            {card.front}
+          </p>
+          <p className="text-[11px] mt-0.5 truncate" style={{ color: "hsl(var(--muted-foreground))" }}>
+            {card.subcategory}
           </p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
@@ -60,8 +61,11 @@ function CardRow({ card }: { card: Flashcard }) {
                 border: "1px solid hsl(var(--primary) / 0.25)",
               }}
             >
-              {accuracy}%
+              Q:{card.quality}/5
             </span>
+          )}
+          {card.codeExample && (
+            <Code size={12} style={{ color: "hsl(var(--primary))", opacity: 0.7 }} />
           )}
           {open ? (
             <ChevronUp size={14} style={{ color: "hsl(var(--muted-foreground))" }} />
@@ -76,19 +80,48 @@ function CardRow({ card }: { card: Flashcard }) {
           className="px-4 pb-4 space-y-3 animate-fade-in"
           style={{ borderTop: "1px solid hsl(var(--border))" }}
         >
+          {/* Answer */}
           <div
             className="terminal-block p-3 mt-3 text-xs leading-relaxed whitespace-pre-wrap"
             style={{ color: "hsl(var(--foreground))" }}
           >
-            {card.answer}
+            {card.back}
           </div>
-          <div className="flex items-center justify-between">
-            <div className="flex gap-3 text-xs" style={{ color: "hsl(var(--muted-foreground))" }}>
-              <span>Reviews: <span className="font-mono">{card.timesReviewed}</span></span>
-              <span>Correct: <span className="font-mono">{card.timesCorrect}</span></span>
+
+          {/* Code example */}
+          {card.codeExample && (
+            <div>
+              <div
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-t-md"
+                style={{
+                  background: "hsl(var(--primary) / 0.08)",
+                  borderBottom: "1px solid hsl(var(--border))",
+                  border: "1px solid hsl(var(--border))",
+                  borderBottomColor: "transparent",
+                }}
+              >
+                <Code size={11} style={{ color: "hsl(var(--primary))" }} />
+                <span className="text-[10px] font-mono" style={{ color: "hsl(var(--primary))" }}>
+                  Python
+                </span>
+              </div>
+              <div
+                className="terminal-block p-3 text-xs leading-relaxed whitespace-pre-wrap rounded-t-none"
+                style={{ color: "hsl(133, 57%, 70%)" }}
+              >
+                {card.codeExample}
+              </div>
+            </div>
+          )}
+
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div className="flex flex-wrap gap-3 text-xs" style={{ color: "hsl(var(--muted-foreground))" }}>
+              <span>Reps: <span className="font-mono">{card.repetitions}</span></span>
+              <span>Interval: <span className="font-mono">{card.interval}d</span></span>
+              <span>EF: <span className="font-mono">{card.easeFactor.toFixed(2)}</span></span>
               {card.tags.length > 0 && (
                 <span className="hidden sm:inline">
-                  Tags: {card.tags.map((t) => `#${t}`).join(" ")}
+                  {card.tags.map((t) => `#${t}`).join(" ")}
                 </span>
               )}
             </div>
@@ -118,8 +151,9 @@ export function AllCardsPage() {
 
   const filtered = cards.filter((c) => {
     const matchesSearch =
-      c.question.toLowerCase().includes(search.toLowerCase()) ||
-      c.answer.toLowerCase().includes(search.toLowerCase());
+      c.front.toLowerCase().includes(search.toLowerCase()) ||
+      c.back.toLowerCase().includes(search.toLowerCase()) ||
+      (c.codeExample ?? "").toLowerCase().includes(search.toLowerCase());
     const matchesCat = filterCat === "All" || c.category === filterCat;
     return matchesSearch && matchesCat;
   });
@@ -139,7 +173,6 @@ export function AllCardsPage() {
 
       {/* Filters */}
       <div className="flex flex-wrap gap-2">
-        {/* Search */}
         <div
           className="flex items-center gap-2 px-3 py-1.5 rounded-md flex-1 min-w-40"
           style={{
@@ -151,15 +184,14 @@ export function AllCardsPage() {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search cards..."
+            placeholder="Search cards…"
             className="bg-transparent text-xs flex-1 outline-none"
             style={{ color: "hsl(var(--foreground))" }}
           />
         </div>
 
-        {/* Category filter */}
         <div className="flex flex-wrap gap-1.5">
-          {["All", ...CATEGORIES].map((cat) => (
+          {["All", ...DS_CATEGORIES].map((cat) => (
             <button
               key={cat}
               onClick={() => setFilterCat(cat)}
@@ -184,7 +216,6 @@ export function AllCardsPage() {
         </div>
       </div>
 
-      {/* Cards list */}
       <div className="space-y-2">
         {filtered.length === 0 ? (
           <p className="text-sm py-8 text-center" style={{ color: "hsl(var(--muted-foreground))" }}>
