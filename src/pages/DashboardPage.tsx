@@ -389,13 +389,13 @@ export function DashboardPage() {
       <div className="ds-card p-5">
         <h2 className="text-sm font-semibold mb-4 flex items-center gap-2" style={{ color: "hsl(var(--foreground))" }}>
           <Activity size={14} style={{ color: "hsl(var(--primary))" }} />
-          Recent Study Sessions
+          {t("recent_sessions", lang)}
         </h2>
 
         {recentSessions.length === 0 ? (
           <div className="text-center py-8">
             <p className="text-sm" style={{ color: "hsl(var(--muted-foreground))" }}>
-              No sessions yet — start studying to see your history here.
+              {lang === "es" ? "Sin sesiones aún — ¡comienza a estudiar!" : "No sessions yet — start studying to see your history here."}
             </p>
           </div>
         ) : (
@@ -403,15 +403,12 @@ export function DashboardPage() {
             {/* Table header */}
             <div
               className="grid grid-cols-4 text-[10px] font-medium uppercase tracking-wide pb-2 mb-1"
-              style={{
-                color: "hsl(var(--muted-foreground))",
-                borderBottom: "1px solid hsl(var(--border))",
-              }}
+              style={{ color: "hsl(var(--muted-foreground))", borderBottom: "1px solid hsl(var(--border))" }}
             >
-              <span>Date</span>
-              <span className="text-right">Reviewed</span>
-              <span className="text-right">Accuracy</span>
-              <span className="text-right">Time</span>
+              <span>{lang === "es" ? "Fecha" : "Date"}</span>
+              <span className="text-right">{t("study_complete_reviewed", lang)}</span>
+              <span className="text-right">{t("study_complete_accuracy", lang)}</span>
+              <span className="text-right">{t("study_complete_time", lang)}</span>
             </div>
 
             <div className="space-y-0.5">
