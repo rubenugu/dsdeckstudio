@@ -8,13 +8,15 @@ import { StudyPage } from "./StudyPage";
 import { AllCardsPage } from "./AllCardsPage";
 import { AddCardPage } from "./AddCardPage";
 import { SettingsPage } from "./SettingsPage";
+import { QuickQuizPage } from "./QuickQuizPage";
 
 const PAGE_COMPONENTS: Record<string, React.FC> = {
-  dashboard:  DashboardPage,
-  study:      StudyPage,
-  "all-cards": AllCardsPage,
-  "add-card":  AddCardPage,
-  settings:   SettingsPage,
+  dashboard:   DashboardPage,
+  study:       StudyPage,
+  "quick-quiz": QuickQuizPage,
+  "all-cards":  AllCardsPage,
+  "add-card":   AddCardPage,
+  settings:    SettingsPage,
 };
 
 function AnimatedPage({ navKey }: { navKey: string }) {
