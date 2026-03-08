@@ -121,7 +121,7 @@ export function SettingsPage() {
               return (
                 <button
                   key={t}
-                  onClick={() => setTheme(t)}
+                  onClick={() => handleThemeChange(t)}
                   className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all duration-200"
                   style={{
                     background: active ? "hsl(var(--primary) / 0.12)" : "hsl(var(--surface-2))",
