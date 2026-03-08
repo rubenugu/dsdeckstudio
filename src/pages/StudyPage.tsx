@@ -320,7 +320,7 @@ function CardReview({ queue, onComplete, onEditCard }: ReviewProps) {
       {/* ── Flip card ── */}
       <div
         className="w-full max-w-2xl"
-        style={{ perspective: "1200px", minHeight: 320 }}
+        style={{ perspective: "1200px", minHeight: 340 }}
       >
         <div
           onClick={flip}
@@ -330,7 +330,7 @@ function CardReview({ queue, onComplete, onEditCard }: ReviewProps) {
             transition: "transform 0.45s cubic-bezier(0.4, 0, 0.2, 1)",
             transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
             cursor: "pointer",
-            minHeight: 320,
+            minHeight: 340,
           }}
         >
           {/* FRONT */}
