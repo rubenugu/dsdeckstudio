@@ -729,7 +729,7 @@ export function AddCardPage() {
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label style={{ ...labelStyle, marginBottom: 0 }}>
-                  Back — Answer
+                  {t("add_back", lang)}
                   <span style={{ color: "#ff6e6e", marginLeft: 2 }}>*</span>
                 </label>
                 <span
@@ -746,7 +746,7 @@ export function AddCardPage() {
                 onChange={(e) => setBack(e.target.value)}
                 onBlur={(e) => { setTouched((t) => ({ ...t, back: true })); blur(e); }}
                 onFocus={focus}
-                placeholder="Explain clearly as if teaching someone. Use bullet points, formulas, comparisons…"
+                placeholder={t("add_back_placeholder", lang)}
                 style={{
                   ...inputBase,
                   resize: "vertical",
