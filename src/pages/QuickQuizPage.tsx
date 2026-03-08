@@ -195,12 +195,16 @@ function QuizSetup({ cards, lang, onStart, onGoToDashboard }: SetupProps) {
           {/* Difficulty */}
           <div>
             <p className="text-[10px] uppercase tracking-widest font-semibold mb-2" style={{ color: "hsl(var(--muted-foreground))" }}>
-              Difficulty
+              {t("quiz_difficulty", lang)}
             </p>
             <div className="flex gap-2">
               {(["all", "beginner", "intermediate", "advanced"] as const).map((d) => {
                 const active = diff === d;
                 const color  = d === "all" ? "hsl(var(--primary))" : DIFF_COLORS[d as Difficulty];
+                const label  = d === "all" ? t("cards_filter_all", lang) :
+                               d === "beginner" ? t("difficulty_beginner", lang).slice(0, 3) :
+                               d === "intermediate" ? t("difficulty_intermediate", lang).slice(0, 3) :
+                               t("difficulty_advanced", lang).slice(0, 3);
                 return (
                   <button
                     key={d}
@@ -212,7 +216,7 @@ function QuizSetup({ cards, lang, onStart, onGoToDashboard }: SetupProps) {
                       color:      active ? color : "hsl(var(--muted-foreground))",
                     }}
                   >
-                    {d === "all" ? "All" : d.slice(0, 3)}
+                    {label}
                   </button>
                 );
               })}
@@ -222,7 +226,7 @@ function QuizSetup({ cards, lang, onStart, onGoToDashboard }: SetupProps) {
           {/* Question count */}
           <div>
             <p className="text-[10px] uppercase tracking-widest font-semibold mb-2" style={{ color: "hsl(var(--muted-foreground))" }}>
-              Questions
+              {t("quiz_questions", lang)}
             </p>
             <div className="flex gap-2">
               {([5, 10, 20, "all"] as const).map((n) => {
