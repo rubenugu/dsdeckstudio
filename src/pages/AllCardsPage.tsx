@@ -484,7 +484,7 @@ export function AllCardsPage() {
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search cards, tags, subcategories…"
+          placeholder={t("cards_search", lang)}
           className="bg-transparent text-sm flex-1 outline-none"
           style={{ color: "hsl(var(--foreground))" }}
         />
