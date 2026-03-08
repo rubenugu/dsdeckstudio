@@ -139,6 +139,7 @@ function HeroCard({
 // ── Main component ─────────────────────────────────────────────────────────────
 export function DashboardPage() {
   const { cards, streak, studySessions } = useDeckStore();
+  const { lang } = useLang();
 
   // ── Hero stats ──────────────────────────────────────────────────────────────
   const mastered = cards.filter((c) => c.interval > 21).length;
