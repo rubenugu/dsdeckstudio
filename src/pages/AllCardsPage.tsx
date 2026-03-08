@@ -397,10 +397,10 @@ export function AllCardsPage() {
         </div>
         <div>
           <p className="text-lg font-semibold" style={{ color: "hsl(var(--foreground))" }}>
-            No flashcards yet
+            {t("cards_empty", lang)}
           </p>
           <p className="text-sm mt-1" style={{ color: "hsl(var(--muted-foreground))" }}>
-            Add your first card to start building your DS deck.
+            {lang === "es" ? "Crea la primera y comienza a aprender." : "Add your first card to start building your DS deck."}
           </p>
         </div>
         <button
@@ -413,7 +413,7 @@ export function AllCardsPage() {
           }}
         >
           <Plus size={15} />
-          Add your first card
+          {t("cards_add_first", lang)}
         </button>
       </div>
     );
