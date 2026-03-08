@@ -221,6 +221,7 @@ function CardReview({ queue, onComplete, onEditCard }: ReviewProps) {
   const { recordReview } = useDeckStore();
   const { upsertCard } = useSupabaseSync();
   const { user } = useAuth();
+  const { lang } = useLang();
   const [index, setIndex]     = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [results, setResults] = useState<ReviewResult[]>([]);
