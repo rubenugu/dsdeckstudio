@@ -40,6 +40,7 @@ export function SettingsPage() {
   const { cards, studySessions } = useDeckStore();
   const store = useDeckStore();
   const { theme, setTheme } = useTheme();
+  const { upsertSettings, deleteCard: deleteCardRemote } = useSupabaseSync();
 
   const totalReps    = cards.reduce((s, c) => s + c.repetitions, 0);
   const avgEF        = cards.length > 0
@@ -51,9 +52,14 @@ export function SettingsPage() {
     return recentLow;
   }).length;
 
+  function handleThemeChange(t: "dark" | "light") {
+    setTheme(t);
+    upsertSettings({ theme: t });
+  }
+
   function clearAll() {
     if (window.confirm("Delete ALL cards? This cannot be undone.")) {
-      cards.forEach((c) => store.deleteCard(c.id));
+      cards.forEach((c) => { store.deleteCard(c.id); deleteCardRemote(c.id); });
       toast({ title: "🗑 All cards deleted", duration: 3000 });
     }
   }
