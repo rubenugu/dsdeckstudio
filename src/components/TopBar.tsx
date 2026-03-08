@@ -111,7 +111,7 @@ export function TopBar({ onMenuClick, onSearchOpen }: TopBarProps) {
         >
           <span>🔥</span>
           <span className="font-mono">{streak}</span>
-          <span className="opacity-80 hidden sm:inline">day streak</span>
+          <span className="opacity-80 hidden sm:inline">{t("streak_label", lang)}</span>
         </div>
 
         <div
