@@ -104,27 +104,28 @@ export function SettingsPage() {
     <div className="p-6 space-y-6 animate-fade-in">
       <div>
         <h1 className="text-xl font-semibold" style={{ color: "hsl(var(--foreground))" }}>
-          Settings
+          {t("settings_title", lang)}
         </h1>
         <p className="text-sm mt-0.5" style={{ color: "hsl(var(--muted-foreground))" }}>
-          Manage your deck and preferences
+          {lang === "es" ? "Gestiona tu mazo y preferencias" : "Manage your deck and preferences"}
         </p>
       </div>
 
       <div className="max-w-lg space-y-4">
 
-        {/* ── Theme toggle ─────────────────────────────────────────────────── */}
+        {/* ── Language toggle ───────────────────────────────────────────────── */}
         <div className="ds-card p-5 space-y-3">
-          <h2 className="text-sm font-semibold" style={{ color: "hsl(var(--foreground))" }}>
-            Appearance
+          <h2 className="text-sm font-semibold flex items-center gap-2" style={{ color: "hsl(var(--foreground))" }}>
+            <Globe size={14} style={{ color: "hsl(var(--primary))" }} />
+            {t("settings_language", lang)}
           </h2>
           <div className="flex gap-2">
-            {(["dark", "light"] as const).map((t) => {
-              const active = theme === t;
+            {(["en", "es"] as const).map((l) => {
+              const active = lang === l;
               return (
                 <button
-                  key={t}
-                  onClick={() => handleThemeChange(t)}
+                  key={l}
+                  onClick={() => setLang(l)}
                   className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all duration-200"
                   style={{
                     background: active ? "hsl(var(--primary) / 0.12)" : "hsl(var(--surface-2))",
@@ -132,8 +133,36 @@ export function SettingsPage() {
                     color:      active ? "hsl(var(--primary))" : "hsl(var(--muted-foreground))",
                   }}
                 >
-                  {t === "dark" ? <Moon size={14} /> : <Sun size={14} />}
-                  {t === "dark" ? "Dark" : "Light"}
+                  <span>{l === "en" ? "🇬🇧" : "🇪🇸"}</span>
+                  {l === "en" ? "English" : "Español"}
+                  {active && <Check size={12} />}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* ── Theme toggle ─────────────────────────────────────────────────── */}
+        <div className="ds-card p-5 space-y-3">
+          <h2 className="text-sm font-semibold" style={{ color: "hsl(var(--foreground))" }}>
+            {t("settings_theme", lang)}
+          </h2>
+          <div className="flex gap-2">
+            {(["dark", "light"] as const).map((th) => {
+              const active = theme === th;
+              return (
+                <button
+                  key={th}
+                  onClick={() => handleThemeChange(th)}
+                  className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all duration-200"
+                  style={{
+                    background: active ? "hsl(var(--primary) / 0.12)" : "hsl(var(--surface-2))",
+                    border:     active ? "1px solid hsl(var(--primary) / 0.4)" : "1px solid hsl(var(--border))",
+                    color:      active ? "hsl(var(--primary))" : "hsl(var(--muted-foreground))",
+                  }}
+                >
+                  {th === "dark" ? <Moon size={14} /> : <Sun size={14} />}
+                  {th === "dark" ? t("settings_theme_dark", lang) : t("settings_theme_light", lang)}
                   {active && <Check size={12} />}
                 </button>
               );
