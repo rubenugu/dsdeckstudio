@@ -480,6 +480,8 @@ function CardPreview({
 
 export function AddCardPage() {
   const { addCard } = useDeckStore();
+  const { upsertCard } = useSupabaseSync();
+  const { user } = useAuth();
 
   const [front, setFront] = useState("");
   const [back, setBack] = useState("");
