@@ -146,10 +146,10 @@ function QuizSetup({ cards, lang, onStart, onGoToDashboard }: SetupProps) {
             <Zap size={26} style={{ color: "hsl(var(--warning))" }} />
           </div>
           <h1 className="text-2xl font-semibold" style={{ color: "hsl(var(--foreground))" }}>
-            Quick Quiz
+            {t("quiz_title", lang)}
           </h1>
           <p className="text-sm" style={{ color: "hsl(var(--muted-foreground))" }}>
-            Multiple-choice · 30 s per question · instant scoring
+            {t("quiz_subtitle", lang)}
           </p>
         </div>
 
@@ -157,7 +157,7 @@ function QuizSetup({ cards, lang, onStart, onGoToDashboard }: SetupProps) {
           {/* Category */}
           <div>
             <p className="text-[10px] uppercase tracking-widest font-semibold mb-2" style={{ color: "hsl(var(--muted-foreground))" }}>
-              Category
+              {t("quiz_category", lang)}
             </p>
             <div className="flex flex-wrap gap-1.5">
               <button
@@ -169,7 +169,7 @@ function QuizSetup({ cards, lang, onStart, onGoToDashboard }: SetupProps) {
                   color:      cat === "all" ? "hsl(var(--primary))" : "hsl(var(--muted-foreground))",
                 }}
               >
-                All
+                {t("cards_filter_all", lang)}
               </button>
               {categories.map((c) => {
                 const color  = CAT_COLORS[c];
