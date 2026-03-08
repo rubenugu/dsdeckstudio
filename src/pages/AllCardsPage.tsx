@@ -313,7 +313,7 @@ function CardModal({ card, onClose }: { card: Flashcard; onClose: () => void }) 
               Study this deck
             </button>
             <button
-              onClick={() => { deleteCard(card.id); onClose(); }}
+              onClick={() => { deleteCard(card.id); deleteCardRemote(card.id); onClose(); }}
               className="flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ml-auto"
               style={{
                 background: "hsl(var(--destructive) / 0.08)",
