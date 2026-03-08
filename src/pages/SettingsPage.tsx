@@ -3,7 +3,7 @@ import { useDeckStore } from "@/store/useDeckStore";
 import { useSupabaseSync } from "@/hooks/useSupabaseSync";
 import { useLang } from "@/contexts/LanguageContext";
 import { t } from "@/i18n/translations";
-import { Sun, Moon, Trash2, Download, Upload, Check, Globe } from "lucide-react";
+import { Sun, Moon, Trash2, FileDown, FileUp, Check, Globe } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 const THEME_KEY = "dsdeck_theme";
