@@ -217,12 +217,9 @@ function CardModal({ card, onClose }: { card: Flashcard; onClose: () => void }) 
             >
               Back
             </p>
-            <div
-              className="terminal-block p-4 text-xs leading-relaxed whitespace-pre-wrap"
-              style={{ color: "hsl(var(--foreground))" }}
-            >
+            <p className="text-base leading-relaxed" style={{ color: "hsl(var(--foreground))" }}>
               {card.back}
-            </div>
+            </p>
           </div>
 
           {/* Code example */}
