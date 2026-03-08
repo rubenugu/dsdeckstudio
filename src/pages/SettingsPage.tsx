@@ -272,6 +272,77 @@ export function SettingsPage() {
           </p>
         </div>
 
+        {/* ── Reset Study Progress ─────────────────────────────────────────── */}
+        <div
+          className="ds-card p-5 space-y-4"
+          style={{ borderColor: "hsl(var(--destructive) / 0.25)" }}
+        >
+          <h2 className="text-sm font-semibold flex items-center gap-2" style={{ color: "hsl(var(--destructive))" }}>
+            ⚠️ {lang === "es" ? "Reiniciar Progreso de Estudio" : "Reset Study Progress"}
+          </h2>
+
+          {/* Reset Streak */}
+          <div className="space-y-1.5">
+            <p className="text-xs" style={{ color: "hsl(var(--muted-foreground))" }}>
+              {lang === "es"
+                ? "Reinicia tu racha a 0. Tus tarjetas y datos SM-2 permanecen intactos."
+                : "Resets your current streak to 0. All cards and SM-2 review data remain intact."}
+            </p>
+            <button
+              onClick={() => {
+                if (window.confirm(t("confirm_reset_streak", lang))) {
+                  store.resetStreak();
+                  upsertSettings({ streak: 0, lastStudyDate: null });
+                  toast({ title: lang === "es" ? "🔄 Racha reiniciada a 0" : "🔄 Streak reset to 0", duration: 3000 });
+                }
+              }}
+              className="flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200"
+              style={{
+                background: "hsl(var(--destructive) / 0.08)",
+                color:      "hsl(var(--destructive))",
+                border:     "1px solid hsl(var(--destructive) / 0.3)",
+              }}
+            >
+              ⚠️ {t("settings_reset_streak", lang)}
+            </button>
+          </div>
+
+          <div style={{ height: "1px", background: "hsl(var(--border))" }} />
+
+          {/* Reset Review Schedule */}
+          <div className="space-y-1.5">
+            <p className="text-xs" style={{ color: "hsl(var(--muted-foreground))" }}>
+              {lang === "es"
+                ? "Reinicia nextReview, lastReviewed, repeticiones e intervalo en todas las tarjetas. El contenido permanece intacto."
+                : "Clears nextReview, lastReviewed, repetitions, interval, and easeFactor on all cards. Card content stays intact."}
+            </p>
+            <button
+              onClick={async () => {
+                if (window.confirm(t("confirm_reset_progress", lang))) {
+                  const resetCards = store.resetReviewSchedule();
+                  await Promise.all(resetCards.map((c) => upsertCard(c)));
+                  toast({
+                    title: lang === "es" ? "🔄 Calendario de repaso reiniciado" : "🔄 Review schedule reset",
+                    description: lang === "es"
+                      ? `${resetCards.length} tarjetas listas para repasar.`
+                      : `${resetCards.length} cards are now due immediately.`,
+                    duration: 4000,
+                  });
+                }
+              }}
+              disabled={cards.length === 0}
+              className="flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 disabled:opacity-30"
+              style={{
+                background: "hsl(var(--destructive) / 0.08)",
+                color:      "hsl(var(--destructive))",
+                border:     "1px solid hsl(var(--destructive) / 0.3)",
+              }}
+            >
+              ⚠️ {t("settings_reset_progress", lang)}
+            </button>
+          </div>
+        </div>
+
         {/* ── Danger zone ───────────────────────────────────────────────────── */}
         <div
           className="ds-card p-5 space-y-3"
