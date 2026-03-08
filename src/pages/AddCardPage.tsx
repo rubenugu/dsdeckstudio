@@ -638,7 +638,9 @@ export function AddCardPage() {
                 style={{ background: "hsl(var(--surface-2))", border: "1px solid hsl(var(--border))" }}
               >
                 {(Object.entries(DIFF_META) as [Difficulty, typeof DIFF_META[Difficulty]][]).map(
-                  ([key, meta]) => (
+                  ([key, meta]) => {
+                    const labels = DIFF_LABELS[key];
+                    return (
                     <button
                       key={key}
                       type="button"
@@ -657,10 +659,11 @@ export function AddCardPage() {
                             }
                       }
                     >
-                      <span className="text-xs font-semibold">{meta.label}</span>
-                      <span className="text-[10px] mt-0.5 opacity-70">{meta.desc}</span>
+                      <span className="text-xs font-semibold">{labels.label}</span>
+                      <span className="text-[10px] mt-0.5 opacity-70">{labels.desc}</span>
                     </button>
-                  )
+                  );
+                  }
                 )}
               </div>
             </div>
