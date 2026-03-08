@@ -2,13 +2,13 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import {
   BookOpen, ChevronRight, RotateCcw, LayoutDashboard,
   SkipForward, Pencil, Flame, Clock, Target, BarChart2,
-  Zap, Brain, CheckCircle2, XCircle, Minus,
+  Zap, Brain, CheckCircle2, ArrowLeft, ArrowRight,
 } from "lucide-react";
 import { useDeckStore, DSCategory, Flashcard } from "@/store/useDeckStore";
 import { getDueCards } from "@/utils/sm2";
 import { SyntaxBlock } from "@/components/SyntaxBlock";
 
-// ── Category colours (same as AllCardsPage) ──────────────────────────────────
+// ── Category colours ─────────────────────────────────────────────────────────
 const CAT_COLORS: Record<DSCategory, string> = {
   "Statistics":          "#a371f7",
   "Machine Learning":    "#58a6ff",
@@ -30,13 +30,12 @@ const DIFF_COLORS: Record<string, string> = {
 
 // ── Rating definitions ────────────────────────────────────────────────────────
 const RATINGS = [
-  { quality: 0, emoji: "🔴", label: "Blackout",  sub: "No idea",           key: "1", color: "#f85149" },
-  { quality: 2, emoji: "🟠", label: "Hard",       sub: "Barely recalled",   key: "2", color: "#d29922" },
-  { quality: 3, emoji: "🟡", label: "Good",       sub: "Got it with effort", key: "3", color: "#3fb950" },
-  { quality: 5, emoji: "🟢", label: "Easy",       sub: "Perfect recall",    key: "4", color: "#39d353" },
+  { quality: 0, emoji: "🔴", label: "Blackout",  sub: "No idea",            key: "1", color: "#f85149" },
+  { quality: 2, emoji: "🟠", label: "Hard",       sub: "Barely recalled",    key: "2", color: "#d29922" },
+  { quality: 3, emoji: "🟡", label: "Good",       sub: "With effort",        key: "3", color: "#3fb950" },
+  { quality: 5, emoji: "🟢", label: "Easy",       sub: "Perfect recall",     key: "4", color: "#39d353" },
 ];
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
 function formatDuration(seconds: number) {
   const m = Math.floor(seconds / 60);
   const s = seconds % 60;
@@ -82,8 +81,8 @@ function SessionSetup({ cards, onStart, onGoToDashboard }: SetupProps) {
   const queue = buildQueue();
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-full p-6 animate-fade-in">
-      <div className="w-full max-w-lg space-y-6">
+    <div className="flex flex-col items-center justify-center min-h-full p-4 sm:p-6 animate-fade-in">
+      <div className="w-full max-w-lg space-y-5">
         {/* Header */}
         <div className="text-center space-y-1">
           <div className="flex items-center justify-center gap-2 mb-3">
@@ -105,17 +104,16 @@ function SessionSetup({ cards, onStart, onGoToDashboard }: SetupProps) {
         </div>
 
         {/* Mode picker */}
-        <div className="ds-card p-5 space-y-3">
+        <div className="ds-card p-4 sm:p-5 space-y-3">
           <p className="text-xs uppercase tracking-widest font-semibold" style={{ color: "hsl(var(--muted-foreground))" }}>
             What to study
           </p>
 
-          {/* Due / All rows */}
           {(["due", "all"] as const).map((m) => (
             <button
               key={m}
               onClick={() => setMode(m)}
-              className="w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm transition-all duration-150"
+              className="w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm transition-all duration-200"
               style={{
                 background: mode === m ? "hsl(var(--primary) / 0.12)" : "hsl(var(--surface-2))",
                 border: `1px solid ${mode === m ? "hsl(var(--primary) / 0.4)" : "hsl(var(--border))"}`,
@@ -137,7 +135,6 @@ function SessionSetup({ cards, onStart, onGoToDashboard }: SetupProps) {
             </button>
           ))}
 
-          {/* Category divider */}
           <p className="text-[10px] uppercase tracking-widest pt-1" style={{ color: "hsl(var(--muted-foreground))" }}>
             By category
           </p>
@@ -150,7 +147,7 @@ function SessionSetup({ cards, onStart, onGoToDashboard }: SetupProps) {
                 <button
                   key={cat}
                   onClick={() => setMode(cat)}
-                  className="flex items-center justify-between px-3 py-2 rounded-md text-xs transition-all duration-150"
+                  className="flex items-center justify-between px-3 py-2.5 rounded-md text-xs transition-all duration-200"
                   style={{
                     background: active ? `${color}18` : "hsl(var(--surface-2))",
                     border: `1px solid ${active ? `${color}60` : "hsl(var(--border))"}`,
@@ -165,11 +162,11 @@ function SessionSetup({ cards, onStart, onGoToDashboard }: SetupProps) {
           </div>
         </div>
 
-        {/* Summary + Start */}
+        {/* Start */}
         <div className="flex items-center gap-3">
           <button
             onClick={onGoToDashboard}
-            className="flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-150"
+            className="flex items-center gap-1.5 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200"
             style={{
               background: "hsl(var(--surface-2))",
               border: "1px solid hsl(var(--border))",
@@ -183,7 +180,7 @@ function SessionSetup({ cards, onStart, onGoToDashboard }: SetupProps) {
           <button
             onClick={() => queue.length > 0 && onStart(queue)}
             disabled={queue.length === 0}
-            className="flex-1 flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-150"
+            className="flex-1 flex items-center justify-center gap-2 px-5 py-3 rounded-lg text-sm font-semibold transition-all duration-200"
             style={{
               background: queue.length === 0 ? "hsl(var(--surface-2))" : "hsl(var(--primary))",
               color: queue.length === 0 ? "hsl(var(--muted-foreground))" : "hsl(var(--primary-foreground))",
@@ -194,10 +191,7 @@ function SessionSetup({ cards, onStart, onGoToDashboard }: SetupProps) {
           >
             Start Session
             <ChevronRight size={15} />
-            <span
-              className="font-mono text-xs ml-0.5 px-1.5 py-0.5 rounded"
-              style={{ background: "hsl(0 0% 0% / 0.2)" }}
-            >
+            <span className="font-mono text-xs ml-0.5 px-1.5 py-0.5 rounded" style={{ background: "hsl(0 0% 0% / 0.2)" }}>
               {queue.length}
             </span>
           </button>
@@ -208,7 +202,7 @@ function SessionSetup({ cards, onStart, onGoToDashboard }: SetupProps) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Screen 2: Card Review
+// Screen 2: Card Review — mobile-optimised
 // ─────────────────────────────────────────────────────────────────────────────
 interface ReviewResult { cardId: string; quality: number; }
 
@@ -220,21 +214,23 @@ interface ReviewProps {
 
 function CardReview({ queue, onComplete, onEditCard }: ReviewProps) {
   const { recordReview } = useDeckStore();
-  const [index, setIndex]       = useState(0);
-  const [flipped, setFlipped]   = useState(false);
-  const [results, setResults]   = useState<ReviewResult[]>([]);
-  const [exiting, setExiting]   = useState(false);
-  const startTime               = useRef(Date.now());
+  const [index, setIndex]     = useState(0);
+  const [flipped, setFlipped] = useState(false);
+  const [results, setResults] = useState<ReviewResult[]>([]);
+  const [exiting, setExiting] = useState(false);
 
-  const card = queue[index];
+  // Swipe state
+  const touchStartX   = useRef<number | null>(null);
+  const touchStartY   = useRef<number | null>(null);
+  const swipeDeltaX   = useRef(0);
+  const [swipeHint, setSwipeHint] = useState<"left" | "right" | null>(null);
+
+  const startTime = useRef(Date.now());
+  const card      = queue[index];
 
   const flip = useCallback(() => setFlipped((f) => !f), []);
 
-  function handleRate(quality: number) {
-    recordReview(card.id, quality);
-    const newResults = [...results, { cardId: card.id, quality }];
-    setResults(newResults);
-
+  function advance(newResults: ReviewResult[]) {
     setExiting(true);
     setTimeout(() => {
       if (index + 1 >= queue.length) {
@@ -244,268 +240,362 @@ function CardReview({ queue, onComplete, onEditCard }: ReviewProps) {
         setIndex((i) => i + 1);
         setFlipped(false);
         setExiting(false);
+        swipeDeltaX.current = 0;
+        setSwipeHint(null);
       }
     }, 220);
+  }
+
+  function handleRate(quality: number) {
+    recordReview(card.id, quality);
+    const newResults = [...results, { cardId: card.id, quality }];
+    setResults(newResults);
+    advance(newResults);
   }
 
   function handleSkip() {
-    setExiting(true);
-    setTimeout(() => {
-      if (index + 1 >= queue.length) {
-        const elapsed = Math.round((Date.now() - startTime.current) / 1000);
-        onComplete(results, elapsed);
-      } else {
-        setIndex((i) => i + 1);
-        setFlipped(false);
-        setExiting(false);
-      }
-    }, 220);
+    advance(results);
   }
 
-  // Keyboard shortcuts
+  // ── Touch / swipe handlers ──────────────────────────────────────────────────
+  function onTouchStart(e: React.TouchEvent) {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+    swipeDeltaX.current = 0;
+    setSwipeHint(null);
+  }
+
+  function onTouchMove(e: React.TouchEvent) {
+    if (touchStartX.current === null || touchStartY.current === null) return;
+    const dx = e.touches[0].clientX - touchStartX.current;
+    const dy = e.touches[0].clientY - touchStartY.current;
+    // Only track horizontal swipes
+    if (Math.abs(dx) < Math.abs(dy)) return;
+    swipeDeltaX.current = dx;
+    if (dx < -40) setSwipeHint("left");
+    else if (dx > 40) setSwipeHint("right");
+    else setSwipeHint(null);
+  }
+
+  function onTouchEnd() {
+    const dx = swipeDeltaX.current;
+    if (!flipped) {
+      // Any swipe on front flips the card
+      if (Math.abs(dx) > 50) { flip(); }
+      touchStartX.current = null;
+      swipeDeltaX.current = 0;
+      setSwipeHint(null);
+      return;
+    }
+    if (dx < -80) {
+      handleRate(2); // Hard
+    } else if (dx > 80) {
+      handleRate(5); // Easy
+    }
+    touchStartX.current = null;
+    swipeDeltaX.current = 0;
+    setSwipeHint(null);
+  }
+
+  // ── Keyboard shortcuts ──────────────────────────────────────────────────────
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       const tag = (e.target as HTMLElement).tagName;
       if (tag === "TEXTAREA" || tag === "INPUT") return;
-
       if (e.code === "Space") { e.preventDefault(); flip(); }
       if (flipped) {
         if (e.key === "1") handleRate(0);
         if (e.key === "2") handleRate(2);
         if (e.key === "3") handleRate(3);
         if (e.key === "4") handleRate(5);
+        if (e.key === "ArrowLeft")  handleRate(2); // Hard
+        if (e.key === "ArrowRight") handleRate(5); // Easy
       }
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [flipped, flip, index]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [flipped, index]);
 
-  const progress = ((index) / queue.length) * 100;
-  const catColor = CAT_COLORS[card.category] ?? "hsl(var(--primary))";
+  const progress  = (index / queue.length) * 100;
+  const catColor  = CAT_COLORS[card.category] ?? "hsl(var(--primary))";
   const diffColor = DIFF_COLORS[card.difficulty];
 
   return (
-    <div className="flex flex-col items-center gap-5 p-6 min-h-full animate-fade-in">
+    // Full-height flex column; rating bar is sticky at bottom
+    <div className="flex flex-col h-full min-h-0">
 
-      {/* ── Progress bar ── */}
-      <div className="w-full max-w-2xl">
-        <div className="flex justify-between text-xs mb-2" style={{ color: "hsl(var(--muted-foreground))" }}>
-          <span>
-            Card <span className="font-mono font-semibold" style={{ color: "hsl(var(--foreground))" }}>{index + 1}</span>
-            {" "}of{" "}
-            <span className="font-mono font-semibold" style={{ color: "hsl(var(--foreground))" }}>{queue.length}</span>
-          </span>
-          <span className="font-mono">{Math.round(progress)}% done</span>
-        </div>
-        <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "hsl(var(--surface-2))" }}>
-          <div
-            className="h-full rounded-full transition-all duration-500 ease-out"
-            style={{ width: `${progress}%`, background: "hsl(var(--primary))" }}
-          />
-        </div>
+      {/* ── Scrollable top area ─────────────────────────────────────────────── */}
+      <div className="flex-1 overflow-y-auto flex flex-col gap-4 p-4 sm:p-6 pb-2">
 
-        {/* mini results row */}
-        <div className="flex gap-1 mt-2 flex-wrap">
-          {results.map((r, i) => (
+        {/* Progress */}
+        <div className="w-full max-w-2xl mx-auto">
+          <div className="flex justify-between text-xs mb-2" style={{ color: "hsl(var(--muted-foreground))" }}>
+            <span>
+              Card <span className="font-mono font-semibold" style={{ color: "hsl(var(--foreground))" }}>{index + 1}</span>
+              {" "}of{" "}
+              <span className="font-mono font-semibold" style={{ color: "hsl(var(--foreground))" }}>{queue.length}</span>
+            </span>
+            <span className="font-mono">{Math.round(progress)}%</span>
+          </div>
+          <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "hsl(var(--surface-2))" }}>
             <div
-              key={i}
-              className="w-2 h-2 rounded-full"
-              style={{ background: RATINGS.find(rt => rt.quality === r.quality)?.color ?? "#8b949e" }}
-              title={RATINGS.find(rt => rt.quality === r.quality)?.label}
+              className="h-full rounded-full transition-all duration-500 ease-out"
+              style={{ width: `${progress}%`, background: "hsl(var(--primary))" }}
             />
-          ))}
-        </div>
-      </div>
-
-      {/* ── Flip card ── */}
-      <div
-        className="w-full max-w-2xl"
-        style={{ perspective: "1200px", minHeight: 340 }}
-      >
-        <div
-          onClick={flip}
-          style={{
-            position: "relative",
-            transformStyle: "preserve-3d",
-            transition: "transform 0.45s cubic-bezier(0.4, 0, 0.2, 1)",
-            transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
-            cursor: "pointer",
-            minHeight: 340,
-          }}
-        >
-          {/* FRONT */}
-          <div
-            className="ds-card flip-face absolute inset-0 p-6 flex flex-col gap-4"
-            style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}
-          >
-            {/* Meta */}
-            <div className="flex items-center gap-2 flex-wrap">
-              <span
-                className="text-[11px] px-2.5 py-1 rounded-md font-semibold"
-                style={{ background: `${catColor}18`, color: catColor, border: `1px solid ${catColor}40` }}
-              >
-                {card.category}
-              </span>
-              {card.subcategory && card.subcategory !== card.category && (
-                <span className="text-[11px]" style={{ color: "hsl(var(--muted-foreground))" }}>
-                  {card.subcategory}
-                </span>
-              )}
-              <span
-                className="text-[10px] px-2 py-0.5 rounded-full font-medium capitalize ml-auto"
-                style={{ background: `${diffColor}18`, color: diffColor, border: `1px solid ${diffColor}40` }}
-              >
-                {card.difficulty}
-              </span>
-            </div>
-
-            {/* Question */}
-            <div className="flex-1 flex items-center justify-center py-4">
-              <p
-                className="text-xl font-medium text-center leading-relaxed"
-                style={{ color: "hsl(var(--foreground))" }}
-              >
-                {card.front}
-              </p>
-            </div>
-
-            {/* Tags */}
-            {card.tags.length > 0 && (
-              <div className="flex gap-1.5 flex-wrap">
-                {card.tags.slice(0, 5).map((t) => (
-                  <span
-                    key={t}
-                    className="text-[10px] px-2 py-0.5 rounded font-mono"
-                    style={{ background: "hsl(var(--surface-2))", color: "hsl(var(--muted-foreground))", border: "1px solid hsl(var(--border))" }}
-                  >
-                    #{t}
-                  </span>
-                ))}
-              </div>
-            )}
-
-            {/* Hint */}
-            <div className="text-center">
-              <span className="text-xs" style={{ color: "hsl(var(--muted-foreground))" }}>
-                Click card or press <kbd className="px-1.5 py-0.5 rounded font-mono text-[10px]" style={{ background: "hsl(var(--surface-2))", border: "1px solid hsl(var(--border))" }}>Space</kbd> to reveal answer
-              </span>
-            </div>
           </div>
-
-          {/* BACK */}
-          <div
-            className="ds-card flip-face absolute inset-0 p-6 flex flex-col gap-4 overflow-y-auto"
-            style={{
-              backfaceVisibility: "hidden",
-              WebkitBackfaceVisibility: "hidden",
-              transform: "rotateY(180deg)",
-              background: "hsl(var(--surface))",
-              borderColor: `${catColor}50`,
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Answer label */}
-            <p className="text-[10px] uppercase tracking-widest font-semibold" style={{ color: "hsl(var(--muted-foreground))" }}>
-              Answer
-            </p>
-
-            {/* Back text */}
-            <div
-              className="terminal-block p-4 text-sm leading-relaxed whitespace-pre-wrap flex-1"
-              style={{ color: "hsl(var(--foreground))", maxHeight: card.codeExample ? 180 : 340, overflowY: "auto" }}
-            >
-              {card.back}
-            </div>
-
-            {/* Code */}
-            {card.codeExample && (
-              <SyntaxBlock code={card.codeExample} language="python" />
-            )}
-
-            {/* SM-2 stats mini row */}
-            {card.repetitions > 0 && (
-              <div className="flex gap-4 text-[10px] font-mono pt-1" style={{ color: "hsl(var(--muted-foreground))" }}>
-                <span>rep #{card.repetitions}</span>
-                <span>EF {card.easeFactor.toFixed(2)}</span>
-                <span>every {card.interval}d</span>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* ── Rating buttons (only after flip) ── */}
-      {flipped && (
-        <div className="w-full max-w-2xl animate-fade-in">
-          <p className="text-[10px] uppercase tracking-widest mb-3 text-center" style={{ color: "hsl(var(--muted-foreground))" }}>
-            How well did you know this?
-          </p>
-          <div className="grid grid-cols-4 gap-2">
-            {RATINGS.map(({ quality, emoji, label, sub, key, color }) => (
-              <button
-                key={quality}
-                onClick={() => handleRate(quality)}
-                className="flex flex-col items-center py-3 px-2 rounded-lg text-center transition-all duration-150 group"
-                style={{
-                  background: `${color}12`,
-                  border: `1px solid ${color}40`,
-                  color,
-                }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = `${color}28`; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = `${color}12`; }}
-              >
-                <span className="text-xl mb-1">{emoji}</span>
-                <span className="font-semibold text-sm">{label}</span>
-                <span className="text-[10px] leading-tight opacity-75">{sub}</span>
-                <span
-                  className="mt-1.5 text-[9px] font-mono px-1.5 py-0.5 rounded"
-                  style={{ background: `${color}20`, opacity: 0.8 }}
-                >
-                  [{key}]
-                </span>
-              </button>
+          <div className="flex gap-1 mt-2 flex-wrap">
+            {results.map((r, i) => (
+              <div
+                key={i}
+                className="w-2 h-2 rounded-full"
+                style={{ background: RATINGS.find(rt => rt.quality === r.quality)?.color ?? "#8b949e" }}
+              />
             ))}
           </div>
         </div>
-      )}
 
-      {/* ── Floating actions ── */}
-      <div
-        className="w-full max-w-2xl flex items-center justify-between text-xs"
-        style={{ color: "hsl(var(--muted-foreground))" }}
-      >
-        <button
-          onClick={() => onEditCard(card.id)}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-all duration-150"
-          style={{ border: "1px solid hsl(var(--border))" }}
-          onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "hsl(var(--surface-2))"; }}
-          onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
+        {/* ── Flip card ───────────────────────────────────────────────────────── */}
+        <div
+          className="w-full max-w-2xl mx-auto flex-1"
+          style={{ perspective: "1200px", minHeight: 320 }}
         >
-          <Pencil size={11} />
-          Edit card
-        </button>
+          <div
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+            onClick={flip}
+            style={{
+              position: "relative",
+              transformStyle: "preserve-3d",
+              transition: exiting ? "none" : "transform 0.45s cubic-bezier(0.4, 0, 0.2, 1)",
+              transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
+              cursor: "pointer",
+              minHeight: 320,
+              height: "100%",
+              // Swipe visual hint
+              ...(swipeHint === "left"  && { outline: "2px solid #d29922", outlineOffset: "2px" }),
+              ...(swipeHint === "right" && { outline: "2px solid #39d353", outlineOffset: "2px" }),
+            }}
+          >
+            {/* FRONT */}
+            <div
+              className="ds-card flip-face absolute inset-0 p-5 sm:p-7 flex flex-col gap-4"
+              style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}
+            >
+              {/* Meta row */}
+              <div className="flex items-center gap-2 flex-wrap">
+                <span
+                  className="text-xs px-2.5 py-1 rounded-md font-semibold"
+                  style={{ background: `${catColor}18`, color: catColor, border: `1px solid ${catColor}40` }}
+                >
+                  {card.category}
+                </span>
+                {card.subcategory && card.subcategory !== card.category && (
+                  <span className="text-xs" style={{ color: "hsl(var(--muted-foreground))" }}>
+                    {card.subcategory}
+                  </span>
+                )}
+                <span
+                  className="text-xs px-2 py-0.5 rounded-full font-medium capitalize ml-auto"
+                  style={{ background: `${diffColor}18`, color: diffColor, border: `1px solid ${diffColor}40` }}
+                >
+                  {card.difficulty}
+                </span>
+              </div>
 
-        <button
-          onClick={handleSkip}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-all duration-150"
-          style={{ border: "1px solid hsl(var(--border))" }}
-          onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "hsl(var(--surface-2))"; }}
-          onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
-        >
-          <SkipForward size={11} />
-          Skip card
-        </button>
+              {/* Question — min 18px */}
+              <div className="flex-1 flex items-center justify-center py-4">
+                <p
+                  className="font-medium text-center leading-relaxed"
+                  style={{ color: "hsl(var(--foreground))", fontSize: "clamp(1.125rem, 2.5vw, 1.375rem)" }}
+                >
+                  {card.front}
+                </p>
+              </div>
+
+              {/* Tags */}
+              {card.tags.length > 0 && (
+                <div className="flex gap-1.5 flex-wrap">
+                  {card.tags.slice(0, 5).map((t) => (
+                    <span
+                      key={t}
+                      className="text-xs px-2 py-0.5 rounded font-mono"
+                      style={{ background: "hsl(var(--surface-2))", color: "hsl(var(--muted-foreground))", border: "1px solid hsl(var(--border))" }}
+                    >
+                      #{t}
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              {/* Hint */}
+              <div className="text-center space-y-1">
+                <p className="text-xs hidden sm:block" style={{ color: "hsl(var(--muted-foreground))" }}>
+                  Tap to reveal · <kbd className="px-1.5 py-0.5 rounded font-mono text-[10px]" style={{ background: "hsl(var(--surface-2))", border: "1px solid hsl(var(--border))" }}>Space</kbd>
+                </p>
+                <p className="text-xs sm:hidden flex items-center justify-center gap-3" style={{ color: "hsl(var(--muted-foreground))" }}>
+                  <span className="flex items-center gap-1"><ArrowLeft size={11} /> Hard</span>
+                  <span>Tap to reveal</span>
+                  <span className="flex items-center gap-1">Easy <ArrowRight size={11} /></span>
+                </p>
+              </div>
+            </div>
+
+            {/* BACK */}
+            <div
+              className="ds-card flip-face absolute inset-0 p-5 sm:p-7 flex flex-col gap-4 overflow-y-auto"
+              style={{
+                backfaceVisibility: "hidden",
+                WebkitBackfaceVisibility: "hidden",
+                transform: "rotateY(180deg)",
+                background: "hsl(var(--surface))",
+                borderColor: `${catColor}50`,
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <p className="text-[10px] uppercase tracking-widest font-semibold" style={{ color: "hsl(var(--muted-foreground))" }}>
+                Answer
+              </p>
+
+              <div
+                className="terminal-block p-4 leading-relaxed whitespace-pre-wrap flex-1"
+                style={{
+                  color: "hsl(var(--foreground))",
+                  fontSize: "clamp(1rem, 2vw, 1.0625rem)",
+                  maxHeight: card.codeExample ? 200 : 360,
+                  overflowY: "auto",
+                }}
+              >
+                {card.back}
+              </div>
+
+              {card.codeExample && (
+                <SyntaxBlock code={card.codeExample} language="python" />
+              )}
+
+              {card.repetitions > 0 && (
+                <div className="flex gap-4 text-[10px] font-mono pt-1" style={{ color: "hsl(var(--muted-foreground))" }}>
+                  <span>rep #{card.repetitions}</span>
+                  <span>EF {card.easeFactor.toFixed(2)}</span>
+                  <span>every {card.interval}d</span>
+                  <span>next {fmtDate(card.nextReview)}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* ── Swipe hint overlay (mobile, after flip) ──────────────────────── */}
+        {flipped && (
+          <div className="w-full max-w-2xl mx-auto flex justify-between text-xs sm:hidden px-1" style={{ color: "hsl(var(--muted-foreground))" }}>
+            <span className="flex items-center gap-1" style={{ color: "#d29922" }}>
+              <ArrowLeft size={12} /> Swipe left = Hard
+            </span>
+            <span className="flex items-center gap-1" style={{ color: "#39d353" }}>
+              Swipe right = Easy <ArrowRight size={12} />
+            </span>
+          </div>
+        )}
+
+        {/* Edit / Skip actions */}
+        <div className="w-full max-w-2xl mx-auto flex items-center justify-between text-xs" style={{ color: "hsl(var(--muted-foreground))" }}>
+          <button
+            onClick={() => onEditCard(card.id)}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-md transition-all duration-200"
+            style={{ border: "1px solid hsl(var(--border))" }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "hsl(var(--surface-2))"; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
+          >
+            <Pencil size={12} />
+            Edit card
+          </button>
+
+          <button
+            onClick={handleSkip}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-md transition-all duration-200"
+            style={{ border: "1px solid hsl(var(--border))" }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "hsl(var(--surface-2))"; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
+          >
+            <SkipForward size={12} />
+            Skip
+          </button>
+        </div>
       </div>
 
-      {/* Exiting overlay */}
+      {/* ── Sticky rating bar — always at the bottom, easy thumb reach ─────── */}
+      <div
+        className="shrink-0 border-t"
+        style={{
+          background: "hsl(var(--surface))",
+          borderColor: "hsl(var(--border))",
+          // Safe-area inset for iPhone home bar
+          paddingBottom: "max(env(safe-area-inset-bottom), 8px)",
+        }}
+      >
+        {flipped ? (
+          <div className="p-3 sm:p-4">
+            <p className="text-[10px] uppercase tracking-widest mb-2 text-center" style={{ color: "hsl(var(--muted-foreground))" }}>
+              How well did you know this?
+            </p>
+            <div className="grid grid-cols-4 gap-2">
+              {RATINGS.map(({ quality, emoji, label, sub, key, color }) => (
+                <button
+                  key={quality}
+                  onClick={() => handleRate(quality)}
+                  className="flex flex-col items-center rounded-xl transition-all duration-200 active:scale-95"
+                  style={{
+                    background: `${color}12`,
+                    border: `1px solid ${color}40`,
+                    color,
+                    // Large tap target — minimum 56px tall
+                    minHeight: 64,
+                    padding: "10px 4px",
+                  }}
+                  onTouchStart={(e) => { (e.currentTarget as HTMLButtonElement).style.background = `${color}28`; }}
+                  onTouchEnd={(e)   => { (e.currentTarget as HTMLButtonElement).style.background = `${color}12`; }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = `${color}28`; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = `${color}12`; }}
+                >
+                  <span className="text-lg sm:text-xl mb-0.5 leading-none">{emoji}</span>
+                  <span className="font-semibold text-xs sm:text-sm leading-tight">{label}</span>
+                  <span className="text-[9px] sm:text-[10px] leading-tight opacity-70 text-center">{sub}</span>
+                  <span
+                    className="mt-1 text-[9px] font-mono px-1.5 py-0.5 rounded hidden sm:block"
+                    style={{ background: `${color}20`, opacity: 0.8 }}
+                  >
+                    [{key}]
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : (
+          /* Tap to reveal CTA at bottom when card is not yet flipped */
+          <div className="p-3 sm:p-4">
+            <button
+              onClick={flip}
+              className="w-full flex items-center justify-center gap-2 py-4 rounded-xl font-semibold transition-all duration-200 active:scale-[0.98]"
+              style={{
+                background: "hsl(var(--primary) / 0.12)",
+                border: "1px solid hsl(var(--primary) / 0.3)",
+                color: "hsl(var(--primary))",
+                fontSize: "1rem",
+                minHeight: 56,
+              }}
+            >
+              Reveal Answer
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Transition overlay */}
       {exiting && (
         <div
           className="fixed inset-0 pointer-events-none"
-          style={{
-            background: "hsl(var(--background))",
-            opacity: 0,
-            animation: "fade-in 0.2s ease forwards",
-          }}
+          style={{ background: "hsl(var(--background))", opacity: 0, animation: "fade-in 0.2s ease forwards" }}
         />
       )}
     </div>
@@ -526,8 +616,8 @@ interface CompleteProps {
 
 function SessionComplete({ results, queue, elapsedSeconds, streak, onStudyAgain, onDashboard }: CompleteProps) {
   const { cards } = useDeckStore();
-  const total   = results.length;
-  const correct = results.filter((r) => r.quality >= 3).length;
+  const total    = results.length;
+  const correct  = results.filter((r) => r.quality >= 3).length;
   const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
 
   const counts = {
@@ -545,7 +635,6 @@ function SessionComplete({ results, queue, elapsedSeconds, streak, onStudyAgain,
     { label: "Easy",     emoji: "🟢", count: counts.easy,     color: "#39d353" },
   ];
 
-  // Next reviews for studied cards
   const reviewedCards = queue
     .filter((q) => results.find((r) => r.cardId === q.id))
     .map((q) => {
@@ -557,10 +646,9 @@ function SessionComplete({ results, queue, elapsedSeconds, streak, onStudyAgain,
     .slice(0, 4);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-full p-6 animate-fade-in">
+    <div className="flex flex-col items-center justify-center min-h-full p-4 sm:p-6 animate-fade-in">
       <div className="w-full max-w-xl space-y-5">
 
-        {/* Trophy header */}
         <div className="text-center space-y-1">
           <div className="text-5xl mb-3">
             {accuracy >= 80 ? "🏆" : accuracy >= 50 ? "💪" : "📖"}
@@ -573,13 +661,12 @@ function SessionComplete({ results, queue, elapsedSeconds, streak, onStudyAgain,
           </p>
         </div>
 
-        {/* Stats grid */}
-        <div className="grid grid-cols-4 gap-3">
+        <div className="grid grid-cols-4 gap-2 sm:gap-3">
           {[
-            { icon: Target,    label: "Reviewed",  value: total,               color: "hsl(var(--primary))",     sub: "cards" },
-            { icon: CheckCircle2, label: "Accuracy", value: `${accuracy}%`,    color: "hsl(var(--success))",     sub: "correct" },
-            { icon: Clock,     label: "Time",       value: formatDuration(elapsedSeconds), color: "hsl(var(--warning))", sub: "elapsed" },
-            { icon: Flame,     label: "Streak",     value: streak,              color: "#f78166",                 sub: "days 🔥" },
+            { icon: Target,       label: "Reviewed",  value: total,                        color: "hsl(var(--primary))",  sub: "cards" },
+            { icon: CheckCircle2, label: "Accuracy",  value: `${accuracy}%`,               color: "hsl(var(--success))",  sub: "correct" },
+            { icon: Clock,        label: "Time",      value: formatDuration(elapsedSeconds), color: "hsl(var(--warning))", sub: "elapsed" },
+            { icon: Flame,        label: "Streak",    value: streak,                        color: "#f78166",              sub: "days 🔥" },
           ].map(({ icon: Icon, label, value, color, sub }) => (
             <div
               key={label}
@@ -587,14 +674,13 @@ function SessionComplete({ results, queue, elapsedSeconds, streak, onStudyAgain,
               style={{ background: "hsl(var(--surface))" }}
             >
               <Icon size={16} className="mx-auto" style={{ color }} />
-              <p className="font-mono text-lg font-bold" style={{ color }}>{value}</p>
+              <p className="font-mono text-base sm:text-lg font-bold" style={{ color }}>{value}</p>
               <p className="text-[10px] leading-tight" style={{ color: "hsl(var(--muted-foreground))" }}>{sub}</p>
             </div>
           ))}
         </div>
 
-        {/* Bar chart breakdown */}
-        <div className="ds-card p-5 space-y-4">
+        <div className="ds-card p-4 sm:p-5 space-y-4">
           <div className="flex items-center gap-2">
             <BarChart2 size={14} style={{ color: "hsl(var(--primary))" }} />
             <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "hsl(var(--muted-foreground))" }}>
@@ -629,9 +715,8 @@ function SessionComplete({ results, queue, elapsedSeconds, streak, onStudyAgain,
           </div>
         </div>
 
-        {/* Next review schedule */}
         {reviewedCards.length > 0 && (
-          <div className="ds-card p-5 space-y-3">
+          <div className="ds-card p-4 sm:p-5 space-y-3">
             <div className="flex items-center gap-2">
               <Zap size={14} style={{ color: "hsl(var(--warning))" }} />
               <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "hsl(var(--muted-foreground))" }}>
@@ -640,11 +725,11 @@ function SessionComplete({ results, queue, elapsedSeconds, streak, onStudyAgain,
             </div>
             <div className="space-y-2">
               {reviewedCards.map((c) => {
-                const catColor = CAT_COLORS[c.category] ?? "hsl(var(--primary))";
+                const color = CAT_COLORS[c.category] ?? "hsl(var(--primary))";
                 return (
                   <div key={c.id} className="flex items-center justify-between text-xs">
                     <div className="flex items-center gap-2 min-w-0">
-                      <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: catColor }} />
+                      <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: color }} />
                       <span className="truncate" style={{ color: "hsl(var(--foreground))" }}>{c.front}</span>
                     </div>
                     <span className="ml-3 shrink-0 font-mono" style={{ color: "hsl(var(--muted-foreground))" }}>
@@ -657,11 +742,10 @@ function SessionComplete({ results, queue, elapsedSeconds, streak, onStudyAgain,
           </div>
         )}
 
-        {/* CTA buttons */}
         <div className="flex gap-3">
           <button
             onClick={onDashboard}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-150"
+            className="flex items-center gap-2 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200"
             style={{
               background: "hsl(var(--surface-2))",
               border: "1px solid hsl(var(--border))",
@@ -673,11 +757,8 @@ function SessionComplete({ results, queue, elapsedSeconds, streak, onStudyAgain,
           </button>
           <button
             onClick={onStudyAgain}
-            className="flex-1 flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-150"
-            style={{
-              background: "hsl(var(--primary))",
-              color: "hsl(var(--primary-foreground))",
-            }}
+            className="flex-1 flex items-center justify-center gap-2 px-5 py-3 rounded-lg text-sm font-semibold transition-all duration-200"
+            style={{ background: "hsl(var(--primary))", color: "hsl(var(--primary-foreground))" }}
           >
             <RotateCcw size={14} />
             Study Again
@@ -689,16 +770,16 @@ function SessionComplete({ results, queue, elapsedSeconds, streak, onStudyAgain,
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Root: StudyPage — orchestrates all three screens
+// Root
 // ─────────────────────────────────────────────────────────────────────────────
 type Screen = "setup" | "review" | "complete";
 
 export function StudyPage() {
   const { cards, streak, setActiveNav, addStudySession } = useDeckStore();
-  const [screen, setScreen]     = useState<Screen>("setup");
-  const [queue, setQueue]       = useState<Flashcard[]>([]);
-  const [results, setResults]   = useState<ReviewResult[]>([]);
-  const [elapsed, setElapsed]   = useState(0);
+  const [screen, setScreen]   = useState<Screen>("setup");
+  const [queue, setQueue]     = useState<Flashcard[]>([]);
+  const [results, setResults] = useState<ReviewResult[]>([]);
+  const [elapsed, setElapsed] = useState(0);
 
   function handleStart(q: Flashcard[]) {
     setQueue(q);
@@ -719,15 +800,6 @@ export function StudyPage() {
       durationSec: secs,
     });
     setScreen("complete");
-  }
-
-  function handleStudyAgain() {
-    setScreen("setup");
-  }
-
-  function handleEditCard(id: string) {
-    // Navigate to add-card with the card id pre-selected (best-effort)
-    setActiveNav("all-cards");
   }
 
   if (cards.length === 0) {
@@ -762,7 +834,7 @@ export function StudyPage() {
       <CardReview
         queue={queue}
         onComplete={handleComplete}
-        onEditCard={handleEditCard}
+        onEditCard={() => setActiveNav("all-cards")}
       />
     );
   }
@@ -773,7 +845,7 @@ export function StudyPage() {
       queue={queue}
       elapsedSeconds={elapsed}
       streak={streak}
-      onStudyAgain={handleStudyAgain}
+      onStudyAgain={() => setScreen("setup")}
       onDashboard={() => setActiveNav("dashboard")}
     />
   );
