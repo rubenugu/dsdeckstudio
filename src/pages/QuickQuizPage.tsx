@@ -106,11 +106,12 @@ function buildQuiz(
 // ─────────────────────────────────────────────────────────────────────────────
 interface SetupProps {
   cards: Flashcard[];
+  lang: Language;
   onStart: (questions: QuizQuestion[]) => void;
   onGoToDashboard: () => void;
 }
 
-function QuizSetup({ cards, onStart, onGoToDashboard }: SetupProps) {
+function QuizSetup({ cards, lang, onStart, onGoToDashboard }: SetupProps) {
   const [cat,   setCat]   = useState<DSCategory | "all">("all");
   const [diff,  setDiff]  = useState<Difficulty | "all">("all");
   const [count, setCount] = useState<number | "all">(10);
