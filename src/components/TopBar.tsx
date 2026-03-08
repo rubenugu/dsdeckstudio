@@ -15,6 +15,7 @@ export function TopBar({ onMenuClick, onSearchOpen }: TopBarProps) {
   const { cards, streak } = useDeckStore();
   const { user, signOut } = useAuth();
   const { syncing }       = useSupabaseSync();
+  const { lang }          = useLang();
 
   const isMac = typeof navigator !== "undefined" && /mac/i.test(navigator.platform);
 
