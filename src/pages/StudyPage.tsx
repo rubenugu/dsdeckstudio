@@ -7,6 +7,8 @@ import {
 import { useDeckStore, DSCategory, Flashcard } from "@/store/useDeckStore";
 import { useSupabaseSync } from "@/hooks/useSupabaseSync";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLang } from "@/contexts/LanguageContext";
+import { t } from "@/i18n/translations";
 import { getDueCards } from "@/utils/sm2";
 import { SyntaxBlock } from "@/components/SyntaxBlock";
 
@@ -63,6 +65,7 @@ interface SetupProps {
 function SessionSetup({ cards, onStart, onGoToDashboard }: SetupProps) {
   const dueCards = getDueCards(cards);
   const [mode, setMode] = useState<StudyMode>(dueCards.length > 0 ? "due" : "all");
+  const { lang } = useLang();
 
   const categories = Array.from(new Set(cards.map((c) => c.category))) as DSCategory[];
 
@@ -96,11 +99,11 @@ function SessionSetup({ cards, onStart, onGoToDashboard }: SetupProps) {
             </div>
           </div>
           <h1 className="text-2xl font-semibold" style={{ color: "hsl(var(--foreground))" }}>
-            Start a Study Session
+            {t("study_title", lang)}
           </h1>
           <p className="text-sm" style={{ color: "hsl(var(--muted-foreground))" }}>
             {dueCards.length > 0
-              ? `You have ${dueCards.length} card${dueCards.length !== 1 ? "s" : ""} due for review`
+              ? `${dueCards.length} ${t("study_due_cards", lang)}`
               : "No cards due today — study ahead!"}
           </p>
         </div>
@@ -123,7 +126,7 @@ function SessionSetup({ cards, onStart, onGoToDashboard }: SetupProps) {
               }}
             >
               <span className="font-medium">
-                {m === "due" ? "⏰  Due cards only" : "📚  All cards"}
+                {m === "due" ? `⏰  ${t("study_option_due", lang)}` : `📚  ${t("study_option_all", lang)}`}
               </span>
               <span
                 className="font-mono text-xs px-2 py-0.5 rounded"
@@ -191,7 +194,7 @@ function SessionSetup({ cards, onStart, onGoToDashboard }: SetupProps) {
               opacity: queue.length === 0 ? 0.6 : 1,
             }}
           >
-            Start Session
+            {t("study_start", lang)}
             <ChevronRight size={15} />
             <span className="font-mono text-xs ml-0.5 px-1.5 py-0.5 rounded" style={{ background: "hsl(0 0% 0% / 0.2)" }}>
               {queue.length}
@@ -218,6 +221,7 @@ function CardReview({ queue, onComplete, onEditCard }: ReviewProps) {
   const { recordReview } = useDeckStore();
   const { upsertCard } = useSupabaseSync();
   const { user } = useAuth();
+  const { lang } = useLang();
   const [index, setIndex]     = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [results, setResults] = useState<ReviewResult[]>([]);
@@ -437,12 +441,12 @@ function CardReview({ queue, onComplete, onEditCard }: ReviewProps) {
               {/* Hint */}
               <div className="text-center space-y-1">
                 <p className="text-xs hidden sm:block" style={{ color: "hsl(var(--muted-foreground))" }}>
-                  Tap to reveal · <kbd className="px-1.5 py-0.5 rounded font-mono text-[10px]" style={{ background: "hsl(var(--surface-2))", border: "1px solid hsl(var(--border))" }}>Space</kbd>
+                  {t("study_tap_to_flip", lang)} · <kbd className="px-1.5 py-0.5 rounded font-mono text-[10px]" style={{ background: "hsl(var(--surface-2))", border: "1px solid hsl(var(--border))" }}>Space</kbd>
                 </p>
                 <p className="text-xs sm:hidden flex items-center justify-center gap-3" style={{ color: "hsl(var(--muted-foreground))" }}>
-                  <span className="flex items-center gap-1"><ArrowLeft size={11} /> Hard</span>
-                  <span>Tap to reveal</span>
-                  <span className="flex items-center gap-1">Easy <ArrowRight size={11} /></span>
+                  <span className="flex items-center gap-1"><ArrowLeft size={11} /> {t("study_rating_hard", lang)}</span>
+                  <span>{t("study_tap_to_flip", lang)}</span>
+                  <span className="flex items-center gap-1">{t("study_rating_easy", lang)} <ArrowRight size={11} /></span>
                 </p>
               </div>
             </div>
@@ -621,6 +625,7 @@ interface CompleteProps {
 
 function SessionComplete({ results, queue, elapsedSeconds, streak, onStudyAgain, onDashboard }: CompleteProps) {
   const { cards } = useDeckStore();
+  const { lang } = useLang();
   const total    = results.length;
   const correct  = results.filter((r) => r.quality >= 3).length;
   const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
@@ -659,7 +664,7 @@ function SessionComplete({ results, queue, elapsedSeconds, streak, onStudyAgain,
             {accuracy >= 80 ? "🏆" : accuracy >= 50 ? "💪" : "📖"}
           </div>
           <h2 className="text-2xl font-semibold" style={{ color: "hsl(var(--foreground))" }}>
-            Session Complete!
+            {t("study_complete_title", lang)}
           </h2>
           <p className="text-sm" style={{ color: "hsl(var(--muted-foreground))" }}>
             {accuracy >= 80 ? "Excellent work! You're mastering this material." : accuracy >= 50 ? "Good session. Keep up the practice." : "Keep going — repetition builds mastery."}
@@ -758,7 +763,7 @@ function SessionComplete({ results, queue, elapsedSeconds, streak, onStudyAgain,
             }}
           >
             <LayoutDashboard size={14} />
-            Dashboard
+            {t("study_go_dashboard", lang)}
           </button>
           <button
             onClick={onStudyAgain}
@@ -766,7 +771,7 @@ function SessionComplete({ results, queue, elapsedSeconds, streak, onStudyAgain,
             style={{ background: "hsl(var(--primary))", color: "hsl(var(--primary-foreground))" }}
           >
             <RotateCcw size={14} />
-            Study Again
+            {t("study_again", lang)}
           </button>
         </div>
       </div>

@@ -1,6 +1,8 @@
 import { useState, useMemo } from "react";
 import { useDeckStore, type Flashcard, type DSCategory, type Difficulty, DS_CATEGORIES } from "@/store/useDeckStore";
 import { useSupabaseSync } from "@/hooks/useSupabaseSync";
+import { useLang } from "@/contexts/LanguageContext";
+import { t } from "@/i18n/translations";
 import { Search, X, Code, Calendar, LayoutGrid, Plus, ChevronDown } from "lucide-react";
 import { SyntaxBlock } from "@/components/SyntaxBlock";
 
@@ -334,6 +336,7 @@ function CardModal({ card, onClose }: { card: Flashcard; onClose: () => void }) 
 
 export function AllCardsPage() {
   const { cards, setActiveNav } = useDeckStore();
+  const { lang } = useLang();
 
   const [search, setSearch] = useState("");
   const [selectedCats, setSelectedCats] = useState<Set<DSCategory>>(new Set());
@@ -394,10 +397,10 @@ export function AllCardsPage() {
         </div>
         <div>
           <p className="text-lg font-semibold" style={{ color: "hsl(var(--foreground))" }}>
-            No flashcards yet
+            {t("cards_empty", lang)}
           </p>
           <p className="text-sm mt-1" style={{ color: "hsl(var(--muted-foreground))" }}>
-            Add your first card to start building your DS deck.
+            {lang === "es" ? "Crea la primera y comienza a aprender." : "Add your first card to start building your DS deck."}
           </p>
         </div>
         <button
@@ -410,7 +413,7 @@ export function AllCardsPage() {
           }}
         >
           <Plus size={15} />
-          Add your first card
+          {t("cards_add_first", lang)}
         </button>
       </div>
     );
@@ -422,7 +425,7 @@ export function AllCardsPage() {
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div>
           <h1 className="text-xl font-semibold" style={{ color: "hsl(var(--foreground))" }}>
-            All Cards
+            {t("cards_title", lang)}
           </h1>
           <p className="text-sm mt-0.5" style={{ color: "hsl(var(--muted-foreground))" }}>
             {cards.length} total · {filtered.length} shown
@@ -481,7 +484,7 @@ export function AllCardsPage() {
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search cards, tags, subcategories…"
+          placeholder={t("cards_search", lang)}
           className="bg-transparent text-sm flex-1 outline-none"
           style={{ color: "hsl(var(--foreground))" }}
         />

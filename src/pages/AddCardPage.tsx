@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from "react";
 import { useDeckStore, DS_CATEGORIES, type DSCategory, type Difficulty } from "@/store/useDeckStore";
 import { useSupabaseSync } from "@/hooks/useSupabaseSync";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLang } from "@/contexts/LanguageContext";
+import { t } from "@/i18n/translations";
 import { toast } from "@/hooks/use-toast";
 import { CATEGORY_COLORS } from "@/pages/AllCardsPage";
 import {
@@ -482,6 +484,7 @@ export function AddCardPage() {
   const { addCard } = useDeckStore();
   const { upsertCard } = useSupabaseSync();
   const { user } = useAuth();
+  const { lang } = useLang();
 
   const [front, setFront] = useState("");
   const [back, setBack] = useState("");

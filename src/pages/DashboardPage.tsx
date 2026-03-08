@@ -1,12 +1,8 @@
 import React, { useMemo } from "react";
 import { useDeckStore } from "@/store/useDeckStore";
-import {
-  Flame,
-  BookMarked,
-  Clock,
-  CalendarDays,
-  Activity,
-} from "lucide-react";
+import { useLang } from "@/contexts/LanguageContext";
+import { t } from "@/i18n/translations";
+import { Flame, BookMarked, Clock, CalendarDays, Activity } from "lucide-react";
 import {
   BarChart,
   Bar,
@@ -143,6 +139,7 @@ function HeroCard({
 // ── Main component ─────────────────────────────────────────────────────────────
 export function DashboardPage() {
   const { cards, streak, studySessions } = useDeckStore();
+  const { lang } = useLang();
 
   // ── Hero stats ──────────────────────────────────────────────────────────────
   const mastered = cards.filter((c) => c.interval > 21).length;
@@ -217,10 +214,10 @@ export function DashboardPage() {
       {/* ── Header ─────────────────────────────────────────────────────────── */}
       <div>
         <h1 className="text-lg font-semibold" style={{ color: "hsl(var(--foreground))" }}>
-          Control Room
+          {t("dashboard_title", lang)}
         </h1>
         <p className="text-xs mt-0.5" style={{ color: "hsl(var(--muted-foreground))" }}>
-          Your DS Deck overview · {new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" })}
+          DS Deck · {new Date().toLocaleDateString(lang === "es" ? "es-ES" : "en-GB", { weekday: "long", day: "numeric", month: "long" })}
         </p>
       </div>
 
@@ -228,23 +225,23 @@ export function DashboardPage() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <HeroCard
           icon={Flame}
-          label="Current Streak"
-          value={`${streak} days`}
-          sub="Keep it going 🔥"
+          label={t("stat_streak", lang)}
+          value={`${streak} ${lang === "es" ? "días" : "days"}`}
+          sub="🔥"
           color="hsl(40 77% 58%)"
         />
         <HeroCard
           icon={BookMarked}
-          label="Cards Mastered"
+          label={t("stat_mastered", lang)}
           value={mastered}
-          sub={`${cards.length - mastered} still in progress`}
+          sub={`${cards.length - mastered} ${lang === "es" ? "en progreso" : "in progress"}`}
           color="hsl(133 57% 58%)"
         />
         <HeroCard
           icon={Clock}
-          label="Due Today"
+          label={t("stat_due_today", lang)}
           value={dueToday}
-          sub={dueToday > 0 ? "Time to review!" : "All caught up ✓"}
+          sub={dueToday > 0 ? (lang === "es" ? "¡A repasar!" : "Time to review!") : (lang === "es" ? "¡Al día ✓" : "All caught up ✓")}
           color={dueToday > 0 ? "hsl(354 70% 60%)" : "hsl(133 57% 58%)"}
         />
       </div>
@@ -254,10 +251,10 @@ export function DashboardPage() {
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-sm font-semibold flex items-center gap-2" style={{ color: "hsl(var(--foreground))" }}>
             <CalendarDays size={14} style={{ color: "hsl(var(--primary))" }} />
-            Study Activity
+            {t("chart_activity", lang)}
           </h2>
           <div className="flex items-center gap-1.5">
-            <span className="text-[10px]" style={{ color: "hsl(var(--muted-foreground))" }}>Less</span>
+            <span className="text-[10px]" style={{ color: "hsl(var(--muted-foreground))" }}>{lang === "es" ? "Menos" : "Less"}</span>
             {["#161b22","#0e4429","#006d32","#26a641","#39d353"].map((c) => (
               <div key={c} className="w-3 h-3 rounded-sm" style={{ background: c, border: "1px solid rgba(255,255,255,0.06)" }} />
             ))}
@@ -323,7 +320,7 @@ export function DashboardPage() {
         <div className="ds-card p-5">
           <h2 className="text-sm font-semibold mb-4 flex items-center gap-2" style={{ color: "hsl(var(--foreground))" }}>
             <Activity size={14} style={{ color: "hsl(var(--primary))" }} />
-            Category Mastery
+            {t("chart_category", lang)}
           </h2>
           <div className="space-y-3">
             {categoryStats.map(({ name, mastered: m, total, pct, color }) => (
@@ -351,7 +348,7 @@ export function DashboardPage() {
         <div className="ds-card p-5">
           <h2 className="text-sm font-semibold mb-4 flex items-center gap-2" style={{ color: "hsl(var(--foreground))" }}>
             <CalendarDays size={14} style={{ color: "hsl(var(--primary))" }} />
-            Due in Next 14 Days
+            {t("chart_upcoming", lang)}
           </h2>
           <ResponsiveContainer width="100%" height={180}>
             <LineChart data={dueTimeline} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
@@ -392,13 +389,13 @@ export function DashboardPage() {
       <div className="ds-card p-5">
         <h2 className="text-sm font-semibold mb-4 flex items-center gap-2" style={{ color: "hsl(var(--foreground))" }}>
           <Activity size={14} style={{ color: "hsl(var(--primary))" }} />
-          Recent Study Sessions
+          {t("recent_sessions", lang)}
         </h2>
 
         {recentSessions.length === 0 ? (
           <div className="text-center py-8">
             <p className="text-sm" style={{ color: "hsl(var(--muted-foreground))" }}>
-              No sessions yet — start studying to see your history here.
+              {lang === "es" ? "Sin sesiones aún — ¡comienza a estudiar!" : "No sessions yet — start studying to see your history here."}
             </p>
           </div>
         ) : (
@@ -406,15 +403,12 @@ export function DashboardPage() {
             {/* Table header */}
             <div
               className="grid grid-cols-4 text-[10px] font-medium uppercase tracking-wide pb-2 mb-1"
-              style={{
-                color: "hsl(var(--muted-foreground))",
-                borderBottom: "1px solid hsl(var(--border))",
-              }}
+              style={{ color: "hsl(var(--muted-foreground))", borderBottom: "1px solid hsl(var(--border))" }}
             >
-              <span>Date</span>
-              <span className="text-right">Reviewed</span>
-              <span className="text-right">Accuracy</span>
-              <span className="text-right">Time</span>
+              <span>{lang === "es" ? "Fecha" : "Date"}</span>
+              <span className="text-right">{t("study_complete_reviewed", lang)}</span>
+              <span className="text-right">{t("study_complete_accuracy", lang)}</span>
+              <span className="text-right">{t("study_complete_time", lang)}</span>
             </div>
 
             <div className="space-y-0.5">

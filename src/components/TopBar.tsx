@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useDeckStore } from "@/store/useDeckStore";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSupabaseSync } from "@/hooks/useSupabaseSync";
+import { useLang } from "@/contexts/LanguageContext";
+import { t } from "@/i18n/translations";
 import { Layers, Menu, Search, LogOut, RefreshCw } from "lucide-react";
 
 interface TopBarProps {
@@ -13,6 +15,7 @@ export function TopBar({ onMenuClick, onSearchOpen }: TopBarProps) {
   const { cards, streak } = useDeckStore();
   const { user, signOut } = useAuth();
   const { syncing }       = useSupabaseSync();
+  const { lang }          = useLang();
 
   const isMac = typeof navigator !== "undefined" && /mac/i.test(navigator.platform);
 
@@ -108,7 +111,7 @@ export function TopBar({ onMenuClick, onSearchOpen }: TopBarProps) {
         >
           <span>🔥</span>
           <span className="font-mono">{streak}</span>
-          <span className="opacity-80 hidden sm:inline">day streak</span>
+          <span className="opacity-80 hidden sm:inline">{t("streak_label", lang)}</span>
         </div>
 
         <div
@@ -117,7 +120,7 @@ export function TopBar({ onMenuClick, onSearchOpen }: TopBarProps) {
         >
           <Layers size={12} />
           <span className="font-mono">{cards.length}</span>
-          <span className="opacity-80 hidden sm:inline">cards</span>
+          <span className="opacity-80 hidden sm:inline">{t("total_cards", lang)}</span>
         </div>
 
         {/* User info + logout */}
