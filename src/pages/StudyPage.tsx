@@ -126,7 +126,7 @@ function SessionSetup({ cards, onStart, onGoToDashboard }: SetupProps) {
               }}
             >
               <span className="font-medium">
-                {m === "due" ? "⏰  Due cards only" : "📚  All cards"}
+                {m === "due" ? `⏰  ${t("study_option_due", lang)}` : `📚  ${t("study_option_all", lang)}`}
               </span>
               <span
                 className="font-mono text-xs px-2 py-0.5 rounded"
