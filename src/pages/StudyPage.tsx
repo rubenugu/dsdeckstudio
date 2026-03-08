@@ -694,7 +694,7 @@ function SessionComplete({ results, queue, elapsedSeconds, streak, onStudyAgain,
 type Screen = "setup" | "review" | "complete";
 
 export function StudyPage() {
-  const { cards, streak, setActiveNav } = useDeckStore();
+  const { cards, streak, setActiveNav, addStudySession } = useDeckStore();
   const [screen, setScreen]     = useState<Screen>("setup");
   const [queue, setQueue]       = useState<Flashcard[]>([]);
   const [results, setResults]   = useState<ReviewResult[]>([]);
@@ -710,6 +710,14 @@ export function StudyPage() {
   function handleComplete(r: ReviewResult[], secs: number) {
     setResults(r);
     setElapsed(secs);
+    const total   = r.length;
+    const correct = r.filter((x) => x.quality >= 3).length;
+    addStudySession({
+      date: new Date().toISOString(),
+      reviewed: total,
+      accuracy: total > 0 ? Math.round((correct / total) * 100) : 0,
+      durationSec: secs,
+    });
     setScreen("complete");
   }
 
