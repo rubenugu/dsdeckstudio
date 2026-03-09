@@ -28,7 +28,6 @@ const DIFF_COLORS: Record<Difficulty, string> = {
 };
 
 const QUESTION_COUNTS = [5, 10, 20] as const;
-const TIMER_SECS = 30;
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface QuizQuestion {
