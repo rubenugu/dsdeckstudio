@@ -372,10 +372,6 @@ function QuizQuestion({ questions, lang, onComplete }: QuestionProps) {
             {" / "}
             <span className="font-mono font-semibold" style={{ color: "hsl(var(--foreground))" }}>{questions.length}</span>
           </span>
-          <span className="flex items-center gap-1.5" style={{ color: timerColor }}>
-            <Clock size={12} />
-            <span className="font-mono font-semibold">{timeLeft}s</span>
-          </span>
         </div>
 
         {/* Quiz progress bar */}
@@ -383,14 +379,6 @@ function QuizQuestion({ questions, lang, onComplete }: QuestionProps) {
           <div
             className="h-full rounded-full transition-all duration-500"
             style={{ width: `${((index) / questions.length) * 100}%`, background: "hsl(var(--primary))" }}
-          />
-        </div>
-
-        {/* Timer bar */}
-        <div className="h-1 rounded-full overflow-hidden" style={{ background: "hsl(var(--surface-2))" }}>
-          <div
-            className="h-full rounded-full transition-all duration-1000 ease-linear"
-            style={{ width: `${timerPct}%`, background: timerColor }}
           />
         </div>
       </div>
