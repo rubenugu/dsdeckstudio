@@ -46,6 +46,7 @@ export function EditCardModal({ cardId, onClose }: Props) {
     if (!card) return;
     setFront(card.front);
     setBack(card.back);
+    setShortAnswer(card.shortAnswer ?? "");
     setCodeExample(card.codeExample ?? "");
     setShowCode(!!card.codeExample);
     setCategory(card.category);
