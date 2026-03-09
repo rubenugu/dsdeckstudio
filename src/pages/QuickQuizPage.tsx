@@ -53,13 +53,14 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
-/** Trim back text to a readable length for MCQ answers */
-function trimAnswer(text: string, maxLen = 90) {
-  const first = text.split("\n")[0].trim();
-  return first.length > maxLen ? first.slice(0, maxLen) + "…" : first;
-}
+  // ── trim answer: prefer shortAnswer if set, else first line of back ──────────
+  function getDisplayAnswer(card: { back: string; shortAnswer?: string }, maxLen = 90) {
+    if (card.shortAnswer?.trim()) return card.shortAnswer.trim();
+    const first = card.back.split("\n")[0].trim();
+    return first.length > maxLen ? first.slice(0, maxLen) + "…" : first;
+  }
 
-function buildChoices(card: Flashcard, allCards: Flashcard[]): string[] {
+  function buildChoices(card: Flashcard, allCards: Flashcard[]): string[] {
   const correct = trimAnswer(card.back);
   // Distractors: prefer same category, else random
   const pool = allCards
