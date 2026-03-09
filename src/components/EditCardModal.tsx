@@ -101,6 +101,7 @@ export function EditCardModal({ cardId, onClose }: Props) {
     const updates: Partial<Flashcard> = {
       front:       front.trim(),
       back:        back.trim(),
+      shortAnswer: shortAnswer.trim() || undefined,
       codeExample: codeExample.trim() || undefined,
       category,
       subcategory: subcategory.trim() || category,
