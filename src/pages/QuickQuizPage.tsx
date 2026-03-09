@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import {
   Zap, ChevronRight, RotateCcw, LayoutDashboard,
-  Clock, CheckCircle2, XCircle, Trophy, Target, Flame,
+  CheckCircle2, XCircle, Trophy, Target, Flame,
 } from "lucide-react";
 import { useDeckStore, type Flashcard, type DSCategory, type Difficulty, DS_CATEGORIES } from "@/store/useDeckStore";
 import { useLang } from "@/contexts/LanguageContext";
@@ -28,7 +28,6 @@ const DIFF_COLORS: Record<Difficulty, string> = {
 };
 
 const QUESTION_COUNTS = [5, 10, 20] as const;
-const TIMER_SECS = 30;
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface QuizQuestion {
@@ -307,33 +306,15 @@ function QuizQuestion({ questions, lang, onComplete }: QuestionProps) {
   const [index,    setIndex]    = useState(0);
   const [chosen,   setChosen]   = useState<string | null>(null);
   const [revealed, setRevealed] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(TIMER_SECS);
   const [results,  setResults]  = useState<QuizResult[]>([]);
   const questionStart = useRef(Date.now());
 
   const q = questions[index];
   const catColor  = CAT_COLORS[q.card.category] ?? "#58a6ff";
   const diffColor = DIFF_COLORS[q.card.difficulty];
-  const timerPct  = (timeLeft / TIMER_SECS) * 100;
-  const timerColor =
-    timeLeft > 15 ? "hsl(var(--success))" :
-    timeLeft > 7  ? "hsl(var(--warning))" :
-    "hsl(var(--destructive))";
 
-  // Countdown timer
+  // Reset state when question changes
   useEffect(() => {
-    if (revealed) return;
-    if (timeLeft <= 0) {
-      handleAnswer(null); // timed out
-      return;
-    }
-    const id = setTimeout(() => setTimeLeft((t) => t - 1), 1000);
-    return () => clearTimeout(id);
-  }, [timeLeft, revealed]);
-
-  // Reset timer when question changes
-  useEffect(() => {
-    setTimeLeft(TIMER_SECS);
     setChosen(null);
     setRevealed(false);
     questionStart.current = Date.now();
@@ -390,10 +371,6 @@ function QuizQuestion({ questions, lang, onComplete }: QuestionProps) {
             {" / "}
             <span className="font-mono font-semibold" style={{ color: "hsl(var(--foreground))" }}>{questions.length}</span>
           </span>
-          <span className="flex items-center gap-1.5" style={{ color: timerColor }}>
-            <Clock size={12} />
-            <span className="font-mono font-semibold">{timeLeft}s</span>
-          </span>
         </div>
 
         {/* Quiz progress bar */}
@@ -401,14 +378,6 @@ function QuizQuestion({ questions, lang, onComplete }: QuestionProps) {
           <div
             className="h-full rounded-full transition-all duration-500"
             style={{ width: `${((index) / questions.length) * 100}%`, background: "hsl(var(--primary))" }}
-          />
-        </div>
-
-        {/* Timer bar */}
-        <div className="h-1 rounded-full overflow-hidden" style={{ background: "hsl(var(--surface-2))" }}>
-          <div
-            className="h-full rounded-full transition-all duration-1000 ease-linear"
-            style={{ width: `${timerPct}%`, background: timerColor }}
           />
         </div>
       </div>
@@ -508,16 +477,6 @@ function QuizQuestion({ questions, lang, onComplete }: QuestionProps) {
         })}
       </div>
 
-      {/* Timed out message */}
-      {revealed && chosen === null && (
-        <div
-          className="w-full max-w-2xl flex items-center gap-2 px-4 py-3 rounded-lg text-sm"
-          style={{ background: "hsl(var(--destructive) / 0.1)", border: "1px solid hsl(var(--destructive) / 0.3)", color: "hsl(var(--destructive))" }}
-        >
-          <Clock size={14} />
-          {t("quiz_times_up", lang)}
-        </div>
-      )}
 
       {/* Next button (after reveal) */}
       {revealed && (
@@ -570,8 +529,6 @@ function QuizResults({ results, lang, onRetry, onDashboard }: ResultsProps) {
   const total    = results.length;
   const correct  = results.filter((r) => r.correct).length;
   const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
-  const totalTime = results.reduce((s, r) => s + r.timeTaken, 0);
-  const avgTime   = total > 0 ? (totalTime / total).toFixed(1) : "0";
 
   const wrong = results.filter((r) => !r.correct);
 
@@ -594,11 +551,10 @@ function QuizResults({ results, lang, onRetry, onDashboard }: ResultsProps) {
         </div>
 
         {/* Stat cards */}
-        <div className="grid grid-cols-4 gap-3">
+        <div className="grid grid-cols-3 gap-3">
           {[
             { icon: Target, label: t("quiz_score_label", lang),    value: `${correct}/${total}`, color: grade.color },
             { icon: Trophy, label: t("quiz_accuracy_label", lang), value: `${accuracy}%`,        color: grade.color },
-            { icon: Clock,  label: t("quiz_avg_time", lang),       value: `${avgTime}s`,         color: "hsl(var(--primary))" },
             { icon: Flame,  label: t("quiz_streak_label", lang),   value: wrong.length === 0 ? t("quiz_perfect", lang) : `${total - wrong.length}`, color: "#f78166" },
           ].map(({ icon: Icon, label, value, color }) => (
             <div key={label} className="ds-card p-3 text-center space-y-1">
@@ -632,9 +588,8 @@ function QuizResults({ results, lang, onRetry, onDashboard }: ResultsProps) {
             {/* Breakdown bars */}
             <div className="flex-1 space-y-2">
               {[
-                { label: t("quiz_correct", lang),   count: correct,                                              color: "#3fb950" },
-                { label: t("quiz_wrong", lang),     count: wrong.length,                                         color: "#f85149" },
-                { label: t("quiz_timed_out", lang), count: results.filter(r => r.chosen === null).length,        color: "#d29922" },
+                { label: t("quiz_correct", lang), count: correct,      color: "#3fb950" },
+                { label: t("quiz_wrong", lang),   count: wrong.length, color: "#f85149" },
               ].map(({ label, count, color }) => (
                 <div key={label} className="flex items-center gap-2 text-xs">
                   <span className="w-16 shrink-0" style={{ color: "hsl(var(--muted-foreground))" }}>{label}</span>

@@ -76,12 +76,6 @@ export function Sidebar({ mobileOpen = false, onMobileClose }: SidebarProps) {
             >
               <Icon size={16} style={{ color: isActive ? activeColor : undefined, flexShrink: 0, transition: "color 200ms ease" }} />
               <span className="text-sm font-medium">{t(key, lang)}</span>
-              {isQuiz && !isActive && (
-                <span className="ml-auto text-[9px] px-1.5 py-0.5 rounded font-semibold"
-                  style={{ background: "hsl(var(--warning) / 0.15)", color: "hsl(var(--warning))", border: "1px solid hsl(var(--warning) / 0.3)" }}>
-                  NEW
-                </span>
-              )}
             </button>
           );
         })}
