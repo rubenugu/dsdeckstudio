@@ -92,7 +92,15 @@ export function SettingsPage() {
         imported.forEach((c: any) => {
           if (c.front && c.back) {
             const newCard = store.addCard(c);
-            upsertCard(newCard);
+            // Override SM-2 fields if explicitly provided in the JSON
+            const sm2Overrides: Partial<import("@/store/useDeckStore").Flashcard> = {};
+            if (c.repetitions !== undefined) sm2Overrides.repetitions = Number(c.repetitions);
+            if (c.easeFactor  !== undefined) sm2Overrides.easeFactor  = Number(c.easeFactor);
+            if (c.interval    !== undefined) sm2Overrides.interval    = Number(c.interval);
+            if (Object.keys(sm2Overrides).length > 0) {
+              store.updateCard(newCard.id, sm2Overrides);
+            }
+            upsertCard({ ...newCard, ...sm2Overrides });
             count++;
           }
         });
