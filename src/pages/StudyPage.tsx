@@ -11,6 +11,7 @@ import { useLang } from "@/contexts/LanguageContext";
 import { t } from "@/i18n/translations";
 import { getDueCards } from "@/utils/sm2";
 import { SyntaxBlock } from "@/components/SyntaxBlock";
+import { EditCardModal } from "@/components/EditCardModal";
 
 // ── Category colours ─────────────────────────────────────────────────────────
 const CAT_COLORS: Record<DSCategory, string> = {
