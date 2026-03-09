@@ -378,6 +378,7 @@ export function AddCardPage() {
     const newCard = addCard({
       front: front.trim(),
       back: back.trim(),
+      shortAnswer: shortAnswer.trim() || undefined,
       codeExample: codeExample.trim() || undefined,
       category,
       subcategory: subcategory.trim() || category,
