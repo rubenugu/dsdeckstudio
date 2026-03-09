@@ -53,15 +53,15 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
-  // ── trim answer: prefer shortAnswer if set, else first line of back ──────────
-  function getDisplayAnswer(card: { back: string; shortAnswer?: string }, maxLen = 90) {
-    if (card.shortAnswer?.trim()) return card.shortAnswer.trim();
-    const first = card.back.split("\n")[0].trim();
-    return first.length > maxLen ? first.slice(0, maxLen) + "…" : first;
-  }
+/** Prefer shortAnswer if set, else first line of back trimmed to maxLen */
+function getDisplayAnswer(card: Flashcard, maxLen = 90): string {
+  if (card.shortAnswer?.trim()) return card.shortAnswer.trim();
+  const first = card.back.split("\n")[0].trim();
+  return first.length > maxLen ? first.slice(0, maxLen) + "…" : first;
+}
 
-  function buildChoices(card: Flashcard, allCards: Flashcard[]): string[] {
-  const correct = trimAnswer(card.back);
+function buildChoices(card: Flashcard, allCards: Flashcard[]): string[] {
+  const correct = getDisplayAnswer(card);
   // Distractors: prefer same category, else random
   const pool = allCards
     .filter((c) => c.id !== card.id)
@@ -74,7 +74,7 @@ function shuffle<T>(arr: T[]): T[] {
   const distractors: string[] = [];
   for (const c of ordered) {
     if (distractors.length >= 3) break;
-    const t = trimAnswer(c.back);
+    const t = getDisplayAnswer(c);
     if (t !== correct && !distractors.includes(t)) distractors.push(t);
   }
   // Pad if not enough
@@ -97,9 +97,10 @@ function buildQuiz(
   return limited.map((card) => ({
     card,
     choices: buildChoices(card, cards),
-    correct: trimAnswer(card.back),
+    correct: getDisplayAnswer(card),
   }));
 }
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Screen 1 — Setup
