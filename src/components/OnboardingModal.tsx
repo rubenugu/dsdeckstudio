@@ -2,46 +2,24 @@ import { useState, useEffect } from "react";
 import {
   Layers, BookOpen, BarChart2, ChevronRight, X, Check,
 } from "lucide-react";
+import { useLang } from "@/contexts/LanguageContext";
+import { t } from "@/i18n/translations";
 
-const STEPS = [
-  {
-    id: 1,
-    emoji: "📚",
-    title: "Your Cards",
-    nav: "all-cards",
-    description:
-      "Every card has a front (question), back (answer) and an optional Python code example. Use the Add Card page to build your personal DS knowledge base.",
-    highlight: "All Cards",
-    icon: Layers,
-  },
-  {
-    id: 2,
-    emoji: "🧠",
-    title: "Study with Science",
-    nav: "study",
-    description:
-      "DS Deck uses the SM-2 spaced repetition algorithm. Rate each card 0–5 after flipping — the algorithm schedules your next review automatically so you spend time only where you need it.",
-    highlight: "Study",
-    icon: BookOpen,
-  },
-  {
-    id: 3,
-    emoji: "📊",
-    title: "Track Your Progress",
-    nav: "dashboard",
-    description:
-      "The Dashboard is your control room: view your study heatmap, category mastery, due-card timeline, and recent sessions at a glance.",
-    highlight: "Dashboard",
-    icon: BarChart2,
-  },
+const STEP_DEFS = [
+  { id: 1, emoji: "📚", titleKey: "Your Cards",          nav: "all-cards", highlightKey: "All Cards",  icon: Layers,   descKey: "onboard_step1_desc" as const },
+  { id: 2, emoji: "🧠", titleKey: "Study with Science",  nav: "study",     highlightKey: "Study",      icon: BookOpen, descKey: "onboard_step2_desc" as const },
+  { id: 3, emoji: "📊", titleKey: "Track Your Progress", nav: "dashboard", highlightKey: "Dashboard",  icon: BarChart2, descKey: "onboard_step3_desc" as const },
 ];
 
 const STORAGE_KEY = "dsdeck_onboarded";
 
 export function OnboardingModal() {
+  const { lang } = useLang();
   const [visible, setVisible] = useState(false);
   const [step, setStep]       = useState(0);
   const [closing, setClosing] = useState(false);
+
+  const STEPS = STEP_DEFS.map((s) => ({ ...s, description: t(s.descKey, lang) }));
 
   useEffect(() => {
     const done = localStorage.getItem(STORAGE_KEY);
@@ -134,6 +112,21 @@ export function OnboardingModal() {
               {current.description}
             </p>
           </div>
+
+          {/* Sample cards note — only on step 1 (Your Cards) */}
+          {step === 0 && (
+            <div
+              className="flex items-start gap-2.5 p-3 rounded-lg text-xs leading-relaxed"
+              style={{
+                background: "hsl(var(--warning) / 0.08)",
+                border:     "1px solid hsl(var(--warning) / 0.25)",
+                color:      "hsl(var(--muted-foreground))",
+              }}
+            >
+              <span style={{ fontSize: 14, lineHeight: 1, marginTop: 1 }}>💡</span>
+              <span>{t("onboard_sample_note", lang)}</span>
+            </div>
+          )}
 
           {/* Highlight card */}
           <div

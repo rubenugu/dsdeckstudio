@@ -1,73 +1,112 @@
-# Welcome to your Lovable project
+# DS Deck Studio
 
-## Project info
+**Active Recall Studio** — Aplicación de flashcards con repetición espaciada para aprender Data Science. SPA offline-first con sincronización en la nube via Supabase.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Stack
 
-## How can I edit this code?
+- **Vite** + **React 18** + **TypeScript**
+- **Tailwind CSS** + **shadcn-ui** (Radix UI)
+- **Zustand** (estado local + `localStorage` via `persist`)
+- **Supabase** (auth + sync en la nube)
+- **TanStack Query**
+- **Vitest** (tests)
 
-There are several ways of editing your application.
+## Funcionalidades
 
-**Use Lovable**
+- Flashcards con frente, reverso, ejemplo de código y respuesta corta
+- Algoritmo **SM-2** de repetición espaciada (ease factor, intervalo, próximo repaso)
+- **Quick Quiz** — modo de opción múltiple cronometrado
+- Dashboard con heatmap de actividad, dominio por categoría y timeline de repasos
+- Sync bidireccional con Supabase al hacer login
+- Soporte multiidioma **EN / ES**
+- Tema claro / oscuro
+- Importar / exportar mazos en JSON
+- Paleta de comandos (`Ctrl+K`)
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+## Inicio rápido
 
-Changes made via Lovable will be committed automatically to this repo.
+```bash
+# Instalar dependencias
+npm install
 
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Servidor de desarrollo (puerto 8080)
 npm run dev
+
+# Build de producción
+npm run build
+
+# Preview del build
+npm run preview
 ```
 
-**Edit a file directly in GitHub**
+## Comandos útiles
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```bash
+npm run lint        # ESLint
+npm run test        # Vitest (una vez)
+npm run test:watch  # Vitest en modo watch
+```
 
-**Use GitHub Codespaces**
+## Variables de entorno
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+Crea un archivo `.env` en la raíz con las credenciales de tu proyecto Supabase:
 
-## What technologies are used for this project?
+```env
+VITE_SUPABASE_URL=https://<tu-proyecto>.supabase.co
+VITE_SUPABASE_ANON_KEY=<tu-anon-key>
+```
 
-This project is built with:
+## Arquitectura
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+```
+src/
+├── components/       # UI compartida (TopBar, Sidebar, modales…)
+│   └── ui/           # Primitivos shadcn-ui
+├── contexts/         # AuthContext, LanguageContext
+├── hooks/            # useSupabaseSync
+├── i18n/             # translations.ts (EN/ES)
+├── integrations/
+│   └── supabase/     # client.ts, types.ts
+├── pages/            # Dashboard, Study, QuickQuiz, AllCards, AddCard, Settings, Auth
+├── store/
+│   └── useDeckStore.ts  # Zustand store principal
+└── utils/
+    └── sm2.ts           # Algoritmo SM-2
+```
 
-## How can I deploy this project?
+### Flujo de datos
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+1. **Local** — Zustand store persiste tarjetas, racha y sesiones en `localStorage`.
+2. **Cloud** — `useSupabaseSync` carga datos al hacer login y hace upsert/delete en cada cambio.
+3. **Routing** — todo es una SPA; la navegación se gestiona con `activeNav` en el store (sin React Router para las rutas internas).
 
-## Can I connect a custom domain to my Lovable project?
+### Esquema de tarjeta
 
-Yes, you can!
+```ts
+interface Flashcard {
+  id: string;
+  category: DSCategory;
+  subcategory: string;
+  front: string;
+  back: string;
+  shortAnswer?: string;   // respuesta breve para Quick Quiz
+  codeExample?: string;   // snippet de código
+  difficulty: "beginner" | "intermediate" | "advanced";
+  tags: string[];
+  created: string;
+  lastReviewed?: string;
+  nextReview?: string;
+  // SM-2
+  repetitions: number;
+  easeFactor: number;
+  interval: number;
+}
+```
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## Tablas Supabase
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+| Tabla | Descripción |
+|---|---|
+| `flashcards` | Tarjetas del usuario |
+| `study_sessions` | Historial de sesiones de estudio |
+| `user_settings` | Preferencias (idioma, tema…) |

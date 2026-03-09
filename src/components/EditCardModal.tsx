@@ -3,6 +3,8 @@ import { X, Code, Plus, CheckCircle2, AlertCircle, ChevronDown, Tag } from "luci
 import { useDeckStore, DS_CATEGORIES, type DSCategory, type Difficulty, type Flashcard } from "@/store/useDeckStore";
 import { useSupabaseSync } from "@/hooks/useSupabaseSync";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLang } from "@/contexts/LanguageContext";
+import { t } from "@/i18n/translations";
 import { toast } from "@/hooks/use-toast";
 import { CATEGORY_COLORS } from "@/pages/AllCardsPage";
 import { CodeEditor } from "@/components/CodeEditor";
@@ -27,6 +29,7 @@ export function EditCardModal({ cardId, onClose }: Props) {
   const { cards, updateCard } = useDeckStore();
   const { upsertCard } = useSupabaseSync();
   const { user } = useAuth();
+  const { lang } = useLang();
 
   const card = cards.find((c) => c.id === cardId) ?? null;
 
@@ -59,10 +62,10 @@ export function EditCardModal({ cardId, onClose }: Props) {
   if (!card || !cardId) return null;
 
   const errors = {
-    front: touched.front && !front.trim() ? "Question is required"
-           : front.length > FRONT_MAX     ? `Max ${FRONT_MAX} chars` : "",
-    back:  touched.back  && !back.trim()  ? "Answer is required"
-           : back.length > BACK_MAX       ? `Max ${BACK_MAX} chars`  : "",
+    front: touched.front && !front.trim() ? t("edit_required_q", lang)
+           : front.length > FRONT_MAX     ? t("edit_max_chars", lang).replace("{n}", String(FRONT_MAX)) : "",
+    back:  touched.back  && !back.trim()  ? t("edit_required_a", lang)
+           : back.length > BACK_MAX       ? t("edit_max_chars", lang).replace("{n}", String(BACK_MAX))  : "",
   };
   const isValid = !!front.trim() && !!back.trim() && !errors.front && !errors.back;
 

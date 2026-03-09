@@ -61,7 +61,7 @@ export function SettingsPage() {
   }
 
   function clearAll() {
-    if (window.confirm("Delete ALL cards? This cannot be undone.")) {
+    if (window.confirm(t("settings_delete_confirm", lang))) {
       cards.forEach((c) => { store.deleteCard(c.id); deleteCardRemote(c.id); });
       toast({ title: "🗑 All cards deleted", duration: 3000 });
     }
@@ -120,7 +120,7 @@ export function SettingsPage() {
           {t("settings_title", lang)}
         </h1>
         <p className="text-sm mt-0.5" style={{ color: "hsl(var(--muted-foreground))" }}>
-          {lang === "es" ? "Gestiona tu mazo y preferencias" : "Manage your deck and preferences"}
+          {t("settings_subtitle", lang)}
         </p>
       </div>
 
@@ -186,15 +186,15 @@ export function SettingsPage() {
         {/* ── Stats panel ──────────────────────────────────────────────────── */}
         <div className="ds-card p-5 space-y-3">
           <h2 className="text-sm font-semibold" style={{ color: "hsl(var(--foreground))" }}>
-            Session Statistics
+            {t("settings_session_stats", lang)}
           </h2>
           {[
-            ["Total cards",            cards.length],
-            ["Total repetitions",      totalReps],
-            ["Average ease factor",    avgEF],
-            ["Mastered (interval > 21d)", masteredCards],
-            ["Needs practice",         needsPractice],
-            ["Study sessions logged",  (studySessions ?? []).length],
+            [t("settings_stat_total_cards", lang),   cards.length],
+            [t("settings_stat_repetitions", lang),   totalReps],
+            [t("settings_stat_ease", lang),          avgEF],
+            [t("settings_stat_mastered", lang),      masteredCards],
+            [t("settings_stat_practice", lang),      needsPractice],
+            [t("settings_stat_sessions", lang),      (studySessions ?? []).length],
           ].map(([label, val]) => (
             <div key={String(label)} className="flex justify-between text-sm">
               <span style={{ color: "hsl(var(--muted-foreground))" }}>{label}</span>
@@ -206,7 +206,7 @@ export function SettingsPage() {
         {/* ── Export / Import ───────────────────────────────────────────────── */}
         <div className="ds-card p-5 space-y-3">
           <h2 className="text-sm font-semibold" style={{ color: "hsl(var(--foreground))" }}>
-            Backup & Restore
+            {t("settings_backup", lang)}
           </h2>
           <p className="text-xs" style={{ color: "hsl(var(--muted-foreground))" }}>
             Export your deck as JSON to back up or share. Import to merge cards from a backup.
