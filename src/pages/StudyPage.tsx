@@ -223,10 +223,11 @@ function CardReview({ queue, onComplete, onEditCard }: ReviewProps) {
   const { upsertCard } = useSupabaseSync();
   const { user } = useAuth();
   const { lang } = useLang();
-  const [index, setIndex]     = useState(0);
-  const [flipped, setFlipped] = useState(false);
-  const [results, setResults] = useState<ReviewResult[]>([]);
-  const [exiting, setExiting] = useState(false);
+  const [index, setIndex]           = useState(0);
+  const [flipped, setFlipped]       = useState(false);
+  const [results, setResults]       = useState<ReviewResult[]>([]);
+  const [exiting, setExiting]       = useState(false);
+  const [showEndConfirm, setShowEndConfirm] = useState(false);
 
   // Swipe state
   const touchStartX   = useRef<number | null>(null);
@@ -503,7 +504,7 @@ function CardReview({ queue, onComplete, onEditCard }: ReviewProps) {
           </div>
         )}
 
-        {/* Edit / Skip actions */}
+        {/* Edit / Skip / End session actions */}
         <div className="w-full max-w-2xl mx-auto flex items-center justify-between text-xs" style={{ color: "hsl(var(--muted-foreground))" }}>
           <button
             onClick={() => onEditCard(card.id)}
@@ -516,16 +517,62 @@ function CardReview({ queue, onComplete, onEditCard }: ReviewProps) {
             Edit card
           </button>
 
-          <button
-            onClick={handleSkip}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-md transition-all duration-200"
-            style={{ border: "1px solid hsl(var(--border))" }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "hsl(var(--surface-2))"; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
-          >
-            <SkipForward size={12} />
-            Skip
-          </button>
+          <div className="flex items-center gap-2">
+            {/* End session button / confirm inline */}
+            {showEndConfirm ? (
+              <div
+                className="flex items-center gap-2 px-3 py-1.5 rounded-md animate-fade-in"
+                style={{ background: "hsl(var(--destructive) / 0.08)", border: "1px solid hsl(var(--destructive) / 0.35)" }}
+              >
+                <span style={{ color: "hsl(var(--destructive))", fontSize: "11px" }}>
+                  End now? ({results.length}/{queue.length} rated)
+                </span>
+                <button
+                  onClick={() => {
+                    const elapsed = Math.round((Date.now() - startTime.current) / 1000);
+                    onComplete(results, elapsed);
+                  }}
+                  className="text-[11px] font-semibold px-2 py-0.5 rounded transition-all duration-200"
+                  style={{ background: "hsl(var(--destructive) / 0.18)", color: "hsl(var(--destructive))", border: "1px solid hsl(var(--destructive) / 0.4)" }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "hsl(var(--destructive) / 0.3)"; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "hsl(var(--destructive) / 0.18)"; }}
+                >
+                  Yes, end
+                </button>
+                <button
+                  onClick={() => setShowEndConfirm(false)}
+                  className="text-[11px] px-2 py-0.5 rounded transition-all duration-200"
+                  style={{ color: "hsl(var(--muted-foreground))", border: "1px solid hsl(var(--border))" }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "hsl(var(--surface-2))"; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
+                >
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setShowEndConfirm(true)}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-md transition-all duration-200"
+                style={{ border: "1px solid hsl(var(--border))" }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "hsl(var(--surface-2))"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
+              >
+                <CheckCircle2 size={12} />
+                End session
+              </button>
+            )}
+
+            <button
+              onClick={handleSkip}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-md transition-all duration-200"
+              style={{ border: "1px solid hsl(var(--border))" }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "hsl(var(--surface-2))"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
+            >
+              <SkipForward size={12} />
+              Skip
+            </button>
+          </div>
         </div>
       </div>
 
