@@ -590,9 +590,8 @@ function QuizResults({ results, lang, onRetry, onDashboard }: ResultsProps) {
             {/* Breakdown bars */}
             <div className="flex-1 space-y-2">
               {[
-                { label: t("quiz_correct", lang),   count: correct,                                              color: "#3fb950" },
-                { label: t("quiz_wrong", lang),     count: wrong.length,                                         color: "#f85149" },
-                { label: t("quiz_timed_out", lang), count: results.filter(r => r.chosen === null).length,        color: "#d29922" },
+                { label: t("quiz_correct", lang), count: correct,      color: "#3fb950" },
+                { label: t("quiz_wrong", lang),   count: wrong.length, color: "#f85149" },
               ].map(({ label, count, color }) => (
                 <div key={label} className="flex items-center gap-2 text-xs">
                   <span className="w-16 shrink-0" style={{ color: "hsl(var(--muted-foreground))" }}>{label}</span>
