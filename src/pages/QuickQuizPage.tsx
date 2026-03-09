@@ -553,11 +553,10 @@ function QuizResults({ results, lang, onRetry, onDashboard }: ResultsProps) {
         </div>
 
         {/* Stat cards */}
-        <div className="grid grid-cols-4 gap-3">
+        <div className="grid grid-cols-3 gap-3">
           {[
             { icon: Target, label: t("quiz_score_label", lang),    value: `${correct}/${total}`, color: grade.color },
             { icon: Trophy, label: t("quiz_accuracy_label", lang), value: `${accuracy}%`,        color: grade.color },
-            { icon: Clock,  label: t("quiz_avg_time", lang),       value: `${avgTime}s`,         color: "hsl(var(--primary))" },
             { icon: Flame,  label: t("quiz_streak_label", lang),   value: wrong.length === 0 ? t("quiz_perfect", lang) : `${total - wrong.length}`, color: "#f78166" },
           ].map(({ icon: Icon, label, value, color }) => (
             <div key={label} className="ds-card p-3 text-center space-y-1">
