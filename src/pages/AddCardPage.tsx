@@ -608,6 +608,41 @@ export function AddCardPage() {
               </div>
             </div>
 
+            {/* Short Answer for Quiz */}
+            <div>
+              <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                <label style={{ ...labelStyle, marginBottom: 0 }}>
+                  {lang === "es" ? "Respuesta Resumida" : "Short Answer"}
+                  <span className="ml-2 font-mono normal-case text-[10px]" style={{ fontWeight: 400, textTransform: "none", color: "hsl(var(--muted-foreground))" }}>
+                    {lang === "es" ? "(opcional)" : "(optional)"}
+                  </span>
+                </label>
+                <span
+                  className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full font-medium"
+                  style={{ background: "hsl(var(--warning) / 0.12)", color: "hsl(var(--warning))", border: "1px solid hsl(var(--warning) / 0.3)" }}
+                >
+                  ⚡ {lang === "es" ? "Quiz Rápido" : "Quick Quiz"}
+                </span>
+              </div>
+              <textarea
+                rows={2}
+                value={shortAnswer}
+                maxLength={150}
+                onChange={(e) => setShortAnswer(e.target.value)}
+                onFocus={focus}
+                onBlur={blur}
+                placeholder={lang === "es"
+                  ? "Versión concisa de la respuesta (máx. 150 caracteres)…"
+                  : "Concise version of the answer (max. 150 chars)…"}
+                style={{ ...inputBase, resize: "vertical", fontFamily: "inherit" }}
+              />
+              <p className="text-[11px] mt-1 leading-relaxed" style={{ color: "hsl(var(--muted-foreground))" }}>
+                {lang === "es"
+                  ? "⚡ Se usará como opción de respuesta en el Quiz Rápido, en lugar del texto completo de la respuesta. Se recomienda para una mejor experiencia en los quizzes."
+                  : "⚡ This will be shown as the answer choice in Quick Quiz instead of the full back text. Recommended for a better quiz experience."}
+              </p>
+            </div>
+
             {/* Code Example */}
             <div>
               <div className="flex items-center justify-between mb-1.5">
