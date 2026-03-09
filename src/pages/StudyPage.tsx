@@ -784,10 +784,11 @@ export function StudyPage() {
   const { cards, streak, setActiveNav, addStudySession } = useDeckStore();
   const { insertSession } = useSupabaseSync();
   const { user } = useAuth();
-  const [screen, setScreen]   = useState<Screen>("setup");
-  const [queue, setQueue]     = useState<Flashcard[]>([]);
-  const [results, setResults] = useState<ReviewResult[]>([]);
-  const [elapsed, setElapsed] = useState(0);
+  const [screen, setScreen]       = useState<Screen>("setup");
+  const [queue, setQueue]         = useState<Flashcard[]>([]);
+  const [results, setResults]     = useState<ReviewResult[]>([]);
+  const [elapsed, setElapsed]     = useState(0);
+  const [editCardId, setEditCardId] = useState<string | null>(null);
 
   function handleStart(q: Flashcard[]) {
     setQueue(q);
@@ -841,11 +842,17 @@ export function StudyPage() {
 
   if (screen === "review") {
     return (
-      <CardReview
-        queue={queue}
-        onComplete={handleComplete}
-        onEditCard={() => setActiveNav("all-cards")}
-      />
+      <>
+        <CardReview
+          queue={queue}
+          onComplete={handleComplete}
+          onEditCard={(id) => setEditCardId(id)}
+        />
+        <EditCardModal
+          cardId={editCardId}
+          onClose={() => setEditCardId(null)}
+        />
+      </>
     );
   }
 
