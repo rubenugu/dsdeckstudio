@@ -477,16 +477,6 @@ function QuizQuestion({ questions, lang, onComplete }: QuestionProps) {
         })}
       </div>
 
-      {/* Timed out message */}
-      {revealed && chosen === null && (
-        <div
-          className="w-full max-w-2xl flex items-center gap-2 px-4 py-3 rounded-lg text-sm"
-          style={{ background: "hsl(var(--destructive) / 0.1)", border: "1px solid hsl(var(--destructive) / 0.3)", color: "hsl(var(--destructive))" }}
-        >
-          <Clock size={14} />
-          {t("quiz_times_up", lang)}
-        </div>
-      )}
 
       {/* Next button (after reveal) */}
       {revealed && (
