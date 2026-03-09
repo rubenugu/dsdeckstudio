@@ -529,8 +529,6 @@ function QuizResults({ results, lang, onRetry, onDashboard }: ResultsProps) {
   const total    = results.length;
   const correct  = results.filter((r) => r.correct).length;
   const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
-  const totalTime = results.reduce((s, r) => s + r.timeTaken, 0);
-  const avgTime   = total > 0 ? (totalTime / total).toFixed(1) : "0";
 
   const wrong = results.filter((r) => !r.correct);
 
