@@ -1,0 +1,74 @@
+{
+  "cards": [
+    {
+      "id": "card_a3b4c5d6",
+      "category": "Data Wrangling",
+      "subcategory": "Pandas - Indexación",
+      "front": "¿Cuál es la diferencia entre `.loc[]` e `.iloc[]` en pandas?",
+      "back": "`.loc[]` indexa por etiquetas (nombres de filas/columnas o índices explícitos) e incluye el valor final en slices. `.iloc[]` indexa por posición entera (como slicing de listas) y excluye el valor final. Cuando el índice es el numérico por defecto, pueden coincidir, pero su comportamiento en slicing es diferente.",
+      "shortAnswer": ".loc usa etiquetas (incluye fin); .iloc usa posición (excluye fin).",
+      "codeExample": "df = data.set_index('ciudad').sort_index()\n\n# .loc - por etiqueta, extremo incluido\ndf.loc['Guadalajara':'Monterrey', 'ventas':'margen']\n\n# .iloc - por posición, extremo excluido\ndata.iloc[0:5]        # filas 0,1,2,3,4\ndata.iloc[0:5, 0:3]   # filas 0-4, columnas 0-2",
+      "difficulty": "intermediate",
+      "tags": ["loc", "iloc", "indexación", "pandas", "slicing"],
+      "repetitions": 0,
+      "easeFactor": 2.5,
+      "interval": 0
+    },
+    {
+      "id": "card_o1p2q3r4",
+      "category": "Data Wrangling",
+      "subcategory": "Pandas - Agrupación",
+      "front": "¿Cómo funciona `groupby()` en pandas y cuándo usar `.agg()` en lugar de `.mean()` directamente?",
+      "back": "`groupby('col')` agrupa el DataFrame por los valores únicos de una columna. Con un método directo como `.mean()` obtienes una sola métrica. Con `.agg()` puedes aplicar múltiples funciones de agregación a la vez, recibiendo una columna por función. Las funciones se pasan como strings porque pandas reconoce sus nombres integrados.",
+      "shortAnswer": "groupby agrupa; .agg() aplica múltiples métricas a la vez.",
+      "codeExample": "import pandas as pd\n\n# Una sola métrica\ndata.groupby('ciudad')['ventas'].mean()\n\n# Múltiples métricas con .agg()\ndata.groupby('ciudad')['ventas'].agg(['min', 'max', 'mean', 'median'])\n\n# Con diccionario para renombrar columnas resultado\ndata.groupby('ciudad').agg(\n    promedio=('ventas', 'mean'),\n    total=('ventas', 'sum')\n)",
+      "difficulty": "intermediate",
+      "tags": ["groupby", "agg", "agregación", "pandas"],
+      "repetitions": 0,
+      "easeFactor": 2.5,
+      "interval": 0
+    },
+    {
+      "id": "card_u1v2w3x4",
+      "category": "Python & Libraries",
+      "subcategory": "Strings",
+      "front": "¿Qué son los f-strings y por qué se prefieren sobre la concatenación o `.format()`?",
+      "back": "Los f-strings (f'...') permiten incrustar expresiones Python directamente en el string usando `{variable}`. Son más legibles, más rápidos en ejecución y permiten expresiones completas dentro de las llaves. Se prefieren sobre `+` (concatenación propensa a errores de tipo) y sobre `.format()` (más verboso).",
+      "shortAnswer": "Interpolación directa con f''; más legible y rápido.",
+      "codeExample": "nombre = \"Ana\"\nedad = 25\n\n# f-string (recomendado)\nmensaje = f\"Hola, soy {nombre} y tengo {edad} años\"\n\n# Expresiones dentro de las llaves\nprint(f\"El doble de edad: {edad * 2}\")\nprint(f\"Mayúsculas: {nombre.upper()}\")",
+      "difficulty": "beginner",
+      "tags": ["f-strings", "formateo", "strings", "interpolación"],
+      "repetitions": 0,
+      "easeFactor": 2.5,
+      "interval": 0
+    },
+    {
+      "id": "card_y5z6a7b8",
+      "category": "Python & Libraries",
+      "subcategory": "Manejo de errores",
+      "front": "¿Cómo funciona el bloque `try-except` en Python y cuándo usarlo?",
+      "back": "El bloque `try` ejecuta código que podría fallar. Si ocurre una excepción, `except` la captura y ejecuta código alternativo sin romper el programa. Se puede especificar el tipo de error (ej. `ZeroDivisionError`, `TypeError`) para manejar casos distintos de forma diferenciada.",
+      "shortAnswer": "try ejecuta; except captura errores sin romper el programa.",
+      "codeExample": "try:\n    resultado = int(input(\"Ingresa un número: \"))\n    print(10 / resultado)\nexcept ZeroDivisionError:\n    print(\"No se puede dividir entre cero.\")\nexcept ValueError:\n    print(\"Eso no es un número válido.\")",
+      "difficulty": "beginner",
+      "tags": ["try-except", "errores", "excepciones", "manejo de errores"],
+      "repetitions": 0,
+      "easeFactor": 2.5,
+      "interval": 0
+    },
+    {
+      "id": "card_e5f6g7h8",
+      "category": "Machine Learning",
+      "subcategory": "Flujo de trabajo",
+      "front": "¿Cuáles son las etapas del flujo de trabajo en un proyecto de Data Science?",
+      "back": "1. Levantamiento de requisitos (entender las necesidades del cliente). 2. Combinación de datos de diferentes fuentes. 3. Preparación de datos (limpiar, formatear, estandarizar). 4. Análisis de datos. La etapa más crítica es la primera: comprender qué busca el cliente antes de trabajar.",
+      "shortAnswer": "Requisitos → Combinar → Preparar → Analizar.",
+      "codeExample": null,
+      "difficulty": "beginner",
+      "tags": ["flujo de trabajo", "pipeline", "proceso", "data science"],
+      "repetitions": 0,
+      "easeFactor": 2.5,
+      "interval": 0
+    }
+  ]
+}

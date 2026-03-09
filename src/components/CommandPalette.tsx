@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { Search, X, Clock, Code, ChevronRight } from "lucide-react";
 import { useDeckStore, type Flashcard, type DSCategory } from "@/store/useDeckStore";
+import { useLang } from "@/contexts/LanguageContext";
+import { t } from "@/i18n/translations";
 import { SyntaxBlock } from "@/components/SyntaxBlock";
 
 // ── Category colours ───────────────────────────────────────────────────────────
@@ -85,6 +87,7 @@ function CardDetailModal({
   onClose: () => void;
 }) {
   const { deleteCard, setActiveNav } = useDeckStore();
+  const { lang } = useLang();
   const color = CAT_COLORS[card.category] ?? "hsl(var(--primary))";
   const diffColor = DIFF_COLORS[card.difficulty];
 
@@ -142,12 +145,12 @@ function CardDetailModal({
         <div className="p-5 space-y-5">
           {/* Front */}
           <div>
-            <p className="text-[10px] uppercase tracking-widest font-semibold mb-2" style={{ color: "hsl(var(--muted-foreground))" }}>Front</p>
+            <p className="text-[10px] uppercase tracking-widest font-semibold mb-2" style={{ color: "hsl(var(--muted-foreground))" }}>{t("cmd_front", lang)}</p>
             <p className="text-base leading-relaxed" style={{ color: "hsl(var(--foreground))" }}>{card.front}</p>
           </div>
           {/* Back */}
           <div>
-            <p className="text-[10px] uppercase tracking-widest font-semibold mb-2" style={{ color: "hsl(var(--muted-foreground))" }}>Back</p>
+            <p className="text-[10px] uppercase tracking-widest font-semibold mb-2" style={{ color: "hsl(var(--muted-foreground))" }}>{t("cmd_back", lang)}</p>
             <div className="terminal-block p-4 text-xs leading-relaxed whitespace-pre-wrap" style={{ color: "hsl(var(--foreground))" }}>
               {card.back}
             </div>

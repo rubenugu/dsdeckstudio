@@ -70,7 +70,7 @@ export function TopBar({ onMenuClick, onSearchOpen }: TopBarProps) {
         onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "hsl(var(--border))"; }}
       >
         <Search size={13} />
-        <span className="flex-1 text-left text-xs">Search cards…</span>
+        <span className="flex-1 text-left text-xs">{t("search_placeholder", lang)}</span>
         <kbd
           className="flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-mono"
           style={{ background: "hsl(var(--surface))", border: "1px solid hsl(var(--border))" }}

@@ -48,6 +48,7 @@ function CardPreview({ card, onClick }: { card: Flashcard; onClick: () => void }
   const diffColor = DIFF_COLORS[card.difficulty];
   const isDue = !card.nextReview || new Date(card.nextReview).getTime() <= Date.now();
   const status = cardStatus(card);
+  const { lang } = useLang();
 
   return (
     <button
@@ -65,17 +66,17 @@ function CardPreview({ card, onClick }: { card: Flashcard; onClick: () => void }
         </span>
         <div className="flex items-center gap-1.5 shrink-0 flex-wrap justify-end">
           {status === "mastered" && (
-            <span className="badge-mastered">✨ Mastered</span>
+            <span className="badge-mastered">{t("cards_mastered", lang)}</span>
           )}
           {status === "needs-practice" && (
-            <span className="badge-needs-practice">🔴 Needs practice</span>
+            <span className="badge-needs-practice">{t("cards_needs_practice", lang)}</span>
           )}
           {isDue && !status && (
             <span
               className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full"
               style={{ background: "#d2992218", color: "#d29922", border: "1px solid #d2992240" }}
             >
-              DUE
+              {t("cards_due_badge", lang)}
             </span>
           )}
           {card.codeExample && (

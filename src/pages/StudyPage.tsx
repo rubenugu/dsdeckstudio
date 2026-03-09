@@ -105,14 +105,14 @@ function SessionSetup({ cards, onStart, onGoToDashboard }: SetupProps) {
           <p className="text-sm" style={{ color: "hsl(var(--muted-foreground))" }}>
             {dueCards.length > 0
               ? `${dueCards.length} ${t("study_due_cards", lang)}`
-              : "No cards due today — study ahead!"}
+              : t("study_no_due", lang)}
           </p>
         </div>
 
         {/* Mode picker */}
         <div className="ds-card p-4 sm:p-5 space-y-3">
           <p className="text-xs uppercase tracking-widest font-semibold" style={{ color: "hsl(var(--muted-foreground))" }}>
-            What to study
+            {t("study_what_to_study", lang)}
           </p>
 
           {(["due", "all"] as const).map((m) => (
@@ -142,7 +142,7 @@ function SessionSetup({ cards, onStart, onGoToDashboard }: SetupProps) {
           ))}
 
           <p className="text-[10px] uppercase tracking-widest pt-1" style={{ color: "hsl(var(--muted-foreground))" }}>
-            By category
+            {t("study_by_category", lang)}
           </p>
 
           <div className="grid grid-cols-2 gap-1.5">
@@ -180,7 +180,7 @@ function SessionSetup({ cards, onStart, onGoToDashboard }: SetupProps) {
             }}
           >
             <LayoutDashboard size={14} />
-            Dashboard
+            {t("nav_dashboard", lang)}
           </button>
 
           <button
@@ -466,7 +466,7 @@ function CardReview({ queue, onComplete, onEditCard }: ReviewProps) {
               onClick={(e) => e.stopPropagation()}
             >
               <p className="text-[10px] uppercase tracking-widest font-semibold" style={{ color: "hsl(var(--muted-foreground))" }}>
-                Answer
+                {t("study_answer_label", lang)}
               </p>
 
               <p
@@ -514,7 +514,7 @@ function CardReview({ queue, onComplete, onEditCard }: ReviewProps) {
             onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
           >
             <Pencil size={12} />
-            Edit card
+            {t("study_edit_card", lang)}
           </button>
 
           <div className="flex items-center gap-2">
@@ -525,7 +525,7 @@ function CardReview({ queue, onComplete, onEditCard }: ReviewProps) {
                 style={{ background: "hsl(var(--destructive) / 0.08)", border: "1px solid hsl(var(--destructive) / 0.35)" }}
               >
                 <span style={{ color: "hsl(var(--destructive))", fontSize: "11px" }}>
-                  End now? ({results.length}/{queue.length} rated)
+                  {t("study_end_confirm", lang).replace("{done}", String(results.length)).replace("{total}", String(queue.length))}
                 </span>
                 <button
                   onClick={() => {
@@ -537,7 +537,7 @@ function CardReview({ queue, onComplete, onEditCard }: ReviewProps) {
                   onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "hsl(var(--destructive) / 0.3)"; }}
                   onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "hsl(var(--destructive) / 0.18)"; }}
                 >
-                  Yes, end
+                  {t("study_end_yes", lang)}
                 </button>
                 <button
                   onClick={() => setShowEndConfirm(false)}
@@ -546,7 +546,7 @@ function CardReview({ queue, onComplete, onEditCard }: ReviewProps) {
                   onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "hsl(var(--surface-2))"; }}
                   onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
                 >
-                  Cancel
+                  {t("study_cancel", lang)}
                 </button>
               </div>
             ) : (
@@ -558,7 +558,7 @@ function CardReview({ queue, onComplete, onEditCard }: ReviewProps) {
                 onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
               >
                 <CheckCircle2 size={12} />
-                End session
+                {t("study_end_session", lang)}
               </button>
             )}
 
@@ -589,7 +589,7 @@ function CardReview({ queue, onComplete, onEditCard }: ReviewProps) {
         {flipped ? (
           <div className="p-3 sm:p-4">
             <p className="text-[10px] uppercase tracking-widest mb-2 text-center" style={{ color: "hsl(var(--muted-foreground))" }}>
-              How well did you know this?
+              {t("study_how_well", lang)}
             </p>
             <div className="grid grid-cols-4 gap-2">
               {RATINGS.map(({ quality, emoji, label, sub, key, color }) => (
@@ -637,7 +637,7 @@ function CardReview({ queue, onComplete, onEditCard }: ReviewProps) {
                 minHeight: 56,
               }}
             >
-              Reveal Answer
+              {t("study_reveal", lang)}
             </button>
           </div>
         )}
@@ -710,7 +710,7 @@ function SessionComplete({ results, queue, elapsedSeconds, streak, onStudyAgain,
             {t("study_complete_title", lang)}
           </h2>
           <p className="text-sm" style={{ color: "hsl(var(--muted-foreground))" }}>
-            {accuracy >= 80 ? "Excellent work! You're mastering this material." : accuracy >= 50 ? "Good session. Keep up the practice." : "Keep going — repetition builds mastery."}
+            {accuracy >= 80 ? t("study_msg_excellent", lang) : accuracy >= 50 ? t("study_msg_good", lang) : t("study_msg_keep", lang)}
           </p>
         </div>
 
@@ -831,6 +831,7 @@ export function StudyPage() {
   const { cards, streak, setActiveNav, addStudySession } = useDeckStore();
   const { insertSession } = useSupabaseSync();
   const { user } = useAuth();
+  const { lang } = useLang();
   const [screen, setScreen]       = useState<Screen>("setup");
   const [queue, setQueue]         = useState<Flashcard[]>([]);
   const [results, setResults]     = useState<ReviewResult[]>([]);
@@ -864,14 +865,14 @@ export function StudyPage() {
     return (
       <div className="flex flex-col items-center justify-center h-full p-6 text-center gap-4 animate-fade-in">
         <Brain size={40} style={{ color: "hsl(var(--muted-foreground))" }} />
-        <p className="text-lg font-semibold" style={{ color: "hsl(var(--foreground))" }}>No cards yet!</p>
-        <p className="text-sm" style={{ color: "hsl(var(--muted-foreground))" }}>Add some cards first to start studying.</p>
+        <p className="text-lg font-semibold" style={{ color: "hsl(var(--foreground))" }}>{t("study_no_cards", lang)}</p>
+        <p className="text-sm" style={{ color: "hsl(var(--muted-foreground))" }}>{t("study_add_first_hint", lang)}</p>
         <button
           onClick={() => setActiveNav("add-card")}
           className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium"
           style={{ background: "hsl(var(--primary))", color: "hsl(var(--primary-foreground))" }}
         >
-          Add your first card
+          {t("study_add_first_btn", lang)}
         </button>
       </div>
     );

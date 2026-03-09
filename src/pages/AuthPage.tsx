@@ -2,8 +2,11 @@ import { useState } from "react";
 import { Layers, Mail, Lock, Eye, EyeOff, Brain } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { useLang } from "@/contexts/LanguageContext";
+import { t } from "@/i18n/translations";
 
 export function AuthPage() {
+  const { lang } = useLang();
   const [mode, setMode]         = useState<"signin" | "signup">("signin");
   const [email, setEmail]       = useState("");
   const [password, setPassword] = useState("");
@@ -52,9 +55,7 @@ export function AuthPage() {
             🧠 DS <span style={{ color: "hsl(var(--primary))" }}>Deck</span>
           </h1>
           <p className="text-sm" style={{ color: "hsl(var(--muted-foreground))" }}>
-            {mode === "signin"
-              ? "Sign in to sync your flashcards across devices"
-              : "Create an account to start learning"}
+            {mode === "signin" ? t("auth_signin_desc", lang) : t("auth_signup_desc", lang)}
           </p>
         </div>
 
@@ -75,7 +76,7 @@ export function AuthPage() {
                   color: mode === m ? "hsl(var(--primary-foreground))" : "hsl(var(--muted-foreground))",
                 }}
               >
-                {m === "signin" ? "Sign In" : "Sign Up"}
+                {m === "signin" ? t("auth_signin_tab", lang) : t("auth_signup_tab", lang)}
               </button>
             ))}
           </div>
@@ -84,7 +85,7 @@ export function AuthPage() {
             {/* Email */}
             <div className="space-y-1.5">
               <label className="text-xs font-medium" style={{ color: "hsl(var(--muted-foreground))" }}>
-                Email
+                {t("auth_email", lang)}
               </label>
               <div className="relative">
                 <Mail size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "hsl(var(--muted-foreground))" }} />
@@ -92,7 +93,7 @@ export function AuthPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
+                  placeholder={t("auth_email_placeholder", lang)}
                   required
                   className="w-full pl-9 pr-3 py-2.5 rounded-lg text-sm outline-none transition-all duration-200"
                   style={{
@@ -154,7 +155,7 @@ export function AuthPage() {
                 color: "hsl(var(--primary-foreground))",
               }}
             >
-              {loading ? "..." : mode === "signin" ? "Sign In" : "Create Account"}
+              {loading ? "..." : mode === "signin" ? t("auth_signin_btn", lang) : t("auth_create_btn", lang)}
             </button>
           </form>
         </div>

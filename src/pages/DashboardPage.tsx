@@ -1,8 +1,8 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { useDeckStore } from "@/store/useDeckStore";
 import { useLang } from "@/contexts/LanguageContext";
 import { t } from "@/i18n/translations";
-import { Flame, BookMarked, Clock, CalendarDays, Activity } from "lucide-react";
+import { Flame, BookMarked, Clock, CalendarDays, Activity, Info } from "lucide-react";
 import {
   BarChart,
   Bar,
@@ -136,10 +136,26 @@ function HeroCard({
   );
 }
 
+const SAMPLE_CARD_IDS = new Set([
+  "card_a3b4c5d6", "card_o1p2q3r4", "card_u1v2w3x4", "card_y5z6a7b8", "card_e5f6g7h8",
+]);
+const BANNER_KEY = "dsdeck_sample_banner_dismissed";
+
 // ── Main component ─────────────────────────────────────────────────────────────
 export function DashboardPage() {
-  const { cards, streak, studySessions } = useDeckStore();
+  const { cards, streak, studySessions, setActiveNav } = useDeckStore();
   const { lang } = useLang();
+
+  const hasSampleCards = cards.some((c) => SAMPLE_CARD_IDS.has(c.id));
+  const [bannerDismissed, setBannerDismissed] = useState(
+    () => !!localStorage.getItem(BANNER_KEY)
+  );
+  const showBanner = hasSampleCards && !bannerDismissed;
+
+  function dismissBanner() {
+    localStorage.setItem(BANNER_KEY, "1");
+    setBannerDismissed(true);
+  }
 
   // ── Hero stats ──────────────────────────────────────────────────────────────
   const mastered = cards.filter((c) => c.interval > 21).length;
@@ -197,7 +213,7 @@ export function DashboardPage() {
         const nr = new Date(c.nextReview);
         return nr >= d && nr < next;
       }).length;
-      const label = i === 0 ? "Today" : i === 1 ? "Tomorrow" : `+${i}d`;
+      const label = i === 0 ? t("dash_today", lang) : i === 1 ? t("dash_tomorrow", lang) : `+${i}d`;
       days.push({ day: label, due });
     }
     return days;
@@ -221,12 +237,55 @@ export function DashboardPage() {
         </p>
       </div>
 
+      {/* ── Sample cards banner ────────────────────────────────────────────── */}
+      {showBanner && (
+        <div
+          className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm"
+          style={{
+            background: "hsl(var(--primary) / 0.07)",
+            border:     "1px solid hsl(var(--primary) / 0.2)",
+          }}
+        >
+          <Info size={15} style={{ color: "hsl(var(--primary))", flexShrink: 0 }} />
+          <p className="flex-1 leading-snug" style={{ color: "hsl(var(--muted-foreground))" }}>
+            {t("dash_sample_banner", lang)}{" "}
+            <button
+              onClick={() => setActiveNav("all-cards")}
+              className="underline underline-offset-2 font-medium"
+              style={{ color: "hsl(var(--primary))" }}
+            >
+              {t("dash_sample_banner_link", lang)}
+            </button>
+            {" "}{t("dash_sample_banner_or", lang)}{" "}
+            <button
+              onClick={() => setActiveNav("settings")}
+              className="underline underline-offset-2 font-medium"
+              style={{ color: "hsl(var(--primary))" }}
+            >
+              {t("dash_sample_banner_link2", lang)}
+            </button>
+            .
+          </p>
+          <button
+            onClick={dismissBanner}
+            className="shrink-0 px-2.5 py-1 rounded-md text-xs font-medium transition-colors"
+            style={{
+              background: "hsl(var(--primary) / 0.12)",
+              color:      "hsl(var(--primary))",
+              border:     "1px solid hsl(var(--primary) / 0.25)",
+            }}
+          >
+            {t("dash_sample_dismiss", lang)}
+          </button>
+        </div>
+      )}
+
       {/* ── 1. Hero Row ────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <HeroCard
           icon={Flame}
           label={t("stat_streak", lang)}
-          value={`${streak} ${lang === "es" ? "días" : "days"}`}
+          value={`${streak} ${t("dash_days_unit", lang)}`}
           sub="🔥"
           color="hsl(40 77% 58%)"
         />
@@ -234,14 +293,14 @@ export function DashboardPage() {
           icon={BookMarked}
           label={t("stat_mastered", lang)}
           value={mastered}
-          sub={`${cards.length - mastered} ${lang === "es" ? "en progreso" : "in progress"}`}
+          sub={`${cards.length - mastered} ${t("dash_in_progress", lang)}`}
           color="hsl(133 57% 58%)"
         />
         <HeroCard
           icon={Clock}
           label={t("stat_due_today", lang)}
           value={dueToday}
-          sub={dueToday > 0 ? (lang === "es" ? "¡A repasar!" : "Time to review!") : (lang === "es" ? "¡Al día ✓" : "All caught up ✓")}
+          sub={dueToday > 0 ? t("dash_time_to_review", lang) : t("dash_all_caught_up", lang)}
           color={dueToday > 0 ? "hsl(354 70% 60%)" : "hsl(133 57% 58%)"}
         />
       </div>
@@ -254,11 +313,11 @@ export function DashboardPage() {
             {t("chart_activity", lang)}
           </h2>
           <div className="flex items-center gap-1.5">
-            <span className="text-[10px]" style={{ color: "hsl(var(--muted-foreground))" }}>{lang === "es" ? "Menos" : "Less"}</span>
+            <span className="text-[10px]" style={{ color: "hsl(var(--muted-foreground))" }}>{t("dash_less", lang)}</span>
             {["#161b22","#0e4429","#006d32","#26a641","#39d353"].map((c) => (
               <div key={c} className="w-3 h-3 rounded-sm" style={{ background: c, border: "1px solid rgba(255,255,255,0.06)" }} />
             ))}
-            <span className="text-[10px]" style={{ color: "hsl(var(--muted-foreground))" }}>More</span>
+            <span className="text-[10px]" style={{ color: "hsl(var(--muted-foreground))" }}>{t("dash_more", lang)}</span>
           </div>
         </div>
 
@@ -395,7 +454,7 @@ export function DashboardPage() {
         {recentSessions.length === 0 ? (
           <div className="text-center py-8">
             <p className="text-sm" style={{ color: "hsl(var(--muted-foreground))" }}>
-              {lang === "es" ? "Sin sesiones aún — ¡comienza a estudiar!" : "No sessions yet — start studying to see your history here."}
+              {t("dash_no_sessions", lang)}
             </p>
           </div>
         ) : (
@@ -405,7 +464,7 @@ export function DashboardPage() {
               className="grid grid-cols-4 text-[10px] font-medium uppercase tracking-wide pb-2 mb-1"
               style={{ color: "hsl(var(--muted-foreground))", borderBottom: "1px solid hsl(var(--border))" }}
             >
-              <span>{lang === "es" ? "Fecha" : "Date"}</span>
+              <span>{t("dash_date_col", lang)}</span>
               <span className="text-right">{t("study_complete_reviewed", lang)}</span>
               <span className="text-right">{t("study_complete_accuracy", lang)}</span>
               <span className="text-right">{t("study_complete_time", lang)}</span>

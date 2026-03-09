@@ -35,7 +35,7 @@ export function Sidebar({ mobileOpen = false, onMobileClose }: SidebarProps) {
     >
       <div className="px-4 pt-5 pb-2 flex items-center justify-between">
         <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "hsl(var(--muted-foreground))" }}>
-          {lang === "es" ? "Navegación" : "Navigation"}
+          {t("nav_label", lang)}
         </span>
         {onMobileClose && (
           <button onClick={onMobileClose} className="md:hidden p-1 rounded transition-colors duration-200" style={{ color: "hsl(var(--muted-foreground))" }}>
