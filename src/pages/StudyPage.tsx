@@ -223,10 +223,11 @@ function CardReview({ queue, onComplete, onEditCard }: ReviewProps) {
   const { upsertCard } = useSupabaseSync();
   const { user } = useAuth();
   const { lang } = useLang();
-  const [index, setIndex]     = useState(0);
-  const [flipped, setFlipped] = useState(false);
-  const [results, setResults] = useState<ReviewResult[]>([]);
-  const [exiting, setExiting] = useState(false);
+  const [index, setIndex]           = useState(0);
+  const [flipped, setFlipped]       = useState(false);
+  const [results, setResults]       = useState<ReviewResult[]>([]);
+  const [exiting, setExiting]       = useState(false);
+  const [showEndConfirm, setShowEndConfirm] = useState(false);
 
   // Swipe state
   const touchStartX   = useRef<number | null>(null);
