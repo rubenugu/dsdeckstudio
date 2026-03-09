@@ -98,7 +98,6 @@ const AI_SUGGESTIONS: Record<DSCategory, string[]> = {
 const FRONT_MAX = 300;
 const BACK_MAX = 2000;
 
-// ── Tag Input Component ───────────────────────────────────────────────────────
 
 function TagInput({ tags, onChange }: { tags: string[]; onChange: (t: string[]) => void }) {
   const [input, setInput] = useState("");
