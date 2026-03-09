@@ -397,6 +397,7 @@ export function AddCardPage() {
     // Reset
     setFront("");
     setBack("");
+    setShortAnswer("");
     setCodeExample("");
     setSubcategory("");
     setTags([]);
