@@ -307,33 +307,15 @@ function QuizQuestion({ questions, lang, onComplete }: QuestionProps) {
   const [index,    setIndex]    = useState(0);
   const [chosen,   setChosen]   = useState<string | null>(null);
   const [revealed, setRevealed] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(TIMER_SECS);
   const [results,  setResults]  = useState<QuizResult[]>([]);
   const questionStart = useRef(Date.now());
 
   const q = questions[index];
   const catColor  = CAT_COLORS[q.card.category] ?? "#58a6ff";
   const diffColor = DIFF_COLORS[q.card.difficulty];
-  const timerPct  = (timeLeft / TIMER_SECS) * 100;
-  const timerColor =
-    timeLeft > 15 ? "hsl(var(--success))" :
-    timeLeft > 7  ? "hsl(var(--warning))" :
-    "hsl(var(--destructive))";
 
-  // Countdown timer
+  // Reset state when question changes
   useEffect(() => {
-    if (revealed) return;
-    if (timeLeft <= 0) {
-      handleAnswer(null); // timed out
-      return;
-    }
-    const id = setTimeout(() => setTimeLeft((t) => t - 1), 1000);
-    return () => clearTimeout(id);
-  }, [timeLeft, revealed]);
-
-  // Reset timer when question changes
-  useEffect(() => {
-    setTimeLeft(TIMER_SECS);
     setChosen(null);
     setRevealed(false);
     questionStart.current = Date.now();
