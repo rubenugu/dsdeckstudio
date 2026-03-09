@@ -327,6 +327,7 @@ export function AddCardPage() {
 
   const [front, setFront] = useState("");
   const [back, setBack] = useState("");
+  const [shortAnswer, setShortAnswer] = useState("");
   const [codeExample, setCodeExample] = useState("");
   const [showCode, setShowCode] = useState(false);
   const [category, setCategory] = useState<DSCategory>("Machine Learning");
