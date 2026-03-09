@@ -24,6 +24,7 @@ export interface Flashcard {
   subcategory: string;
   front: string;
   back: string;
+  shortAnswer?: string;  // Optional short answer for Quick Quiz choices
   codeExample?: string;
   difficulty: Difficulty;
   tags: string[];

@@ -53,14 +53,15 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
-/** Trim back text to a readable length for MCQ answers */
-function trimAnswer(text: string, maxLen = 90) {
-  const first = text.split("\n")[0].trim();
+/** Prefer shortAnswer if set, else first line of back trimmed to maxLen */
+function getDisplayAnswer(card: Flashcard, maxLen = 90): string {
+  if (card.shortAnswer?.trim()) return card.shortAnswer.trim();
+  const first = card.back.split("\n")[0].trim();
   return first.length > maxLen ? first.slice(0, maxLen) + "…" : first;
 }
 
 function buildChoices(card: Flashcard, allCards: Flashcard[]): string[] {
-  const correct = trimAnswer(card.back);
+  const correct = getDisplayAnswer(card);
   // Distractors: prefer same category, else random
   const pool = allCards
     .filter((c) => c.id !== card.id)
@@ -73,7 +74,7 @@ function buildChoices(card: Flashcard, allCards: Flashcard[]): string[] {
   const distractors: string[] = [];
   for (const c of ordered) {
     if (distractors.length >= 3) break;
-    const t = trimAnswer(c.back);
+    const t = getDisplayAnswer(c);
     if (t !== correct && !distractors.includes(t)) distractors.push(t);
   }
   // Pad if not enough
@@ -96,9 +97,10 @@ function buildQuiz(
   return limited.map((card) => ({
     card,
     choices: buildChoices(card, cards),
-    correct: trimAnswer(card.back),
+    correct: getDisplayAnswer(card),
   }));
 }
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Screen 1 — Setup
